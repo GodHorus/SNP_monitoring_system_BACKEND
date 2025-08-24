@@ -1,16 +1,19 @@
 package com.example.master.services.impl;
 
 import com.example.master.Dto.DemandDTO;
+import com.example.master.event.DemandEventPublisher;
 import com.example.master.exception.NotFoundException;
 import com.example.master.model.Demand;
 import com.example.master.repository.DemandRepository;
 import com.example.master.services.DemandService;
-import com.example.master.event.DemandEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Transactional
 public class DemandServiceImpl implements DemandService {
 
     private final DemandRepository demandRepository;
@@ -24,23 +27,19 @@ public class DemandServiceImpl implements DemandService {
     @Override
     public Demand createDemand(DemandDTO dto) {
         Demand demand = new Demand();
-        demand.setDescription(dto.getDescription());
-        demand.setFromDate(dto.getFromDate());
-        demand.setToDate(dto.getToDate());
-        demand.setFciId(dto.getFciId());
-        demand.setFciDocs(dto.getFciDocs());
+//        demand.setItemName(dto.getItemName());
         demand.setQuantity(dto.getQuantity());
-        demand.setQuantityUnit(dto.getQuantityUnit());
-        demand.setSupplierId(dto.getSupplierId());
-        demand.setSupplierDocs(dto.getSupplierDocs());
-        demand.setStatus("DEMAND_GENERATED");
+        demand.setDescription(dto.getDescription());
+        demand.setStatus("PENDING");
+        demand.setCreatedAt(LocalDateTime.now());
+        demand.setUpdatedAt(LocalDateTime.now());
 
-        Demand saved = demandRepository.save(demand);
+        Demand savedDemand = demandRepository.save(demand);
 
-        // publish Kafka event
-        eventPublisher.publish("NEW_DEMAND:" + saved.getId());
+        // Publish event
+        eventPublisher.publish("NEW_DEMAND:" + savedDemand.getId());
 
-        return saved;
+        return savedDemand;
     }
 
     @Override
@@ -51,21 +50,92 @@ public class DemandServiceImpl implements DemandService {
     @Override
     public Demand getDemandById(Long id) {
         return demandRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Demand not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Demand not found with id: " + id));
     }
 
     @Override
     public void deleteDemand(Long id) {
+        if (!demandRepository.existsById(id)) {
+            throw new NotFoundException("Demand not found with id: " + id);
+        }
         demandRepository.deleteById(id);
     }
 
     @Override
-    public void updateStatus(Long id, String status) {
+    public Demand updateStatus(Long id, String status) {
         Demand demand = getDemandById(id);
-        demand.setStatus(status);
-        demandRepository.save(demand);
 
-        // publish status update event
+        validateStatusTransition(demand.getStatus(), status);
+
+        demand.setStatus(status);
+        demand.setUpdatedAt(LocalDateTime.now());
+
+        // Timestamp logic
+        switch (status) {
+            case "FCI_ACCEPTED":
+                demand.setFciAcceptedAt(LocalDateTime.now());
+                break;
+            case "FCI_REJECTED":
+                demand.setFciRejectedAt(LocalDateTime.now());
+                break;
+            case "SUPPLIER_ACCEPTED":
+                demand.setSupplierAcceptedAt(LocalDateTime.now());
+                break;
+            case "SUPPLIER_REJECTED":
+                demand.setSupplierRejectedAt(LocalDateTime.now());
+                break;
+            case "CDPO_DISPATCHED":
+                demand.setCdpoDispatchedAt(LocalDateTime.now());
+                break;
+            case "AWC_ACCEPTED":
+                demand.setAwcAcceptedAt(LocalDateTime.now());
+                break;
+        }
+
+        Demand updatedDemand = demandRepository.save(demand);
+
+        // Publish event
         eventPublisher.publish("STATUS_UPDATE:" + id + ":" + status);
+
+        return updatedDemand;
+    }
+
+    private void validateStatusTransition(String currentStatus, String newStatus) {
+        boolean isValidTransition = switch (currentStatus) {
+            case "PENDING" -> newStatus.equals("FCI_ACCEPTED") || newStatus.equals("FCI_REJECTED");
+            case "FCI_ACCEPTED" -> newStatus.equals("SUPPLIER_ACCEPTED") || newStatus.equals("SUPPLIER_REJECTED");
+            case "SUPPLIER_ACCEPTED" -> newStatus.equals("CDPO_DISPATCHED");
+            case "CDPO_DISPATCHED" -> newStatus.equals("AWC_ACCEPTED");
+            default -> false;
+        };
+
+        if (!isValidTransition) {
+            throw new RuntimeException("Invalid status transition from " + currentStatus + " to " + newStatus);
+        }
+    }
+
+    @Override
+    public List<Demand> getDemandsByStatus(String status) {
+        return demandRepository.findByStatus(status);
+    }
+
+    @Override
+    public List<Demand> getPendingDemandsForFCI() {
+        return demandRepository.findByStatus("PENDING");
+    }
+
+    @Override
+    public List<Demand> getAcceptedDemandsForSupplier() {
+        return demandRepository.findByStatus("FCI_ACCEPTED");
+    }
+
+    @Override
+    public List<Demand> getManufacturedDemandsForCDPO() {
+        return demandRepository.findByStatus("SUPPLIER_ACCEPTED");
+    }
+
+    @Override
+    public List<Demand> getDispatchedDemandsForAWC() {
+        return demandRepository.findByStatus("CDPO_DISPATCHED");
     }
 }

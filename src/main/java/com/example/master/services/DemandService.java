@@ -10,5 +10,12 @@ public interface DemandService {
     List<Demand> getAllDemands();
     Demand getDemandById(Long id);
     void deleteDemand(Long id);
-    void updateStatus(Long id, String status);
+    Demand updateStatus(Long id, String status);
+
+    // Additional methods for role-specific queries
+    List<Demand> getDemandsByStatus(String status);
+    List<Demand> getPendingDemandsForFCI();
+    List<Demand> getAcceptedDemandsForSupplier();
+    List<Demand> getManufacturedDemandsForCDPO();
+    List<Demand> getDispatchedDemandsForAWC();
 }
