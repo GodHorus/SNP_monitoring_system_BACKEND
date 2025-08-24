@@ -1,0 +1,23 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: admin-service
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/snp-assam
+
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/snp-assam
+        registration:
+          keycloak:
+            client-id: snp-backend
+            client-secret: Fck3Uluq4hDzg4Z4sLPMJv4cYP9itiDV
+            authorization-grant-type: client_credentials
+            scope: openid
