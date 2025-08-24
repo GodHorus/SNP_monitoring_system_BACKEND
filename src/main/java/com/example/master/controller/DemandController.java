@@ -30,7 +30,7 @@ public class DemandController {
     }
 
     // DWCD creates demand
-    @PreAuthorize("hasRole('DWCD')")
+    @PreAuthorize("hasAnyRole('ADMIN','DWCD')")
     @PostMapping
     public ResponseEntity<Demand> createDemand(@RequestBody DemandDTO dto) {
         logCurrentUserAuthorities("createDemand");
