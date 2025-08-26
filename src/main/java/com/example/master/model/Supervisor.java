@@ -1,6 +1,9 @@
 package com.example.master.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "supervisors")
@@ -13,16 +16,47 @@ public class Supervisor {
     @Column(name="name", nullable = false)
     private String name;
 
-    public Supervisor() {}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cdpo_id")
+    @JsonBackReference
+    private Cdpo cdpo;
 
-    public Supervisor(String name) {
+    @OneToMany(mappedBy = "supervisor")
+    @JsonManagedReference
+    private List<AnganwadiCenter> anganwadiCenters;
+
+    public Supervisor() {}
+    public Supervisor(String name) { this.name = name; }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
 
-    // getters & setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Cdpo getCdpo() {
+        return cdpo;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setCdpo(Cdpo cdpo) {
+        this.cdpo = cdpo;
+    }
+
+    public List<AnganwadiCenter> getAnganwadiCenters() {
+        return anganwadiCenters;
+    }
+
+    public void setAnganwadiCenters(List<AnganwadiCenter> anganwadiCenters) {
+        this.anganwadiCenters = anganwadiCenters;
+    }
 }

@@ -3,14 +3,19 @@ package com.example.master.services.impl;
 import com.example.master.Dto.DemandDTO;
 import com.example.master.event.DemandEventPublisher;
 import com.example.master.exception.NotFoundException;
-import com.example.master.model.Demand;
+import com.example.master.model.*;
+import com.example.master.repository.CdpoRepository;
 import com.example.master.repository.DemandRepository;
+import com.example.master.repository.DistrictRepository;
+import com.example.master.repository.SupervisorRepository;
 import com.example.master.services.DemandService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+//import jakarta.persistence.EntityNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -19,24 +24,70 @@ public class DemandServiceImpl implements DemandService {
     private final DemandRepository demandRepository;
     private final DemandEventPublisher eventPublisher;
 
-    public DemandServiceImpl(DemandRepository demandRepository, DemandEventPublisher eventPublisher) {
+    //  Inject repositories properly
+    private final DistrictRepository districtRepository;
+    private final CdpoRepository cdpoRepository;
+    private final SupervisorRepository supervisorRepository;
+
+    public DemandServiceImpl(
+            DemandRepository demandRepository,
+            DemandEventPublisher eventPublisher,
+            DistrictRepository districtRepository,
+            CdpoRepository cdpoRepository,
+            SupervisorRepository supervisorRepository
+    ) {
         this.demandRepository = demandRepository;
         this.eventPublisher = eventPublisher;
+        this.districtRepository = districtRepository;
+        this.cdpoRepository = cdpoRepository;
+        this.supervisorRepository = supervisorRepository;
     }
 
     @Override
     public Demand createDemand(DemandDTO dto) {
         Demand demand = new Demand();
-//        demand.setItemName(dto.getItemName());
-        demand.setQuantity(dto.getQuantity());
+
         demand.setDescription(dto.getDescription());
         demand.setStatus("PENDING");
+
+        demand.setFromDate(dto.getFromDate());
+        demand.setToDate(dto.getToDate());
+
+        demand.setFciId(dto.getFciId());
+        demand.setFciDocs(dto.getFciDocs());
+
+        demand.setQuantity(dto.getQuantity());
+        demand.setQuantityUnit(dto.getQuantityUnit());
+
+        demand.setSupplierId(dto.getSupplierId());
+        demand.setSupplierDocs(dto.getSupplierDocs());
+
+        //  Set relations using repository instances, not static calls
+        demand.setDistrict(districtRepository.getReferenceById(dto.getDistrictId()));
+        demand.setCdpo(cdpoRepository.getReferenceById(dto.getCdpoId()));
+        demand.setSupervisor(supervisorRepository.getReferenceById(dto.getSupervisorId()));
+
+        //  Map AWC details
+        List<DemandAwcDetail> awcDetails = dto.getAwcDetails().stream().map(awcDto -> {
+            DemandAwcDetail detail = new DemandAwcDetail();
+            detail.setDemand(demand);
+
+            AnganwadiCenter awc = new AnganwadiCenter();
+            awc.setId(awcDto.getAwcId());
+            detail.setAnganwadi(awc);
+
+            detail.setHcmNumber(awcDto.getHcmNumber());
+            detail.setHcmUnit(awcDto.getHcmUnit());
+
+            return detail;
+        }).collect(Collectors.toList());
+        demand.setAwcDetails(awcDetails);
+
         demand.setCreatedAt(LocalDateTime.now());
         demand.setUpdatedAt(LocalDateTime.now());
 
         Demand savedDemand = demandRepository.save(demand);
 
-        // Publish event
         eventPublisher.publish("NEW_DEMAND:" + savedDemand.getId());
 
         return savedDemand;
@@ -72,24 +123,12 @@ public class DemandServiceImpl implements DemandService {
 
         // Timestamp logic
         switch (status) {
-            case "FCI_ACCEPTED":
-                demand.setFciAcceptedAt(LocalDateTime.now());
-                break;
-            case "FCI_REJECTED":
-                demand.setFciRejectedAt(LocalDateTime.now());
-                break;
-            case "SUPPLIER_ACCEPTED":
-                demand.setSupplierAcceptedAt(LocalDateTime.now());
-                break;
-            case "SUPPLIER_REJECTED":
-                demand.setSupplierRejectedAt(LocalDateTime.now());
-                break;
-            case "CDPO_DISPATCHED":
-                demand.setCdpoDispatchedAt(LocalDateTime.now());
-                break;
-            case "AWC_ACCEPTED":
-                demand.setAwcAcceptedAt(LocalDateTime.now());
-                break;
+            case "FCI_ACCEPTED" -> demand.setFciAcceptedAt(LocalDateTime.now());
+            case "FCI_REJECTED" -> demand.setFciRejectedAt(LocalDateTime.now());
+            case "SUPPLIER_ACCEPTED" -> demand.setSupplierAcceptedAt(LocalDateTime.now());
+            case "SUPPLIER_REJECTED" -> demand.setSupplierRejectedAt(LocalDateTime.now());
+            case "CDPO_DISPATCHED" -> demand.setCdpoDispatchedAt(LocalDateTime.now());
+            case "AWC_ACCEPTED" -> demand.setAwcAcceptedAt(LocalDateTime.now());
         }
 
         Demand updatedDemand = demandRepository.save(demand);

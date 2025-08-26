@@ -1,5 +1,7 @@
 package com.example.master.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -7,6 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "demands")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Demand {
 
     @Id
@@ -14,7 +17,6 @@ public class Demand {
     private Long id;
 
     private String description;
-
     private String status;
 
     private LocalDate fromDate;
@@ -24,12 +26,12 @@ public class Demand {
     private String fciDocs;
 
     private Integer quantity;
-    private String quantityUnit;
+    private String quantityUnit; // "kg", "packets", "metric ton"
 
     private String supplierId;
     private String supplierDocs;
 
-    // Workflow timestamp fields
+    // Workflow timestamps
     private LocalDateTime fciAcceptedAt;
     private LocalDateTime fciRejectedAt;
     private LocalDateTime supplierAcceptedAt;
@@ -40,36 +42,30 @@ public class Demand {
     private String rejectionReason;
     private String notes;
 
-    @ElementCollection
-    @CollectionTable(name = "demand_districts", joinColumns = @JoinColumn(name = "demand_id"))
-    @Column(name = "district")
-    private List<String> districts;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "district_id")
+    private District district;
 
-    @ElementCollection
-    @CollectionTable(name = "demand_blocks", joinColumns = @JoinColumn(name = "demand_id"))
-    @Column(name = "cdpo")
-    private List<String> cdpos;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "cdpo_id")
+    private Cdpo cdpo;
 
-    @ElementCollection
-    @CollectionTable(name = "demand_supervisors", joinColumns = @JoinColumn(name = "demand_id"))
-    @Column(name = "supervisor")
-    private List<String> supervisors;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "supervisor_id")
+    private Supervisor supervisor;
 
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String awcDetailsJson;
+    @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<DemandAwcDetail> awcDetails;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // Lifecycle callbacks
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        if (this.status == null) {
-            this.status = "NEW";
-        }
+        if (this.status == null) this.status = "NEW";
     }
 
     @PreUpdate
@@ -77,24 +73,7 @@ public class Demand {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Utility methods
-    public boolean isPending() {
-        return "PENDING".equals(status) || "NEW".equals(status);
-    }
 
-    public boolean isFciAccepted() {
-        return "FCI_ACCEPTED".equals(status);
-    }
-
-    public boolean isCompleted() {
-        return "AWC_ACCEPTED".equals(status) || "COMPLETED".equals(status);
-    }
-
-    public boolean isRejected() {
-        return status != null && status.endsWith("_REJECTED");
-    }
-
-    // Getters & Setters for all fields (omit here for brevity)
 
     public Long getId() {
         return id;
@@ -248,36 +227,36 @@ public class Demand {
         this.notes = notes;
     }
 
-    public List<String> getDistricts() {
-        return districts;
+    public District getDistrict() {
+        return district;
     }
 
-    public void setDistricts(List<String> districts) {
-        this.districts = districts;
+    public void setDistrict(District district) {
+        this.district = district;
     }
 
-    public List<String> getCdpos() {
-        return cdpos;
+    public Cdpo getCdpo() {
+        return cdpo;
     }
 
-    public void setCdpos(List<String> cdpos) {
-        this.cdpos = cdpos;
+    public void setCdpo(Cdpo cdpo) {
+        this.cdpo = cdpo;
     }
 
-    public List<String> getSupervisors() {
-        return supervisors;
+    public Supervisor getSupervisor() {
+        return supervisor;
     }
 
-    public void setSupervisors(List<String> supervisors) {
-        this.supervisors = supervisors;
+    public void setSupervisor(Supervisor supervisor) {
+        this.supervisor = supervisor;
     }
 
-    public String getAwcDetailsJson() {
-        return awcDetailsJson;
+    public List<DemandAwcDetail> getAwcDetails() {
+        return awcDetails;
     }
 
-    public void setAwcDetailsJson(String awcDetailsJson) {
-        this.awcDetailsJson = awcDetailsJson;
+    public void setAwcDetails(List<DemandAwcDetail> awcDetails) {
+        this.awcDetails = awcDetails;
     }
 
     public LocalDateTime getCreatedAt() {

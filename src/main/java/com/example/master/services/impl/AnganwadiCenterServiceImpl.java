@@ -1,116 +1,155 @@
 package com.example.master.services.impl;
 
 import com.example.master.Dto.AnganwadiCenterDTO;
-import com.example.master.exception.NotFoundException;
-import com.example.master.model.*;
-import com.example.master.repository.*;
+import com.example.master.model.AnganwadiCenter;
+import com.example.master.model.Supervisor;
+import com.example.master.model.Cdpo;
+import com.example.master.model.District;
+import com.example.master.repository.AnganwadiCenterRepository;
+import com.example.master.repository.SupervisorRepository;
+import com.example.master.repository.CdpoRepository;
+import com.example.master.repository.DistrictRepository;
 import com.example.master.services.AnganwadiCenterService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class AnganwadiCenterServiceImpl implements AnganwadiCenterService {
 
-    private final AnganwadiCenterRepository centerRepository;
+    private final AnganwadiCenterRepository repository;
     private final SupervisorRepository supervisorRepository;
+    private final CdpoRepository cdpoRepository;
     private final DistrictRepository districtRepository;
-    private final BlockRepository blockRepository;
 
-    public AnganwadiCenterServiceImpl(AnganwadiCenterRepository centerRepository,
+    @Autowired
+    public AnganwadiCenterServiceImpl(AnganwadiCenterRepository repository,
                                       SupervisorRepository supervisorRepository,
-                                      DistrictRepository districtRepository,
-                                      BlockRepository blockRepository) {
-        this.centerRepository = centerRepository;
+                                      CdpoRepository cdpoRepository,
+                                      DistrictRepository districtRepository) {
+        this.repository = repository;
         this.supervisorRepository = supervisorRepository;
+        this.cdpoRepository = cdpoRepository;
         this.districtRepository = districtRepository;
-        this.blockRepository = blockRepository;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<AnganwadiCenterDTO> list(Pageable pageable) {
-        return centerRepository.findAll(pageable).map(this::toDTO);
-        // if you want everything without pagination, return:
-        // new PageImpl<>(centerRepository.findAll().stream().map(this::toDTO).toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public AnganwadiCenterDTO get(Long id) {
-        AnganwadiCenter entity = centerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Anganwadi center not found: " + id));
-        return toDTO(entity);
     }
 
     @Override
     public AnganwadiCenterDTO create(AnganwadiCenterDTO dto) {
         AnganwadiCenter entity = new AnganwadiCenter();
-        apply(dto, entity);
-        AnganwadiCenter saved = centerRepository.save(entity);
-        return toDTO(saved);
+        entity.setCenterName(dto.getCenterName());
+        entity.setCenterAddress(dto.getCenterAddress());
+        entity.setStatus(dto.getStatus());
+
+        // Fetch related entities
+        if (dto.getSupervisorId() != null) {
+            Supervisor supervisor = supervisorRepository.findById(dto.getSupervisorId())
+                    .orElseThrow(() -> new RuntimeException("Supervisor not found"));
+            entity.setSupervisor(supervisor);
+            dto.setSupervisorId(supervisor.getId());  // Add this line
+        }
+
+        if (dto.getCdpoId() != null) {
+            Cdpo cdpo = cdpoRepository.findById(dto.getCdpoId())
+                    .orElseThrow(() -> new RuntimeException("CDPO not found"));
+            entity.setCdpo(cdpo);
+            dto.setCdpoId(cdpo.getId());  // Add this line
+        }
+
+        if (dto.getDistrictId() != null) {
+            District district = districtRepository.findById(dto.getDistrictId())
+                    .orElseThrow(() -> new RuntimeException("District not found"));
+            entity.setDistrict(district);
+            dto.setDistrictId(district.getId());  // Add this line
+        }
+
+        repository.save(entity);
+        dto.setId(entity.getId());
+        return dto;
     }
 
     @Override
     public AnganwadiCenterDTO update(Long id, AnganwadiCenterDTO dto) {
-        AnganwadiCenter entity = centerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Anganwadi center not found: " + id));
-        apply(dto, entity);
-        AnganwadiCenter saved = centerRepository.save(entity);
-        return toDTO(saved);
+        AnganwadiCenter entity = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("AnganwadiCenter not found"));
+
+        entity.setCenterName(dto.getCenterName());
+        entity.setCenterAddress(dto.getCenterAddress());
+        entity.setStatus(dto.getStatus());
+
+        if (dto.getSupervisorId() != null) {
+            Supervisor supervisor = supervisorRepository.findById(dto.getSupervisorId())
+                    .orElseThrow(() -> new RuntimeException("Supervisor not found"));
+            entity.setSupervisor(supervisor);
+            dto.setSupervisorId(supervisor.getId());
+        }
+
+        if (dto.getCdpoId() != null) {
+            Cdpo cdpo = cdpoRepository.findById(dto.getCdpoId())
+                    .orElseThrow(() -> new RuntimeException("CDPO not found"));
+            entity.setCdpo(cdpo);
+            dto.setCdpoId(cdpo.getId());
+        }
+
+        if (dto.getDistrictId() != null) {
+            District district = districtRepository.findById(dto.getDistrictId())
+                    .orElseThrow(() -> new RuntimeException("District not found"));
+            entity.setDistrict(district);
+            dto.setDistrictId(district.getId());
+        }
+
+        repository.save(entity);
+        dto.setId(entity.getId());
+        return dto;
     }
 
     @Override
     public void delete(Long id) {
-        if (!centerRepository.existsById(id)) {
-            throw new NotFoundException("Anganwadi center not found: " + id);
-        }
-        centerRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
-    private AnganwadiCenterDTO toDTO(AnganwadiCenter e) {
-        AnganwadiCenterDTO dto = new AnganwadiCenterDTO();
-        dto.setId(e.getId());
-        dto.setCenterId(e.getCenterId());
-        dto.setCenterName(e.getCenterName());
-        dto.setCenterAddress(e.getCenterAddress());
-        dto.setStatus(e.getStatus());
-        dto.setSupervisorName(e.getSupervisor() != null ? e.getSupervisor().getName() : null);
-        dto.setDistrictName(e.getDistrict() != null ? e.getDistrict().getDistrictName() : null);
-        dto.setBlockName(e.getBlock() != null ? e.getBlock().getBlockName() : null);
+    @Override
+    public AnganwadiCenterDTO get(Long id) {
+        AnganwadiCenter entity = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Anganwadi not found"));
+        AnganwadiCenterDTO dto = new AnganwadiCenterDTO(entity.getId(), entity.getCenterName(), entity.getCenterAddress(), entity.getStatus());
+
+        if (entity.getSupervisor() != null) {
+            dto.setSupervisorId(entity.getSupervisor().getId());
+        }
+        if (entity.getCdpo() != null) {
+            dto.setCdpoId(entity.getCdpo().getId());
+        }
+        if (entity.getDistrict() != null) {
+            dto.setDistrictId(entity.getDistrict().getId());
+        }
+
         return dto;
     }
 
-    private void apply(AnganwadiCenterDTO dto, AnganwadiCenter e) {
-        e.setCenterId(dto.getCenterId());
-        e.setCenterName(dto.getCenterName());
-        e.setCenterAddress(dto.getCenterAddress());
-        e.setStatus(dto.getStatus() == null ? "active" : dto.getStatus());
+    @Override
+    public Page<AnganwadiCenterDTO> list(Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(e -> {
+                    // Create the AnganwadiCenterDTO and populate basic fields
+                    AnganwadiCenterDTO dto = new AnganwadiCenterDTO(e.getId(), e.getCenterName(), e.getCenterAddress(), e.getStatus() );
 
-        // resolve relations by name (as your UI passes names)
-        if (dto.getSupervisorName() != null && !dto.getSupervisorName().isBlank()) {
-            Supervisor s = supervisorRepository.findByName(dto.getSupervisorName())
-                    .orElseGet(() -> supervisorRepository.save(new Supervisor(dto.getSupervisorName())));
-            e.setSupervisor(s);
-        } else {
-            e.setSupervisor(null);
-        }
+                    // Set the supervisorId if supervisor is present
+                    if (e.getSupervisor() != null) {
+                        dto.setSupervisorId(e.getSupervisor().getId());
+                    }
 
-        if (dto.getDistrictName() != null && !dto.getDistrictName().isBlank()) {
-            District d = districtRepository.findByDistrictName(dto.getDistrictName())
-                    .orElseGet(() -> districtRepository.save(new District(dto.getDistrictName())));
-            e.setDistrict(d);
-        } else {
-            e.setDistrict(null);
-        }
+                    // Set the cdpoId if cdpo is present
+                    if (e.getCdpo() != null) {
+                        dto.setCdpoId(e.getCdpo().getId());
+                    }
 
-        if (dto.getBlockName() != null && !dto.getBlockName().isBlank()) {
-            Block b = blockRepository.findByBlockName(dto.getBlockName())
-                    .orElseGet(() -> blockRepository.save(new Block(dto.getBlockName())));
-            e.setBlock(b);
-        } else {
-            e.setBlock(null);
-        }
+                    // Set the districtId if district is present
+                    if (e.getDistrict() != null) {
+                        dto.setDistrictId(e.getDistrict().getId());
+                    }
+
+                    return dto;
+                });
     }
+
 }

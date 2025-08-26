@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // This is crucial for @PreAuthorize to work
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);

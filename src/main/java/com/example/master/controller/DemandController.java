@@ -44,6 +44,9 @@ public class DemandController {
     public ResponseEntity<List<Demand>> getAllDemands() {
         logCurrentUserAuthorities("getAllDemands");
         List<Demand> demands = demandService.getAllDemands();
+//        List<DemandDTO> demandDTOs = demands.stream()
+////                .map(demand -> new DemandDTO(demand)) // Convert Demand entity to DTO
+//                .collect(Collectors.toList());
         return ResponseEntity.ok(demands);
     }
 

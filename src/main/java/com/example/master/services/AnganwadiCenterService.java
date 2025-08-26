@@ -6,13 +6,13 @@ import org.springframework.data.domain.Pageable;
 
 public interface AnganwadiCenterService {
 
-    Page<AnganwadiCenterDTO> list(Pageable pageable);
-
-    AnganwadiCenterDTO get(Long id);
-
     AnganwadiCenterDTO create(AnganwadiCenterDTO dto);
 
     AnganwadiCenterDTO update(Long id, AnganwadiCenterDTO dto);
 
     void delete(Long id);
+
+    AnganwadiCenterDTO get(Long id);   // renamed to match controller
+
+    Page<AnganwadiCenterDTO> list(Pageable pageable); //  paging support
 }
