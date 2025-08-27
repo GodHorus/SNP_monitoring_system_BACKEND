@@ -1,5 +1,6 @@
 package com.example.master.repository;
 
+import com.example.master.Dto.DemandResponseDTO;
 import com.example.master.model.Demand;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,27 +32,27 @@ public interface DemandRepository extends JpaRepository<Demand, Long> {
 
     // Find pending demands (for FCI)
     @Query("SELECT d FROM Demand d WHERE d.status = 'PENDING' ORDER BY d.createdAt ASC")
-    List<Demand> findPendingDemands();
+    List<DemandResponseDTO> findPendingDemands();
 
     // Find FCI accepted demands (for Supplier)
     @Query("SELECT d FROM Demand d WHERE d.status = 'FCI_ACCEPTED' ORDER BY d.fciAcceptedAt ASC")
-    List<Demand> findFciAcceptedDemands();
+    List<DemandResponseDTO> findFciAcceptedDemands();
 
     // Find supplier accepted demands (for CDPO)
     @Query("SELECT d FROM Demand d WHERE d.status = 'SUPPLIER_ACCEPTED' ORDER BY d.supplierAcceptedAt ASC")
-    List<Demand> findSupplierAcceptedDemands();
+    List<DemandResponseDTO> findSupplierAcceptedDemands();
 
     // Find dispatched demands (for AWC)
     @Query("SELECT d FROM Demand d WHERE d.status = 'CDPO_DISPATCHED' ORDER BY d.cdpoDispatchedAt ASC")
-    List<Demand> findDispatchedDemands();
+    List<DemandResponseDTO> findDispatchedDemands();
 
     // Find completed demands
     @Query("SELECT d FROM Demand d WHERE d.status = 'AWC_ACCEPTED' ORDER BY d.awcAcceptedAt DESC")
-    List<Demand> findCompletedDemands();
+    List<DemandResponseDTO> findCompletedDemands();
 
     // Find rejected demands
     @Query("SELECT d FROM Demand d WHERE d.status LIKE '%_REJECTED' ORDER BY d.updatedAt DESC")
-    List<Demand> findRejectedDemands();
+    List<DemandResponseDTO> findRejectedDemands();
 
     // Dashboard statistics
     @Query("SELECT d.status, COUNT(d) FROM Demand d GROUP BY d.status")

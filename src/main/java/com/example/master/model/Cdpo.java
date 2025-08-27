@@ -1,12 +1,15 @@
 package com.example.master.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "cdpos")
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Cdpo {
 
     @Id
@@ -19,6 +22,7 @@ public class Cdpo {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "district_id")
     @JsonBackReference
+//    @JsonIgnore
     private District district;
 
     @OneToMany(mappedBy = "cdpo")

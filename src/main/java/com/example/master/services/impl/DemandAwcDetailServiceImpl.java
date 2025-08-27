@@ -48,8 +48,8 @@ public class DemandAwcDetailServiceImpl implements DemandAwcDetailService {
         detail.setAnganwadi(awc);
         detail.setHcmNumber(dto.getHcmNumber());
         detail.setHcmUnit(dto.getHcmUnit());
-//        detail.setThrNumber(dto.ge());
-//        detail.setThrUnit(dto.getThrUnit());
+        detail.setThrNumber(dto.getThrNumber());
+        detail.setThrUnit(dto.getThrUnit());
 
         return demandAwcDetailRepository.save(detail);
     }

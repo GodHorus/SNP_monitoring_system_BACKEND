@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "demand_awc_details")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class DemandAwcDetail {
 
     @Id
@@ -14,13 +14,13 @@ public class DemandAwcDetail {
     private Long id;
 
     // Relation to Demand
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "demand_id", nullable = false)
     @JsonBackReference
     private Demand demand;
 
     // Relation to Anganwadi Center
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "anganwadi_id", nullable = false)
     private AnganwadiCenter anganwadi;
 

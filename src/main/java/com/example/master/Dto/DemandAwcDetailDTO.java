@@ -15,6 +15,38 @@ public class DemandAwcDetailDTO {
     @NotBlank(message = "Quantity unit is required")
     private String hcmUnit; // maps to quantityUnit
 
+    @Positive(message = "Quantity must be positive")
+    private int thrNumber; // maps to quantity in demand
+
+    @NotBlank(message = "Quantity unit is required")
+    private String thrUnit; // maps to quantityUnit
+
+    private AnganwadiCenterDTO anganwadi;
+
+    public AnganwadiCenterDTO getAnganwadi() {
+        return anganwadi;
+    }
+
+    public void setAnganwadi(AnganwadiCenterDTO anganwadi) {
+        this.anganwadi = anganwadi;
+    }
+
+    public int getThrNumber() {
+        return thrNumber;
+    }
+
+    public void setThrNumber(int thrNumber) {
+        this.thrNumber = thrNumber;
+    }
+
+    public String getThrUnit() {
+        return thrUnit;
+    }
+
+    public void setThrUnit(String thrUnit) {
+        this.thrUnit = thrUnit;
+    }
+
     // Getters and Setters
     public Long getAwcId() { return awcId; }
     public void setAwcId(Long awcId) { this.awcId = awcId; }

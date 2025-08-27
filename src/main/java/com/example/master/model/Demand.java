@@ -1,5 +1,6 @@
 package com.example.master.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "demands")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Demand {
 
     @Id
@@ -44,14 +45,17 @@ public class Demand {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "district_id")
+//    @JsonIgnore
     private District district;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cdpo_id")
+//    @JsonIgnore
     private Cdpo cdpo;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "supervisor_id")
+//    @JsonIgnore
     private Supervisor supervisor;
 
     @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -74,6 +78,10 @@ public class Demand {
     }
 
 
+    public Demand() {
+    }
+
+//     getteer settere
 
     public Long getId() {
         return id;

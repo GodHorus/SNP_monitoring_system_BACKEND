@@ -1,6 +1,7 @@
 package com.example.master.controller;
 
 import com.example.master.Dto.DemandDTO;
+import com.example.master.Dto.DemandResponseDTO;
 import com.example.master.model.Demand;
 import com.example.master.services.DemandService;
 import org.springframework.http.ResponseEntity;
@@ -39,15 +40,21 @@ public class DemandController {
     }
 
     // Admin & DWCD can view all demands
+//    @PreAuthorize("hasAnyRole('ADMIN','DWCD')")
+//    @GetMapping
+//    public ResponseEntity<List<Demand>> getAllDemands() {
+//        logCurrentUserAuthorities("getAllDemands");
+//        List<Demand> demands = demandService.getAllDemands();
+
+    /// /        List<DemandDTO> demandDTOs = demands.stream()
+    /// ///                .map(demand -> new DemandDTO(demand)) // Convert Demand entity to DTO
+    /// /                .collect(Collectors.toList());
+//        return ResponseEntity.ok(demands);
+//    }
     @PreAuthorize("hasAnyRole('ADMIN','DWCD')")
     @GetMapping
-    public ResponseEntity<List<Demand>> getAllDemands() {
-        logCurrentUserAuthorities("getAllDemands");
-        List<Demand> demands = demandService.getAllDemands();
-//        List<DemandDTO> demandDTOs = demands.stream()
-////                .map(demand -> new DemandDTO(demand)) // Convert Demand entity to DTO
-//                .collect(Collectors.toList());
-        return ResponseEntity.ok(demands);
+    public ResponseEntity<List<DemandResponseDTO>> getAllDemands() {
+        return ResponseEntity.ok(demandService.getAllDemands());
     }
 
     // All authenticated roles can view a specific demand
@@ -114,9 +121,9 @@ public class DemandController {
     // FCI-specific endpoints
     @PreAuthorize("hasRole('FCI')")
     @GetMapping("/pending")
-    public ResponseEntity<List<Demand>> getPendingDemands() {
+    public ResponseEntity<List<DemandResponseDTO>> getPendingDemands() {
         logCurrentUserAuthorities("getPendingDemands");
-        List<Demand> demands = demandService.getPendingDemandsForFCI();
+        List<DemandResponseDTO> demands = demandService.getPendingDemandsForFCI();
         return ResponseEntity.ok(demands);
     }
 
@@ -132,12 +139,19 @@ public class DemandController {
     }
 
     // Supplier-specific endpoints
+//    @PreAuthorize("hasRole('SUPPLIER')")
+//    @GetMapping("/fci-accepted")
+//    public ResponseEntity<List<DemandResponseDTO>> getAcceptedDemands() {
+//        logCurrentUserAuthorities("getAcceptedDemands");
+//        List<DemandResponseDTO> demands = demandService.getAcceptedDemandsForSupplier();
+//        return ResponseEntity.ok(demands);
+//    }
+
     @PreAuthorize("hasRole('SUPPLIER')")
     @GetMapping("/fci-accepted")
-    public ResponseEntity<List<Demand>> getAcceptedDemands() {
+    public ResponseEntity<List<DemandResponseDTO>> getAcceptedDemands() {
         logCurrentUserAuthorities("getAcceptedDemands");
-        List<Demand> demands = demandService.getAcceptedDemandsForSupplier();
-        return ResponseEntity.ok(demands);
+        return ResponseEntity.ok(demandService.getAcceptedDemandsForSupplier());
     }
 
     @PreAuthorize("hasRole('SUPPLIER')")
@@ -152,13 +166,20 @@ public class DemandController {
     }
 
     // CDPO-specific endpoints
+//    @PreAuthorize("hasRole('CDPO')")
+//    @GetMapping("/manufactured")
+//    public ResponseEntity<List<DemandResponseDTO>> getManufacturedDemands() {
+//        logCurrentUserAuthorities("getManufacturedDemands");
+//        List<DemandResponseDTO> demands = demandService.getManufacturedDemandsForCDPO();
+//        return ResponseEntity.ok(demands);
+//    }
     @PreAuthorize("hasRole('CDPO')")
     @GetMapping("/manufactured")
-    public ResponseEntity<List<Demand>> getManufacturedDemands() {
+    public ResponseEntity<List<DemandResponseDTO>> getManufacturedDemands() {
         logCurrentUserAuthorities("getManufacturedDemands");
-        List<Demand> demands = demandService.getManufacturedDemandsForCDPO();
-        return ResponseEntity.ok(demands);
+        return ResponseEntity.ok(demandService.getManufacturedDemandsForCDPO());
     }
+
 
     @PreAuthorize("hasRole('CDPO')")
     @PostMapping("/{id}/cdpo-dispatch")
@@ -169,12 +190,19 @@ public class DemandController {
     }
 
     // AWC-specific endpoints
+//    @PreAuthorize("hasRole('AWC')")
+//    @GetMapping("/dispatched")
+//    public ResponseEntity<List<DemandResponseDTO>> getDispatchedDemands() {
+//        logCurrentUserAuthorities("getDispatchedDemands");
+//        List<DemandResponseDTO> demands = demandService.getDispatchedDemandsForAWC();
+//        return ResponseEntity.ok(demands);
+//    }
+
     @PreAuthorize("hasRole('AWC')")
     @GetMapping("/dispatched")
-    public ResponseEntity<List<Demand>> getDispatchedDemands() {
+    public ResponseEntity<List<DemandResponseDTO>> getDispatchedDemands() {
         logCurrentUserAuthorities("getDispatchedDemands");
-        List<Demand> demands = demandService.getDispatchedDemandsForAWC();
-        return ResponseEntity.ok(demands);
+        return ResponseEntity.ok(demandService.getDispatchedDemandsForAWC());
     }
 
     @PreAuthorize("hasRole('AWC')")
@@ -190,7 +218,7 @@ public class DemandController {
     @GetMapping("/admin/dashboard")
     public ResponseEntity<Map<String, Object>> getAdminDashboard() {
         logCurrentUserAuthorities("getAdminDashboard");
-        List<Demand> allDemands = demandService.getAllDemands();
+        List<DemandResponseDTO> allDemands = demandService.getAllDemands();
 
         long pending = allDemands.stream().filter(d -> "PENDING".equals(d.getStatus())).count();
         long fciAccepted = allDemands.stream().filter(d -> "FCI_ACCEPTED".equals(d.getStatus())).count();

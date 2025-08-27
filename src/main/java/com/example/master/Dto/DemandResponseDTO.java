@@ -21,24 +21,26 @@ public class DemandResponseDTO {
     private String supplierId;
     private String supplierDocs;
 
+    private LocalDateTime fciAcceptedAt;
+    private LocalDateTime fciRejectedAt;
+    private LocalDateTime supplierAcceptedAt;
+    private LocalDateTime supplierRejectedAt;
+    private LocalDateTime cdpoDispatchedAt;
+    private LocalDateTime awcAcceptedAt;
+
     private String rejectionReason;
     private String notes;
 
-    private Long districtId;
-    private String districtName;
-
-    private Long cdpoId;
-    private String cdpoName;
-
-    private Long supervisorId;
-    private String supervisorName;
+    private DistrictDTO district;
+    private CdpoDTO cdpo;
+    private SupervisorDTO supervisor;
 
     private List<DemandAwcDetailDTO> awcDetails;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // getters and setters
+    // getters + setters
 
 
     public Long getId() {
@@ -129,6 +131,54 @@ public class DemandResponseDTO {
         this.supplierDocs = supplierDocs;
     }
 
+    public LocalDateTime getFciAcceptedAt() {
+        return fciAcceptedAt;
+    }
+
+    public void setFciAcceptedAt(LocalDateTime fciAcceptedAt) {
+        this.fciAcceptedAt = fciAcceptedAt;
+    }
+
+    public LocalDateTime getFciRejectedAt() {
+        return fciRejectedAt;
+    }
+
+    public void setFciRejectedAt(LocalDateTime fciRejectedAt) {
+        this.fciRejectedAt = fciRejectedAt;
+    }
+
+    public LocalDateTime getSupplierAcceptedAt() {
+        return supplierAcceptedAt;
+    }
+
+    public void setSupplierAcceptedAt(LocalDateTime supplierAcceptedAt) {
+        this.supplierAcceptedAt = supplierAcceptedAt;
+    }
+
+    public LocalDateTime getSupplierRejectedAt() {
+        return supplierRejectedAt;
+    }
+
+    public void setSupplierRejectedAt(LocalDateTime supplierRejectedAt) {
+        this.supplierRejectedAt = supplierRejectedAt;
+    }
+
+    public LocalDateTime getCdpoDispatchedAt() {
+        return cdpoDispatchedAt;
+    }
+
+    public void setCdpoDispatchedAt(LocalDateTime cdpoDispatchedAt) {
+        this.cdpoDispatchedAt = cdpoDispatchedAt;
+    }
+
+    public LocalDateTime getAwcAcceptedAt() {
+        return awcAcceptedAt;
+    }
+
+    public void setAwcAcceptedAt(LocalDateTime awcAcceptedAt) {
+        this.awcAcceptedAt = awcAcceptedAt;
+    }
+
     public String getRejectionReason() {
         return rejectionReason;
     }
@@ -145,52 +195,28 @@ public class DemandResponseDTO {
         this.notes = notes;
     }
 
-    public Long getDistrictId() {
-        return districtId;
+    public DistrictDTO getDistrict() {
+        return district;
     }
 
-    public void setDistrictId(Long districtId) {
-        this.districtId = districtId;
+    public void setDistrict(DistrictDTO district) {
+        this.district = district;
     }
 
-    public String getDistrictName() {
-        return districtName;
+    public CdpoDTO getCdpo() {
+        return cdpo;
     }
 
-    public void setDistrictName(String districtName) {
-        this.districtName = districtName;
+    public void setCdpo(CdpoDTO cdpo) {
+        this.cdpo = cdpo;
     }
 
-    public Long getCdpoId() {
-        return cdpoId;
+    public SupervisorDTO getSupervisor() {
+        return supervisor;
     }
 
-    public void setCdpoId(Long cdpoId) {
-        this.cdpoId = cdpoId;
-    }
-
-    public String getCdpoName() {
-        return cdpoName;
-    }
-
-    public void setCdpoName(String cdpoName) {
-        this.cdpoName = cdpoName;
-    }
-
-    public Long getSupervisorId() {
-        return supervisorId;
-    }
-
-    public void setSupervisorId(Long supervisorId) {
-        this.supervisorId = supervisorId;
-    }
-
-    public String getSupervisorName() {
-        return supervisorName;
-    }
-
-    public void setSupervisorName(String supervisorName) {
-        this.supervisorName = supervisorName;
+    public void setSupervisor(SupervisorDTO supervisor) {
+        this.supervisor = supervisor;
     }
 
     public List<DemandAwcDetailDTO> getAwcDetails() {
