@@ -1,5 +1,6 @@
 package com.example.master.Dto;
 
+import com.example.master.model.DemandAwcDetail;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.NotBlank;
@@ -22,6 +23,16 @@ public class DemandAwcDetailDTO {
     private String thrUnit; // maps to quantityUnit
 
     private AnganwadiCenterDTO anganwadi;
+
+
+//    public DemandAwcDetailDTO(DemandAwcDetail detail) {
+//        this.awcId = detail.getAnganwadi() != null ? detail.getAnganwadi().getId() : null;
+//        this.hcmNumber = detail.getHcmNumber();
+//        this.hcmUnit = detail.getHcmUnit();
+//        this.thrNumber = detail.getThrNumber();
+//        this.thrUnit = detail.getThrUnit();
+//    }
+
 
     public AnganwadiCenterDTO getAnganwadi() {
         return anganwadi;

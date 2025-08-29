@@ -1,6 +1,7 @@
 package com.example.master.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
@@ -17,6 +18,7 @@ public class DemandAwcDetail {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "demand_id", nullable = false)
     @JsonBackReference
+    @JsonIgnore
     private Demand demand;
 
     // Relation to Anganwadi Center

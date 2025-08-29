@@ -18,6 +18,7 @@ public class IngredientDetail {
     private String unit;
     private String vendor;
     private BigDecimal total;
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private String batchNo;
 
     // Relation with Demand

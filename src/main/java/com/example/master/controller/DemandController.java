@@ -1,7 +1,7 @@
 package com.example.master.controller;
 
-import com.example.master.Dto.DemandDTO;
-import com.example.master.Dto.DemandResponseDTO;
+import com.example.master.Dto.*;
+//import com.example.master.mapper.DemandMapper;
 import com.example.master.model.Demand;
 import com.example.master.services.DemandService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import com.example.master.Dto.DecisionRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,10 +36,64 @@ public class DemandController {
     // DWCD creates demand
     @PreAuthorize("hasAnyRole('ADMIN','DWCD')")
     @PostMapping
-    public ResponseEntity<Demand> createDemand(@RequestBody DemandDTO dto) {
+    public ResponseEntity<DemandResponseDTO> createDemand(@RequestBody DemandDTO dto) {
         logCurrentUserAuthorities("createDemand");
-        Demand demand = demandService.createDemand(dto);
-        return ResponseEntity.ok(demand);
+        Demand savedDemand = demandService.createDemand(dto);
+
+        DemandResponseDTO response = mapToResponseDTO(savedDemand);
+        return ResponseEntity.ok(response);
+    }
+
+    private DemandResponseDTO mapToResponseDTO(Demand demand) {
+        DemandResponseDTO dto = new DemandResponseDTO();
+        dto.setId(demand.getId());
+        dto.setDescription(demand.getDescription());
+        dto.setStatus(demand.getStatus());
+        dto.setFromDate(demand.getFromDate());
+        dto.setToDate(demand.getToDate());
+        dto.setFciId(demand.getFciId());
+        dto.setFciDocs(demand.getFciDocs());
+        dto.setQuantity(demand.getQuantity());
+        dto.setQuantityUnit(demand.getQuantityUnit());
+        dto.setSupplierId(demand.getSupplierId());
+        dto.setSupplierDocs(demand.getSupplierDocs());
+        dto.setNotes(demand.getNotes());
+        dto.setCreatedAt(demand.getCreatedAt());
+        dto.setUpdatedAt(demand.getUpdatedAt());
+
+        // Map related entities
+        if (demand.getDistrict() != null) {
+            DistrictDTO districtDTO = new DistrictDTO();
+            districtDTO.setId(demand.getDistrict().getId());
+            districtDTO.setDistrictName(demand.getDistrict().getDistrictName());
+            dto.setDistrict(districtDTO);
+        }
+        if (demand.getCdpo() != null) {
+            CdpoDTO cdpoDTO = new CdpoDTO();
+            cdpoDTO.setId(demand.getCdpo().getId());
+            cdpoDTO.setCdpoName(demand.getCdpo().getCdpoName());
+            dto.setCdpo(cdpoDTO);
+        }
+        if (demand.getSupervisor() != null) {
+            SupervisorDTO supDTO = new SupervisorDTO();
+            supDTO.setId(demand.getSupervisor().getId());
+            supDTO.setName(demand.getSupervisor().getName());
+            dto.setSupervisor(supDTO);
+        }
+
+        // Map AWC details
+        List<DemandAwcDetailDTO> awcDTOs = demand.getAwcDetails().stream().map(d -> {
+            DemandAwcDetailDTO awcDto = new DemandAwcDetailDTO();
+            awcDto.setAwcId(d.getAnganwadi().getId());
+            awcDto.setHcmNumber(d.getHcmNumber());
+            awcDto.setHcmUnit(d.getHcmUnit());
+            awcDto.setThrNumber(d.getThrNumber());
+            awcDto.setThrUnit(d.getThrUnit());
+            return awcDto;
+        }).collect(Collectors.toList());
+        dto.setAwcDetails(awcDTOs);
+
+        return dto;
     }
 
     // Admin & DWCD can view all demands
