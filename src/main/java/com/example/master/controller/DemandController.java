@@ -4,7 +4,9 @@ import com.example.master.Dto.DemandDTO;
 import com.example.master.Dto.DemandResponseDTO;
 import com.example.master.model.Demand;
 import com.example.master.services.DemandService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 //@CrossOrigin(origins = "*")
 public class DemandController {
 
+//    @Autowired
+//    private KafkaTemplate<String, String> kafkaTemplate;
     private static final Logger logger = LoggerFactory.getLogger(DemandController.class);
     private final DemandService demandService;
 

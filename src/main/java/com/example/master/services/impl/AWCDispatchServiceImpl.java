@@ -8,6 +8,7 @@ import com.example.master.repository.PackagingDetailRepository;
 import com.example.master.services.AWCDispatchService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -24,8 +25,7 @@ public class AWCDispatchServiceImpl implements AWCDispatchService {
     }
 
     @Override
-    public AWCDispatch createAWCDispatch(AWCDispatchDTO dto) {
-        try {
+    public AWCDispatchDTO createAWCDispatch(AWCDispatchDTO dto) {
         PackagingDetail packagingDetail = packagingDetailRepository.findById(dto.getPackagingId())
                 .orElseThrow(() -> new RuntimeException("Packaging not found"));
 
@@ -35,17 +35,25 @@ public class AWCDispatchServiceImpl implements AWCDispatchService {
         awcDispatch.setRemark(dto.getRemark());
         awcDispatch.setDispatchPackets(dto.getDispatchPackets());
 
-        return awcDispatchRepository.save(awcDispatch);
-        } catch (Exception e) {
-            // Log the error if logging is set up
-            System.err.println("Error creating AWCDispatch: " + e.getMessage());
-            // Optionally rethrow or wrap into a custom exception
-            throw new RuntimeException("Failed to create AWC Dispatch: " + e.getMessage(), e);
-        }
+        AWCDispatch saved = awcDispatchRepository.save(awcDispatch);
+        return convertToDTO(saved);
     }
 
     @Override
-    public List<AWCDispatch> getAllAWCDispatches() {
-        return awcDispatchRepository.findAll();
+    public List<AWCDispatchDTO> getAllAWCDispatches() {
+        return awcDispatchRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    // ---------- PRIVATE MAPPER ----------
+    private AWCDispatchDTO convertToDTO(AWCDispatch dispatch) {
+        AWCDispatchDTO dto = new AWCDispatchDTO();
+        dto.setPackagingId(dispatch.getPackagingDetail().getId()); // only ID
+        dto.setAwc(dispatch.getAwc());
+        dto.setRemark(dispatch.getRemark());
+        dto.setDispatchPackets(dispatch.getDispatchPackets());
+        return dto;
     }
 }

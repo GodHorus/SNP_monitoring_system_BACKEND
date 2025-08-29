@@ -1,9 +1,9 @@
 package com.example.master.controller;
 
 import com.example.master.Dto.AWCDispatchDTO;
-import com.example.master.model.AWCDispatch;
 import com.example.master.services.AWCDispatchService;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -17,12 +17,12 @@ public class AWCDispatchController {
     }
 
     @PostMapping
-    public AWCDispatch createAWCDispatch(@RequestBody AWCDispatchDTO dto) {
+    public AWCDispatchDTO createAWCDispatch(@RequestBody AWCDispatchDTO dto) {
         return awcDispatchService.createAWCDispatch(dto);
     }
 
     @GetMapping
-    public List<AWCDispatch> getAllAWCDispatches() {
+    public List<AWCDispatchDTO> getAllAWCDispatches() {
         return awcDispatchService.getAllAWCDispatches();
     }
 }
