@@ -1,6 +1,10 @@
 package com.example.master.model;
 
+import com.example.master.model.IngredientDetail;
+import com.example.master.model.LabReport;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "batch_details")
@@ -10,32 +14,40 @@ public class BatchDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String type;
-    private String batchNo;   // b1, b2, b3
-    private Double quantity;
+    // ✅ Relation with IngredientDetail (foreign key)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ingredient_id", nullable = false)
+    private IngredientDetail ingredient;
+
     private String qrCode;
 
-    // Relation with LabReport
+    // ✅ Relation with LabReport
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "lab_report_id")
     private LabReport labReport;
 
-    // Getters & Setters
+    @OneToMany(mappedBy = "batchDetail", cascade = CascadeType.ALL)
+    private List<PackagingDetail> packagingDetails;
+
+    public List<PackagingDetail> getPackagingDetails() {
+        return packagingDetails;
+    }
+
+    public void setPackagingDetails(List<PackagingDetail> packagingDetails) {
+        this.packagingDetails = packagingDetails;
+    }
+
+    // --- Getters & Setters ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-
-    public String getBatchNo() { return batchNo; }
-    public void setBatchNo(String batchNo) { this.batchNo = batchNo; }
-
-    public Double getQuantity() { return quantity; }
-    public void setQuantity(Double quantity) { this.quantity = quantity; }
+    public IngredientDetail getIngredient() { return ingredient; }
+    public void setIngredient(IngredientDetail ingredient) { this.ingredient = ingredient; }
 
     public String getQrCode() { return qrCode; }
     public void setQrCode(String qrCode) { this.qrCode = qrCode; }
 
     public LabReport getLabReport() { return labReport; }
     public void setLabReport(LabReport labReport) { this.labReport = labReport; }
+
 }

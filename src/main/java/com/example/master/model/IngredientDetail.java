@@ -18,7 +18,7 @@ public class IngredientDetail {
     private String unit;
     private String vendor;
     private BigDecimal total;
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+
     private String batchNo;
 
     // Relation with Demand
@@ -27,12 +27,23 @@ public class IngredientDetail {
     private Demand demand;
 
     // Relation with LabReport
-    @OneToOne(mappedBy = "ingredientDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private LabReport labReport;
+//    @OneToOne(mappedBy = "ingredientDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private LabReport labReport;
+
+    @OneToOne(mappedBy = "ingredient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private BatchDetail batchDetail;
 
     // Getters and Setters
     // ...
 
+
+    public BatchDetail getBatchDetail() {
+        return batchDetail;
+    }
+
+    public void setBatchDetail(BatchDetail batchDetail) {
+        this.batchDetail = batchDetail;
+    }
 
     public Long getId() {
         return id;
@@ -114,11 +125,11 @@ public class IngredientDetail {
         this.demand = demand;
     }
 
-    public LabReport getLabReport() {
-        return labReport;
-    }
-
-    public void setLabReport(LabReport labReport) {
-        this.labReport = labReport;
-    }
+//    public LabReport getLabReport() {
+//        return labReport;
+//    }
+//
+//    public void setLabReport(LabReport labReport) {
+//        this.labReport = labReport;
+//    }
 }

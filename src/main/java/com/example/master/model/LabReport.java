@@ -18,85 +18,37 @@ public class LabReport {
     private String status;
     private String remarks;
 
-    private String filePath; // store uploaded file path
+    private String filePath; // uploaded file path
 
-    // Relation with IngredientDetail
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ingredient_id", nullable = false)
-    private IngredientDetail ingredientDetail;
+    // ✅ Relation with BatchDetail (not IngredientDetail anymore)
+    @OneToOne(mappedBy = "labReport", fetch = FetchType.LAZY)
+    private BatchDetail batchDetail;
 
-    // Getters and Setters
-    // ...
+    // --- Getters & Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
-    }
+    public String getLabName() { return labName; }
+    public void setLabName(String labName) { this.labName = labName; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public LocalDate getManufacturingDate() { return manufacturingDate; }
+    public void setManufacturingDate(LocalDate manufacturingDate) { this.manufacturingDate = manufacturingDate; }
 
-    public String getLabName() {
-        return labName;
-    }
+    public LocalDate getExpiryDate() { return expiryDate; }
+    public void setExpiryDate(LocalDate expiryDate) { this.expiryDate = expiryDate; }
 
-    public void setLabName(String labName) {
-        this.labName = labName;
-    }
+    public LocalDate getTestDate() { return testDate; }
+    public void setTestDate(LocalDate testDate) { this.testDate = testDate; }
 
-    public LocalDate getManufacturingDate() {
-        return manufacturingDate;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public void setManufacturingDate(LocalDate manufacturingDate) {
-        this.manufacturingDate = manufacturingDate;
-    }
+    public String getRemarks() { return remarks; }
+    public void setRemarks(String remarks) { this.remarks = remarks; }
 
-    public LocalDate getExpiryDate() {
-        return expiryDate;
-    }
+    public String getFilePath() { return filePath; }
+    public void setFilePath(String filePath) { this.filePath = filePath; }
 
-    public void setExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public LocalDate getTestDate() {
-        return testDate;
-    }
-
-    public void setTestDate(LocalDate testDate) {
-        this.testDate = testDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getRemarks() {
-        return remarks;
-    }
-
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public IngredientDetail getIngredientDetail() {
-        return ingredientDetail;
-    }
-
-    public void setIngredientDetail(IngredientDetail ingredientDetail) {
-        this.ingredientDetail = ingredientDetail;
-    }
+    public BatchDetail getBatchDetail() { return batchDetail; }
+    public void setBatchDetail(BatchDetail batchDetail) { this.batchDetail = batchDetail; }
 }
