@@ -15,7 +15,7 @@ public class AWCDispatch {
     private Integer dispatchPackets;
 
     // Mapping with PackagingDetail (batchNo, lotNo, cdpo, qrCode can be derived)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "packaging_id", nullable = false)
     private PackagingDetail packagingDetail;
 

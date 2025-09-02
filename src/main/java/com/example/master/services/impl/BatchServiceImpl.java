@@ -47,6 +47,7 @@ public class BatchServiceImpl implements BatchService {
                 LabReport report = labReportRepo.findById(dto.getLabReportId())
                         .orElseThrow(() -> new RuntimeException("Lab Report not found"));
                 batch.setLabReport(report);
+                report.setBatchDetail(batch);
             }
 
             return batchRepo.save(batch);
@@ -63,23 +64,29 @@ public class BatchServiceImpl implements BatchService {
     private BatchDetailDTO toDTO(BatchDetail batch) {
         BatchDetailDTO dto = new BatchDetailDTO();
         dto.setId(batch.getId());
-        dto.setIngredientId(batch.getIngredient().getId());
         dto.setQrCode(batch.getQrCode());
-        dto.setLabReportId(batch.getLabReport() != null ? batch.getLabReport().getId() : null);
+//        dto.setLabReportId(batch.getLabReport().getId());
 
-        // Nested ingredient
-        IngredientDetailDTO ingDto = new IngredientDetailDTO();
-        ingDto.setId(batch.getIngredient().getId());
-        ingDto.setName(batch.getIngredient().getName());
-        ingDto.setType(batch.getIngredient().getType());
-        ingDto.setQuantity(batch.getIngredient().getQuantity());
-        ingDto.setUnit(batch.getIngredient().getUnit());
-        ingDto.setVendor(batch.getIngredient().getVendor());
-        ingDto.setTotal(batch.getIngredient().getTotal());
-        dto.setIngredient(ingDto);
+        // Ensure ingredient and lab report are not null before accessing their fields
+        if (batch.getIngredient() != null) {
+            dto.setIngredientId(batch.getIngredient().getId());
+            IngredientDetailDTO ingDto = new IngredientDetailDTO();
+            ingDto.setId(batch.getIngredient().getId());
+            ingDto.setName(batch.getIngredient().getName());
+            ingDto.setType(batch.getIngredient().getType());
+            ingDto.setPrice(batch.getIngredient().getPrice());
+            ingDto.setDemandId(batch.getIngredient().getDemand().getId());
+            ingDto.setBatchNo(batch.getIngredient().getBatchNo());
+            ingDto.setQuantity(batch.getIngredient().getQuantity());
+            ingDto.setUnit(batch.getIngredient().getUnit());
+            ingDto.setVendor(batch.getIngredient().getVendor());
+            ingDto.setTotal(batch.getIngredient().getTotal());
+            dto.setIngredient(ingDto);
+        }
 
         // Nested lab report
         if (batch.getLabReport() != null) {
+            dto.setLabReportId(batch.getLabReport().getId());
             LabReportDTO labDto = new LabReportDTO();
             labDto.setId(batch.getLabReport().getId());
             labDto.setLabName(batch.getLabReport().getLabName());
@@ -90,4 +97,5 @@ public class BatchServiceImpl implements BatchService {
 
         return dto;
     }
+
 }

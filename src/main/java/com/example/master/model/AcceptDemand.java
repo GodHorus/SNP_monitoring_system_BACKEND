@@ -14,7 +14,7 @@ public class AcceptDemand {
     private String remarks;            // NEW field
 
     // Mapping with DispatchDetail (lotNo, cdpo, packets, qrCode come from here)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dispatch_id", nullable = false)
     private DispatchDetail dispatchDetail;
 

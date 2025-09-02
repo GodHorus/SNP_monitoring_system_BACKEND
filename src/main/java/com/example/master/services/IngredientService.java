@@ -20,4 +20,6 @@ public interface IngredientService {
 
     LabReportDTO saveLabReport(LabReportDTO dto);
     LabReportDTO getLabReportByIngredientId(Long ingredientId);
+
+    List<IngredientDetailDTO> getIngredientsByDemandId(Long demandId);
 }

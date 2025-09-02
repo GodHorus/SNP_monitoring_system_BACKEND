@@ -14,6 +14,42 @@ public class IngredientDetailDTO {
     private String batchNo;
     private Long demandId;
 
+    private BatchDetailDTO batchDetailDTO;
+    private PackagingDetailDTO packagingDetailDTO;
+    private DispatchDetailDTO dispatchDetailDTO;
+    private LabReportDTO labReportDTO;
+    public LabReportDTO getLabReportDTO() {
+        return labReportDTO;
+    }
+
+    public void setLabReportDTO(LabReportDTO labReportDTO) {
+        this.labReportDTO = labReportDTO;
+    }
+
+    public BatchDetailDTO getBatchDetailDTO() {
+        return batchDetailDTO;
+    }
+
+    public void setBatchDetailDTO(BatchDetailDTO batchDetailDTO) {
+        this.batchDetailDTO = batchDetailDTO;
+    }
+
+    public PackagingDetailDTO getPackagingDetailDTO() {
+        return packagingDetailDTO;
+    }
+
+    public void setPackagingDetailDTO(PackagingDetailDTO packagingDetailDTO) {
+        this.packagingDetailDTO = packagingDetailDTO;
+    }
+
+    public DispatchDetailDTO getDispatchDetailDTO() {
+        return dispatchDetailDTO;
+    }
+
+    public void setDispatchDetailDTO(DispatchDetailDTO dispatchDetailDTO) {
+        this.dispatchDetailDTO = dispatchDetailDTO;
+    }
+
     public Long getId() {
         return id;
     }

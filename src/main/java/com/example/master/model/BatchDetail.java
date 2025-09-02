@@ -15,7 +15,7 @@ public class BatchDetail {
     private Long id;
 
     // ✅ Relation with IngredientDetail (foreign key)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ingredient_id", nullable = false)
     private IngredientDetail ingredient;
 

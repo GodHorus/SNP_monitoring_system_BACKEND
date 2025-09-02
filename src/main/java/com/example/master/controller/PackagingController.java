@@ -18,8 +18,8 @@ public class PackagingController {
     }
 
     @PostMapping
-    public ResponseEntity<PackagingDetailDTO> createPackaging(@RequestBody PackagingDetailDTO dto) {
-        return ResponseEntity.ok(packagingService.savePackaging(dto));
+    public ResponseEntity<List<PackagingDetailDTO>> createPackaging(@RequestBody List<PackagingDetailDTO> dtoList) {
+        return ResponseEntity.ok(packagingService.savePackaging(dtoList));
     }
 
     @GetMapping

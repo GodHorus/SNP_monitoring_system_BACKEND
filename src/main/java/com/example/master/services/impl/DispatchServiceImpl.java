@@ -1,64 +1,94 @@
 package com.example.master.services.impl;
 
 import com.example.master.Dto.DispatchDetailDTO;
+import com.example.master.model.Cdpo;
 import com.example.master.model.DispatchDetail;
 import com.example.master.model.PackagingDetail;
+import com.example.master.repository.CdpoRepository;
 import com.example.master.repository.DispatchDetailRepository;
 import com.example.master.repository.PackagingDetailRepository;
 import com.example.master.services.DispatchService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
-@Transactional
 public class DispatchServiceImpl implements DispatchService {
 
     private final DispatchDetailRepository dispatchRepo;
     private final PackagingDetailRepository packagingRepo;
+    private final CdpoRepository cdpoRepo;
 
-    public DispatchServiceImpl(DispatchDetailRepository dispatchRepo, PackagingDetailRepository packagingRepo) {
+    private static final AtomicInteger lotCounter = new AtomicInteger(1);
+
+    public DispatchServiceImpl(DispatchDetailRepository dispatchRepo,
+                               PackagingDetailRepository packagingRepo,
+                               CdpoRepository cdpoRepo) {
         this.dispatchRepo = dispatchRepo;
         this.packagingRepo = packagingRepo;
+        this.cdpoRepo = cdpoRepo;
     }
 
     @Override
-    public DispatchDetailDTO saveDispatch(DispatchDetailDTO dto) {
-        // Fetch the PackagingDetail entity
-        PackagingDetail packaging = packagingRepo.findById(dto.getPackagingId())
-                .orElseThrow(() -> new RuntimeException("PackagingDetail not found for id " + dto.getPackagingId()));
+    public List<DispatchDetailDTO> saveDispatchDetails(List<DispatchDetailDTO> dtoList) {
+        List<DispatchDetail> entities = new ArrayList<>();
 
-        // Create DispatchDetail entity
-        DispatchDetail dispatch = new DispatchDetail();
-        dispatch.setLotNo(dto.getLotNo());
-        dispatch.setCdpo(dto.getCdpo());
-        dispatch.setNoOfPackets(dto.getNoOfPackets());
-        dispatch.setRemarks(dto.getRemarks());
-        dispatch.setQrCode(dto.getQrCode());
-        dispatch.setPackagingDetail(packaging); // set the entity, not just ID
+        for (DispatchDetailDTO dto : dtoList) {
+            PackagingDetail packaging = packagingRepo.findById(dto.getPackagingId())
+                    .orElseThrow(() -> new RuntimeException("Packaging not found: " + dto.getPackagingId()));
 
-        // Save entity
-        dispatch = dispatchRepo.save(dispatch);
+            Cdpo cdpo = cdpoRepo.findById(dto.getCdpoId())
+                    .orElseThrow(() -> new RuntimeException("CDPO not found: " + dto.getCdpoId()));
 
-        // Set the generated ID back to DTO
-        dto.setId(dispatch.getId());
-        return dto;
-    }
+            DispatchDetail dispatch = new DispatchDetail();
+            dispatch.setLotNo("LOT-" + String.format("%04d", lotCounter.getAndIncrement()));
+            dispatch.setNoOfPackets(dto.getNoOfPackets());
+            dispatch.setRemarks(dto.getRemarks());
+            dispatch.setPackagingDetail(packaging);
+            dispatch.setCdpo(cdpo);
 
-    @Override
-    public List<DispatchDetailDTO> getAllDispatches() {
-        return dispatchRepo.findAll().stream().map(d -> {
+            entities.add(dispatch);
+        }
+
+        List<DispatchDetail> saved = dispatchRepo.saveAll(entities);
+
+        // Map back to DTOs
+        List<DispatchDetailDTO> result = new ArrayList<>();
+        for (DispatchDetail d : saved) {
             DispatchDetailDTO dto = new DispatchDetailDTO();
             dto.setId(d.getId());
             dto.setLotNo(d.getLotNo());
-            dto.setCdpo(d.getCdpo());
             dto.setNoOfPackets(d.getNoOfPackets());
             dto.setRemarks(d.getRemarks());
-            dto.setQrCode(d.getQrCode());
-            dto.setPackagingId(d.getPackagingDetail() != null ? d.getPackagingDetail().getId() : null);
-            return dto;
-        }).collect(Collectors.toList());
+
+            dto.setPackagingId(d.getPackagingDetail().getId());
+            dto.setCdpoId(d.getCdpo().getId());
+
+            // Optional: map nested DTOs using mapper
+            result.add(dto);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<DispatchDetailDTO> getAllDispatchDetails() {
+        List<DispatchDetail> entities = dispatchRepo.findAll();
+        List<DispatchDetailDTO> result = new ArrayList<>();
+
+        for (DispatchDetail d : entities) {
+            DispatchDetailDTO dto = new DispatchDetailDTO();
+            dto.setId(d.getId());
+            dto.setLotNo(d.getLotNo());
+            dto.setNoOfPackets(d.getNoOfPackets());
+            dto.setRemarks(d.getRemarks());
+            dto.setPackagingId(d.getPackagingDetail().getId());
+            dto.setCdpoId(d.getCdpo().getId());
+            result.add(dto);
+        }
+
+        return result;
     }
 }

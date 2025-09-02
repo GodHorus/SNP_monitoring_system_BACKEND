@@ -3,6 +3,7 @@ package com.example.master.controller;
 import com.example.master.Dto.AcceptDemandDTO;
 import com.example.master.model.AcceptDemand;
 import com.example.master.services.AcceptDemandService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -17,13 +18,25 @@ public class AcceptDemandController {
         this.acceptDemandService = acceptDemandService;
     }
 
+//    @PostMapping
+//    public AcceptDemand createAcceptDemand(@RequestBody AcceptDemandDTO dto) {
+//        return acceptDemandService.createAcceptDemand(dto);
+//    }
+
+//    @PostMapping("/bulk")
     @PostMapping
-    public AcceptDemand createAcceptDemand(@RequestBody AcceptDemandDTO dto) {
-        return acceptDemandService.createAcceptDemand(dto);
+    public ResponseEntity<List<AcceptDemand>> createAcceptDemands(@RequestBody List<AcceptDemandDTO> dtos) {
+        return ResponseEntity.ok(acceptDemandService.createAcceptDemands(dtos));
     }
 
     @GetMapping
-    public List<AcceptDemand> getAllAcceptDemands() {
-        return acceptDemandService.getAllAcceptDemands();
+    public ResponseEntity<List<AcceptDemandDTO>> getAllAcceptDemands() {
+        return ResponseEntity.ok(acceptDemandService.getAllAcceptDemands());
     }
+
+
+//    @GetMapping
+//    public List<AcceptDemand> getAllAcceptDemands() {
+//        return acceptDemandService.getAllAcceptDemands();
+//    }
 }

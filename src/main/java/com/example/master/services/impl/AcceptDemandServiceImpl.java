@@ -8,7 +8,10 @@ import com.example.master.repository.DispatchDetailRepository;
 import com.example.master.services.AcceptDemandService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -23,21 +26,52 @@ public class AcceptDemandServiceImpl implements AcceptDemandService {
         this.dispatchDetailRepository = dispatchDetailRepository;
     }
 
+//    @Override
+//    public AcceptDemand createAcceptDemand(AcceptDemandDTO dto) {
+//        DispatchDetail dispatchDetail = dispatchDetailRepository.findById(dto.getDispatchId())
+//                .orElseThrow(() -> new RuntimeException("Dispatch not found"));
+//
+//        AcceptDemand acceptDemand = new AcceptDemand();
+//        acceptDemand.setDispatchDetail(dispatchDetail);
+//        acceptDemand.setReceivedPackets(dto.getReceivedPackets());
+//        acceptDemand.setRemarks(dto.getRemarks());
+//
+//        return acceptDemandRepository.save(acceptDemand);
+//    }
+
     @Override
-    public AcceptDemand createAcceptDemand(AcceptDemandDTO dto) {
-        DispatchDetail dispatchDetail = dispatchDetailRepository.findById(dto.getDispatchId())
-                .orElseThrow(() -> new RuntimeException("Dispatch not found"));
+    public List<AcceptDemand> createAcceptDemands(List<AcceptDemandDTO> dtos) {
+        List<AcceptDemand> savedDemands = new ArrayList<>();
 
-        AcceptDemand acceptDemand = new AcceptDemand();
-        acceptDemand.setDispatchDetail(dispatchDetail);
-        acceptDemand.setReceivedPackets(dto.getReceivedPackets());
-        acceptDemand.setRemarks(dto.getRemarks());
+        for (AcceptDemandDTO dto : dtos) {
+            DispatchDetail dispatchDetail = dispatchDetailRepository.findById(dto.getDispatchId())
+                    .orElseThrow(() -> new RuntimeException("Dispatch not found: " + dto.getDispatchId()));
 
-        return acceptDemandRepository.save(acceptDemand);
+            AcceptDemand acceptDemand = new AcceptDemand();
+            acceptDemand.setDispatchDetail(dispatchDetail);
+            acceptDemand.setReceivedPackets(dto.getReceivedPackets());
+            acceptDemand.setRemarks(dto.getRemarks());
+
+            savedDemands.add(acceptDemandRepository.save(acceptDemand));
+        }
+        return savedDemands;
     }
 
+//    @Override
+//    public List<AcceptDemand> getAllAcceptDemands() {
+//        return acceptDemandRepository.findAll();
+//    }
+
     @Override
-    public List<AcceptDemand> getAllAcceptDemands() {
-        return acceptDemandRepository.findAll();
+    public List<AcceptDemandDTO> getAllAcceptDemands() {
+        return acceptDemandRepository.findAll().stream().map(entity -> {
+            AcceptDemandDTO dto = new AcceptDemandDTO();
+            dto.setId(entity.getId());
+            dto.setDispatchId(entity.getDispatchDetail().getId());
+            dto.setReceivedPackets(entity.getReceivedPackets());
+            dto.setRemarks(entity.getRemarks());
+            return dto;
+        }).collect(Collectors.toList());
     }
+
 }

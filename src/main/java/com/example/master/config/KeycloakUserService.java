@@ -9,6 +9,8 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.representations.idm.CredentialRepresentation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,5 +138,31 @@ public class KeycloakUserService {
             System.err.println("Error checking user role: " + e.getMessage());
             return false;
         }
+    }
+
+
+    public void sendResetPasswordEmail(String userId) {
+        Keycloak keycloakInstance = getKeycloakInstance();
+        RealmResource realmResource = keycloakInstance.realm(realm);
+        UserResource userResource = realmResource.users().get(userId);
+
+        // Keycloak will send reset email with link
+        userResource.executeActionsEmail(List.of("UPDATE_PASSWORD"));
+    }
+
+    /**
+     * Reset password programmatically (direct API reset)
+     */
+    public void resetUserPassword(String userId, String newPassword) {
+        Keycloak keycloakInstance = getKeycloakInstance();
+        RealmResource realmResource = keycloakInstance.realm(realm);
+        UserResource userResource = realmResource.users().get(userId);
+
+        CredentialRepresentation newCred = new CredentialRepresentation();
+        newCred.setTemporary(false); // true if you want user to reset again on next login
+        newCred.setType(CredentialRepresentation.PASSWORD);
+        newCred.setValue(newPassword);
+
+        userResource.resetPassword(newCred);
     }
 }

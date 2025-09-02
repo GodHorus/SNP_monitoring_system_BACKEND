@@ -5,6 +5,8 @@ import com.example.master.model.AcceptDemand;
 import java.util.List;
 
 public interface AcceptDemandService {
-    AcceptDemand createAcceptDemand(AcceptDemandDTO dto);
-    List<AcceptDemand> getAllAcceptDemands();
+//    AcceptDemand createAcceptDemand(AcceptDemandDTO dto);
+
+    List<AcceptDemand> createAcceptDemands(List<AcceptDemandDTO> dtos);
+    List<AcceptDemandDTO> getAllAcceptDemands();
 }

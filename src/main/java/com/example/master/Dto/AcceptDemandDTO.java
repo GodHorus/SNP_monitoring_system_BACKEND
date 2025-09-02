@@ -1,12 +1,35 @@
 package com.example.master.Dto;
 
+import com.example.master.model.DispatchDetail;
+
 public class AcceptDemandDTO {
+
+    private Long id;
 
     private Long dispatchId;   // mapped from DispatchDetail
     private Integer receivedPackets;
     private String remarks;
 
+//    private DispatchDetail dispatch;
+
+//    public DispatchDetail getDispatch() {
+//        return dispatch;
+//    }
+//
+//    public void setDispatch(DispatchDetail dispatch) {
+//        this.dispatch = dispatch;
+//    }
     // Getters & Setters
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getDispatchId() { return dispatchId; }
     public void setDispatchId(Long dispatchId) { this.dispatchId = dispatchId; }
 

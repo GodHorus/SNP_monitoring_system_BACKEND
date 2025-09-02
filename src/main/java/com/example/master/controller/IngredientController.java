@@ -34,6 +34,11 @@ public class IngredientController {
         return ResponseEntity.ok(ingredientService.getIngredientById(id));
     }
 
+    @GetMapping("/by-demand")
+    public ResponseEntity<List<IngredientDetailDTO>> getByDemandId(@RequestParam Long demandId) {
+        return ResponseEntity.ok(ingredientService.getIngredientsByDemandId(demandId));
+    }
+
     @PostMapping("/lab-report")
     public ResponseEntity<LabReportDTO> createLabReport(@RequestBody LabReportDTO dto) {
         return ResponseEntity.ok(ingredientService.saveLabReport(dto));

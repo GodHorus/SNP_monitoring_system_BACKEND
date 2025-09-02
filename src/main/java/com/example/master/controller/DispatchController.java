@@ -17,13 +17,24 @@ public class DispatchController {
         this.dispatchService = dispatchService;
     }
 
+//    @PostMapping
+//    public ResponseEntity<DispatchDetailDTO> createDispatch(@RequestBody DispatchDetailDTO dto) {
+//        return ResponseEntity.ok(dispatchService.saveDispatch(dto));
+//    }
+//
+//    @GetMapping
+//    public ResponseEntity<List<DispatchDetailDTO>> getAllDispatches() {
+//        return ResponseEntity.ok(dispatchService.getAllDispatches());
+//    }
+
     @PostMapping
-    public ResponseEntity<DispatchDetailDTO> createDispatch(@RequestBody DispatchDetailDTO dto) {
-        return ResponseEntity.ok(dispatchService.saveDispatch(dto));
+    public ResponseEntity<?> createDispatch(@RequestBody List<DispatchDetailDTO> request) {
+        return ResponseEntity.ok(dispatchService.saveDispatchDetails(request));
     }
 
     @GetMapping
-    public ResponseEntity<List<DispatchDetailDTO>> getAllDispatches() {
-        return ResponseEntity.ok(dispatchService.getAllDispatches());
+    public ResponseEntity<?> getAllDispatch() {
+        return ResponseEntity.ok(dispatchService.getAllDispatchDetails());
     }
+
 }
