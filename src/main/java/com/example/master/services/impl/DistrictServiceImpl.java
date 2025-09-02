@@ -34,13 +34,13 @@ public class DistrictServiceImpl implements DistrictService {
                     cdpoDTO.setId(cdpo.getId());
                     cdpoDTO.setCdpoName(cdpo.getCdpoName());
 
-                    cdpoDTO.setSupervisors(
-                            cdpo.getSupervisors().stream().map(s -> {
-                                SupervisorDTO supDTO = new SupervisorDTO();
-                                supDTO.setId(s.getId());
-                                supDTO.setName(s.getName());
+                    cdpoDTO.setSectors(
+                            cdpo.getSectors().stream().map(s -> {
+                                SectorDTO sectorDTO = new SectorDTO();
+                                sectorDTO.setId(s.getId());
+                                sectorDTO.setName(s.getName());
 
-                                supDTO.setAnganwadiCenters(
+                                sectorDTO.setAnganwadiCenters(
                                         s.getAnganwadiCenters().stream().map(a -> {
                                             AnganwadiCenterDTO ac = new AnganwadiCenterDTO();
                                             ac.setId(a.getId());
@@ -50,7 +50,7 @@ public class DistrictServiceImpl implements DistrictService {
                                             return ac;
                                         }).collect(Collectors.toList())
                                 );
-                                return supDTO;
+                                return sectorDTO;
                             }).collect(Collectors.toList())
                     );
                     return cdpoDTO;

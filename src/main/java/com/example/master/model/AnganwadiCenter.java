@@ -28,9 +28,22 @@ public class AnganwadiCenter {
     private Cdpo cdpo;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sector_id")
+    @JsonBackReference
+    private Sector sector;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "district_id")
     @JsonBackReference
     private District district;
+
+    public Sector getSector() {
+        return sector;
+    }
+
+    public void setSector(Sector sector) {
+        this.sector = sector;
+    }
 
     public Long getId() {
         return id;

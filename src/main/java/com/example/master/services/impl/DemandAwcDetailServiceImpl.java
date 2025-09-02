@@ -46,10 +46,8 @@ public class DemandAwcDetailServiceImpl implements DemandAwcDetailService {
         DemandAwcDetail detail = new DemandAwcDetail();
         detail.setDemand(demand);
         detail.setAnganwadi(awc);
-        detail.setHcmNumber(dto.getHcmNumber());
-        detail.setHcmUnit(dto.getHcmUnit());
-        detail.setThrNumber(dto.getThrNumber());
-        detail.setThrUnit(dto.getThrUnit());
+        detail.setQuantity(dto.getQuantity());
+        detail.setType(dto.getType());
 
         return demandAwcDetailRepository.save(detail);
     }

@@ -4,10 +4,7 @@ import com.example.master.Dto.*;
 import com.example.master.event.DemandEventPublisher;
 import com.example.master.exception.NotFoundException;
 import com.example.master.model.*;
-import com.example.master.repository.CdpoRepository;
-import com.example.master.repository.DemandRepository;
-import com.example.master.repository.DistrictRepository;
-import com.example.master.repository.SupervisorRepository;
+import com.example.master.repository.*;
 import com.example.master.services.DemandService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,20 +24,20 @@ public class DemandServiceImpl implements DemandService {
     //  Inject repositories properly
     private final DistrictRepository districtRepository;
     private final CdpoRepository cdpoRepository;
-    private final SupervisorRepository supervisorRepository;
+    private final SectorRepository sectorRepository;
 
     public DemandServiceImpl(
             DemandRepository demandRepository,
             DemandEventPublisher eventPublisher,
             DistrictRepository districtRepository,
             CdpoRepository cdpoRepository,
-            SupervisorRepository supervisorRepository
+            SectorRepository sectorRepository
     ) {
         this.demandRepository = demandRepository;
         this.eventPublisher = eventPublisher;
         this.districtRepository = districtRepository;
         this.cdpoRepository = cdpoRepository;
-        this.supervisorRepository = supervisorRepository;
+        this.sectorRepository = sectorRepository;
     }
 
     @Override
@@ -62,10 +59,14 @@ public class DemandServiceImpl implements DemandService {
         demand.setSupplierId(dto.getSupplierId());
         demand.setSupplierDocs(dto.getSupplierDocs());
 
+        demand.setDemandCategory(dto.getDemandCategory());
+        demand.setDemandProduct(dto.getDemandProduct());
+        demand.setBeneficery(dto.getBeneficery());
+
         //  Set relations using repository instances, not static calls
         demand.setDistrict(districtRepository.getReferenceById(dto.getDistrictId()));
         demand.setCdpo(cdpoRepository.getReferenceById(dto.getCdpoId()));
-        demand.setSupervisor(supervisorRepository.getReferenceById(dto.getSupervisorId()));
+        demand.setSectors(sectorRepository.getReferenceById(dto.getSectorId()));
 
         //  Map AWC details
         List<DemandAwcDetail> awcDetails = dto.getAwcDetails().stream().map(awcDto -> {
@@ -76,10 +77,8 @@ public class DemandServiceImpl implements DemandService {
             awc.setId(awcDto.getAwcId());
             detail.setAnganwadi(awc);
 
-            detail.setHcmNumber(awcDto.getHcmNumber());
-            detail.setHcmUnit(awcDto.getHcmUnit());
-            detail.setThrNumber(awcDto.getThrNumber());
-            detail.setThrUnit(awcDto.getThrUnit());
+            detail.setQuantity(awcDto.getQuantity());
+            detail.setType(awcDto.getType());
 
             return detail;
         }).collect(Collectors.toList());
@@ -122,6 +121,10 @@ public class DemandServiceImpl implements DemandService {
         dto.setSupplierId(demand.getSupplierId());
         dto.setSupplierDocs(demand.getSupplierDocs());
 
+        dto.setDemandCategory(demand.getDemandCategory());
+        dto.setDemandProduct(demand.getDemandProduct());
+        dto.setBeneficery(demand.getBeneficery());
+
         dto.setFciAcceptedAt(demand.getFciAcceptedAt());
         dto.setFciRejectedAt(demand.getFciRejectedAt());
         dto.setSupplierAcceptedAt(demand.getSupplierAcceptedAt());
@@ -151,11 +154,11 @@ public class DemandServiceImpl implements DemandService {
         }
 
         // supervisor
-        if (demand.getSupervisor() != null) {
-            SupervisorDTO supDTO = new SupervisorDTO();
-            supDTO.setId(demand.getSupervisor().getId());
-            supDTO.setName(demand.getSupervisor().getName());
-            dto.setSupervisor(supDTO);
+        if (demand.getSectors() != null) {
+            SectorDTO sectorDTO = new SectorDTO();
+            sectorDTO.setId(demand.getSectors().getId());
+            sectorDTO.setName(demand.getSectors().getName());
+            dto.setSectorDTO(sectorDTO);
         }
 
         // awc details
@@ -173,10 +176,8 @@ public class DemandServiceImpl implements DemandService {
                     awcDTO.setAnganwadi(angDTO);
                 }
 
-                awcDTO.setHcmNumber(awc.getHcmNumber());
-                awcDTO.setHcmUnit(awc.getHcmUnit());
-                awcDTO.setThrNumber(awc.getThrNumber());
-                awcDTO.setThrUnit(awc.getThrUnit());
+                awcDTO.setType(awc.getType());
+                awcDTO.setQuantity(awc.getQuantity());
                 return awcDTO;
             }).collect(Collectors.toList());
             dto.setAwcDetails(awcDTOs);

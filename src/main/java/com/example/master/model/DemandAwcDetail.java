@@ -26,12 +26,17 @@ public class DemandAwcDetail {
     @JoinColumn(name = "anganwadi_id", nullable = false)
     private AnganwadiCenter anganwadi;
 
-    // Meals
-    private Integer hcmNumber;
-    private String hcmUnit; // "kg", "packets", etc.
 
-    private Integer thrNumber;
-    private String thrUnit; // "kg", "packets", etc.
+    private Integer quantity;
+
+    private String type;
+
+    // Meals
+//    private Integer hcmNumber;
+//    private String hcmUnit; // "kg", "packets", etc.
+//
+//    private Integer thrNumber;
+//    private String thrUnit; // "kg", "packets", etc.
 
     public Long getId() {
         return id;
@@ -57,35 +62,51 @@ public class DemandAwcDetail {
         this.anganwadi = anganwadi;
     }
 
-    public Integer getHcmNumber() {
-        return hcmNumber;
+    public Integer getQuantity() {
+        return quantity;
     }
 
-    public void setHcmNumber(Integer hcmNumber) {
-        this.hcmNumber = hcmNumber;
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
-    public String getHcmUnit() {
-        return hcmUnit;
+    public String getType() {
+        return type;
     }
 
-    public void setHcmUnit(String hcmUnit) {
-        this.hcmUnit = hcmUnit;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public Integer getThrNumber() {
-        return thrNumber;
-    }
-
-    public void setThrNumber(Integer thrNumber) {
-        this.thrNumber = thrNumber;
-    }
-
-    public String getThrUnit() {
-        return thrUnit;
-    }
-
-    public void setThrUnit(String thrUnit) {
-        this.thrUnit = thrUnit;
-    }
+    //    public Integer getHcmNumber() {
+//        return hcmNumber;
+//    }
+//
+//    public void setHcmNumber(Integer hcmNumber) {
+//        this.hcmNumber = hcmNumber;
+//    }
+//
+//    public String getHcmUnit() {
+//        return hcmUnit;
+//    }
+//
+//    public void setHcmUnit(String hcmUnit) {
+//        this.hcmUnit = hcmUnit;
+//    }
+//
+//    public Integer getThrNumber() {
+//        return thrNumber;
+//    }
+//
+//    public void setThrNumber(Integer thrNumber) {
+//        this.thrNumber = thrNumber;
+//    }
+//
+//    public String getThrUnit() {
+//        return thrUnit;
+//    }
+//
+//    public void setThrUnit(String thrUnit) {
+//        this.thrUnit = thrUnit;
+//    }
 }

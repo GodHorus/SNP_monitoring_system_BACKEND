@@ -25,9 +25,12 @@ public class Cdpo {
 //    @JsonIgnore
     private District district;
 
-    @OneToMany(mappedBy = "cdpo")
-    @JsonManagedReference
-    private List<Supervisor> supervisors;
+//    @OneToMany(mappedBy = "cdpo")
+//    @JsonManagedReference
+//    private List<Supervisor> supervisors;
+
+    @OneToMany(mappedBy = "cdpo")  // One Cdpo can have multiple sectors
+    private List<Sector> sectors;
 
     public Cdpo() {}
     public Cdpo(String cdpoName) { this.cdpoName = cdpoName; }
@@ -38,6 +41,14 @@ public class Cdpo {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Sector> getSectors() {
+        return sectors;
+    }
+
+    public void setSectors(List<Sector> sectors) {
+        this.sectors = sectors;
     }
 
     public String getCdpoName() {
@@ -56,11 +67,11 @@ public class Cdpo {
         this.district = district;
     }
 
-    public List<Supervisor> getSupervisors() {
-        return supervisors;
-    }
-
-    public void setSupervisors(List<Supervisor> supervisors) {
-        this.supervisors = supervisors;
-    }
+//    public List<Supervisor> getSupervisors() {
+//        return supervisors;
+//    }
+//
+//    public void setSupervisors(List<Supervisor> supervisors) {
+//        this.supervisors = supervisors;
+//    }
 }

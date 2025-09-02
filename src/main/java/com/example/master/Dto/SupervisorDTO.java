@@ -10,18 +10,6 @@ public class SupervisorDTO {
     private String name;
     private List<AnganwadiCenterDTO> anganwadiCenters;
 
-    // Constructor to map from Supervisor entity
-//    public SupervisorDTO(Supervisor supervisor) {
-//        this.id = supervisor.getId();
-//        this.name = supervisor.getName();
-//
-//        if (supervisor.getAnganwadiCenters() != null) {
-//            this.anganwadiCenters = supervisor.getAnganwadiCenters().stream()
-//                    .map(AnganwadiCenterDTO::new) // AnganwadiCenterDTO should have a constructor taking AnganwadiCenter entity
-//                    .collect(Collectors.toList());
-//        }
-//    }
-
     public Long getId() {
         return id;
     }

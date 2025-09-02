@@ -61,6 +61,10 @@ public class DemandController {
         dto.setCreatedAt(demand.getCreatedAt());
         dto.setUpdatedAt(demand.getUpdatedAt());
 
+        dto.setDemandCategory(demand.getDemandCategory());
+        dto.setDemandProduct(demand.getDemandProduct());
+        dto.setBeneficery(demand.getBeneficery());
+
         // Map related entities
         if (demand.getDistrict() != null) {
             DistrictDTO districtDTO = new DistrictDTO();
@@ -74,21 +78,19 @@ public class DemandController {
             cdpoDTO.setCdpoName(demand.getCdpo().getCdpoName());
             dto.setCdpo(cdpoDTO);
         }
-        if (demand.getSupervisor() != null) {
-            SupervisorDTO supDTO = new SupervisorDTO();
-            supDTO.setId(demand.getSupervisor().getId());
-            supDTO.setName(demand.getSupervisor().getName());
-            dto.setSupervisor(supDTO);
+        if (demand.getSectors() != null) {
+            SectorDTO sectorDTO = new SectorDTO();
+            sectorDTO.setId(demand.getSectors().getId());
+            sectorDTO.setName(demand.getSectors().getName());
+            dto.setSectorDTO(sectorDTO);
         }
 
         // Map AWC details
         List<DemandAwcDetailDTO> awcDTOs = demand.getAwcDetails().stream().map(d -> {
             DemandAwcDetailDTO awcDto = new DemandAwcDetailDTO();
             awcDto.setAwcId(d.getAnganwadi().getId());
-            awcDto.setHcmNumber(d.getHcmNumber());
-            awcDto.setHcmUnit(d.getHcmUnit());
-            awcDto.setThrNumber(d.getThrNumber());
-            awcDto.setThrUnit(d.getThrUnit());
+            awcDto.setType(d.getType());
+            awcDto.setQuantity(d.getQuantity());
             return awcDto;
         }).collect(Collectors.toList());
         dto.setAwcDetails(awcDTOs);

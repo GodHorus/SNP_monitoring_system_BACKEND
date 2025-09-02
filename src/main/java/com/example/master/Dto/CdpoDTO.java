@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 public class CdpoDTO {
     private Long id;
     private String cdpoName;
-    private List<SupervisorDTO> supervisors;
+//    private List<SupervisorDTO> supervisors;
+
+    private List<SectorDTO> sectors;
 
     // Constructor to map from Cdpo entity
 //    public CdpoDTO(Cdpo cdpo) {
@@ -38,11 +40,20 @@ public class CdpoDTO {
         this.cdpoName = cdpoName;
     }
 
-    public List<SupervisorDTO> getSupervisors() {
-        return supervisors;
+//    public List<SupervisorDTO> getSupervisors() {
+//        return supervisors;
+//    }
+//
+//    public void setSupervisors(List<SupervisorDTO> supervisors) {
+//        this.supervisors = supervisors;
+//    }
+
+
+    public List<SectorDTO> getSectors() {
+        return sectors;
     }
 
-    public void setSupervisors(List<SupervisorDTO> supervisors) {
-        this.supervisors = supervisors;
+    public void setSectors(List<SectorDTO> sectors) {
+        this.sectors = sectors;
     }
 }

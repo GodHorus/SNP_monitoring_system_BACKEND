@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +23,12 @@ public class Demand {
 
     private LocalDate fromDate;
     private LocalDate toDate;
+
+    private String demandCategory;
+
+    private String demandProduct;
+
+    private String beneficery;
 
     private String fciId;
     private String fciDocs;
@@ -53,10 +60,14 @@ public class Demand {
 //    @JsonIgnore
     private Cdpo cdpo;
 
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "supervisor_id")
+    /// /    @JsonIgnore
+//    private Supervisor supervisor;
+
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "supervisor_id")
-//    @JsonIgnore
-    private Supervisor supervisor;
+    @JoinColumn(name = "sector_id")
+    private Sector sectors;
 
     @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -251,12 +262,45 @@ public class Demand {
         this.cdpo = cdpo;
     }
 
-    public Supervisor getSupervisor() {
-        return supervisor;
+//    public Supervisor getSupervisor() {
+//        return supervisor;
+//    }
+//
+//    public void setSupervisor(Supervisor supervisor) {
+//        this.supervisor = supervisor;
+//    }
+
+
+    public String getDemandCategory() {
+        return demandCategory;
     }
 
-    public void setSupervisor(Supervisor supervisor) {
-        this.supervisor = supervisor;
+    public void setDemandCategory(String demandCategory) {
+        this.demandCategory = demandCategory;
+    }
+
+    public String getDemandProduct() {
+        return demandProduct;
+    }
+
+    public void setDemandProduct(String demandProduct) {
+        this.demandProduct = demandProduct;
+    }
+
+    public String getBeneficery() {
+        return beneficery;
+    }
+
+    public void setBeneficery(String beneficery) {
+        this.beneficery = beneficery;
+    }
+
+    public Sector getSectors() {
+        return sectors;
+    }
+
+    public void setSectors(Sector sectors) {
+        this.sectors = sectors;
     }
 
     public List<DemandAwcDetail> getAwcDetails() {

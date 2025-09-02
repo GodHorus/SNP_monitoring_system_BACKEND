@@ -28,12 +28,18 @@ public class DemandResponseDTO {
     private LocalDateTime cdpoDispatchedAt;
     private LocalDateTime awcAcceptedAt;
 
+    private String demandCategory;
+
+    private String demandProduct;
+
+    private String beneficery;
+
     private String rejectionReason;
     private String notes;
 
     private DistrictDTO district;
     private CdpoDTO cdpo;
-    private SupervisorDTO supervisor;
+    private SectorDTO sectorDTO;
 
     private List<DemandAwcDetailDTO> awcDetails;
 
@@ -81,6 +87,30 @@ public class DemandResponseDTO {
 
     public void setToDate(LocalDate toDate) {
         this.toDate = toDate;
+    }
+
+    public String getDemandCategory() {
+        return demandCategory;
+    }
+
+    public void setDemandCategory(String demandCategory) {
+        this.demandCategory = demandCategory;
+    }
+
+    public String getDemandProduct() {
+        return demandProduct;
+    }
+
+    public void setDemandProduct(String demandProduct) {
+        this.demandProduct = demandProduct;
+    }
+
+    public String getBeneficery() {
+        return beneficery;
+    }
+
+    public void setBeneficery(String beneficery) {
+        this.beneficery = beneficery;
     }
 
     public String getFciId() {
@@ -211,12 +241,12 @@ public class DemandResponseDTO {
         this.cdpo = cdpo;
     }
 
-    public SupervisorDTO getSupervisor() {
-        return supervisor;
+    public SectorDTO getSectorDTO() {
+        return sectorDTO;
     }
 
-    public void setSupervisor(SupervisorDTO supervisor) {
-        this.supervisor = supervisor;
+    public void setSectorDTO(SectorDTO sectorDTO) {
+        this.sectorDTO = sectorDTO;
     }
 
     public List<DemandAwcDetailDTO> getAwcDetails() {
