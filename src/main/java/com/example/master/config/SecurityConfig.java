@@ -42,6 +42,8 @@ public class SecurityConfig {
                                 .requestMatchers("/api/demands/**").authenticated()
                                 .requestMatchers("/api/**").permitAll()
                                 .requestMatchers("/auth/login").permitAll()
+                                .requestMatchers("/auth/forgot-password").permitAll()
+                                .requestMatchers("/auth/reset-password").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

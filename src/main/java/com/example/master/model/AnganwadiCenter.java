@@ -1,10 +1,12 @@
 package com.example.master.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "anganwadi_centers")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class AnganwadiCenter {
 
     @Id

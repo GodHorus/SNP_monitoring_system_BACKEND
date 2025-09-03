@@ -14,14 +14,14 @@ public class BatchDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ✅ Relation with IngredientDetail (foreign key)
+    //  Relation with IngredientDetail (foreign key)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ingredient_id", nullable = false)
     private IngredientDetail ingredient;
 
     private String qrCode;
 
-    // ✅ Relation with LabReport
+    //  Relation with LabReport
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "lab_report_id")
     private LabReport labReport;

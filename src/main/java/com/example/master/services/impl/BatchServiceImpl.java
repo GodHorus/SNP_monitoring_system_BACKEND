@@ -33,9 +33,12 @@ public class BatchServiceImpl implements BatchService {
     }
 
     @Override
+    @Transactional
     public List<BatchDetailDTO> saveBatches(List<BatchDetailDTO> dtos) {
         List<BatchDetail> saved = dtos.stream().map(dto -> {
-            BatchDetail batch = new BatchDetail();
+            // check if batch already exists for ingredient
+            BatchDetail batch = batchRepo.findByIngredientId(dto.getIngredientId())
+                    .orElse(new BatchDetail());
 
             IngredientDetail ingredient = ingredientRepo.findById(dto.getIngredientId())
                     .orElseThrow(() -> new RuntimeException("Ingredient not found"));
@@ -55,6 +58,7 @@ public class BatchServiceImpl implements BatchService {
 
         return saved.stream().map(this::toDTO).collect(Collectors.toList());
     }
+
 
     @Override
     public List<BatchDetailDTO> getAllBatches() {
