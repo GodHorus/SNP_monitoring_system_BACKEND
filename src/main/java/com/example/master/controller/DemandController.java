@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -72,12 +73,14 @@ public class DemandController {
             districtDTO.setDistrictName(demand.getDistrict().getDistrictName());
             dto.setDistrict(districtDTO);
         }
+
         if (demand.getCdpo() != null) {
             CdpoDTO cdpoDTO = new CdpoDTO();
             cdpoDTO.setId(demand.getCdpo().getId());
             cdpoDTO.setCdpoName(demand.getCdpo().getCdpoName());
             dto.setCdpo(cdpoDTO);
         }
+
         if (demand.getSectors() != null) {
             SectorDTO sectorDTO = new SectorDTO();
             sectorDTO.setId(demand.getSectors().getId());
@@ -95,8 +98,59 @@ public class DemandController {
         }).collect(Collectors.toList());
         dto.setAwcDetails(awcDTOs);
 
+        // Map Supplier Mappings (including supplier names, districts, etc.)
+        if (demand.getSupplierMappings() != null && !demand.getSupplierMappings().isEmpty()) {
+            List<SupplierMappingResponseDTO> supplierDTOs = demand.getSupplierMappings().stream().map(mapping -> {
+                SupplierMappingResponseDTO supplierDTO = new SupplierMappingResponseDTO();
+                supplierDTO.setId(mapping.getId());
+
+                // Map Demand (as DemandDTO)
+                SupplierMappingResponseDTO.DemandDTO demandDTO = new SupplierMappingResponseDTO.DemandDTO();
+                demandDTO.setId(demand.getId());
+                demandDTO.setName(demand.getDescription());
+                supplierDTO.setDemand(demandDTO);
+
+                // Map Supplier (as SupplierDTO)
+                SupplierMappingResponseDTO.SupplierDTO supplierDTOObj = new SupplierMappingResponseDTO.SupplierDTO();
+                supplierDTOObj.setId(mapping.getSupplier().getId());
+                supplierDTOObj.setName(mapping.getSupplier().getName());
+                supplierDTO.setSupplier(supplierDTOObj);
+
+                // Map District (as DistrictDTO)
+                SupplierMappingResponseDTO.DistrictDTO districtDTOObj = new SupplierMappingResponseDTO.DistrictDTO();
+                districtDTOObj.setId(mapping.getDistrict().getId());
+                districtDTOObj.setName(mapping.getDistrict().getDistrictName());
+                supplierDTO.setDistrict(districtDTOObj);
+
+                // Map CDPOs (as CdpoDTO)
+                List<SupplierMappingResponseDTO.CdpoDTO> cdpoDTOs = mapping.getCdpos().stream().map(cdpo -> {
+                    SupplierMappingResponseDTO.CdpoDTO cdpoDTO = new SupplierMappingResponseDTO.CdpoDTO();
+                    cdpoDTO.setId(cdpo.getId());
+                    cdpoDTO.setCdpoName(cdpo.getCdpoName());
+                    return cdpoDTO;
+                }).collect(Collectors.toList());
+                supplierDTO.setCdpos(cdpoDTOs);
+
+                // Map Sectors (as SectorDTO)
+                List<SupplierMappingResponseDTO.SectorDTO> sectorDTOs = mapping.getSectors().stream().map(sector -> {
+                    SupplierMappingResponseDTO.SectorDTO sectorDTO = new SupplierMappingResponseDTO.SectorDTO();
+                    sectorDTO.setId(sector.getId());
+                    sectorDTO.setName(sector.getName());
+                    return sectorDTO;
+                }).collect(Collectors.toList());
+                supplierDTO.setSectors(sectorDTOs);
+
+                return supplierDTO;
+            }).collect(Collectors.toList());
+            dto.setSupplierMappings(supplierDTOs);
+        } else {
+            dto.setSupplierMappings(Collections.emptyList());
+        }
+
         return dto;
     }
+
+
 
     // Admin & DWCD can view all demands
 //    @PreAuthorize("hasAnyRole('ADMIN','DWCD')")

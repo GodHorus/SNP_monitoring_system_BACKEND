@@ -73,6 +73,10 @@ public class Demand {
     @JsonManagedReference
     private List<DemandAwcDetail> awcDetails;
 
+    @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<SupplierMapping> supplierMappings;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -325,5 +329,13 @@ public class Demand {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<SupplierMapping> getSupplierMappings() {
+        return supplierMappings;
+    }
+
+    public void setSupplierMappings(List<SupplierMapping> supplierMappings) {
+        this.supplierMappings = supplierMappings;
     }
 }

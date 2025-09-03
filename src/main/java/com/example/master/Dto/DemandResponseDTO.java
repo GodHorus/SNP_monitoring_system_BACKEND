@@ -43,6 +43,8 @@ public class DemandResponseDTO {
 
     private List<DemandAwcDetailDTO> awcDetails;
 
+    private List<SupplierMappingResponseDTO> supplierMappings;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -271,5 +273,13 @@ public class DemandResponseDTO {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<SupplierMappingResponseDTO> getSupplierMappings() {
+        return supplierMappings;
+    }
+
+    public void setSupplierMappings(List<SupplierMappingResponseDTO> supplierMappings) {
+        this.supplierMappings = supplierMappings;
     }
 }

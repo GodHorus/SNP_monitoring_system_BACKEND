@@ -40,7 +40,7 @@ public class DemandDTO {
     @NotBlank(message = "Quantity unit is required")
     private String quantityUnit;
 
-    @NotBlank(message = "Supplier ID is required")
+//    @NotBlank(message = "Supplier ID is required")
     private String supplierId;
 
     private String supplierDocs; // optional
@@ -56,6 +56,8 @@ public class DemandDTO {
 
     private String rejectionReason;
     private String notes;
+
+    private List<@Valid SupplierMappingDTO> supplierIds;
 
     @NotEmpty(message = "AWC details are required")
     private List<@Valid DemandAwcDetailDTO> awcDetails;
@@ -221,5 +223,13 @@ public class DemandDTO {
 
     public void setAwcDetails(List<DemandAwcDetailDTO> awcDetails) {
         this.awcDetails = awcDetails;
+    }
+
+    public List<SupplierMappingDTO> getSupplierIds() {
+        return supplierIds;
+    }
+
+    public void setSupplierIds(List<SupplierMappingDTO> supplierIds) {
+        this.supplierIds = supplierIds;
     }
 }
