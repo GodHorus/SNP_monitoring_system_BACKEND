@@ -3,8 +3,11 @@ package com.example.master.controller;
 import com.example.master.Dto.*;
 //import com.example.master.mapper.DemandMapper;
 import com.example.master.model.Demand;
+import com.example.master.model.DemandProduct;
+import com.example.master.model.ProductCommodityQuantity;
 import com.example.master.services.DemandService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,118 +55,89 @@ public class DemandController {
         dto.setStatus(demand.getStatus());
         dto.setFromDate(demand.getFromDate());
         dto.setToDate(demand.getToDate());
-        dto.setFciId(demand.getFciId());
-        dto.setFciDocs(demand.getFciDocs());
-        dto.setQuantity(demand.getQuantity());
-        dto.setQuantityUnit(demand.getQuantityUnit());
-        dto.setSupplierId(demand.getSupplierId());
-        dto.setSupplierDocs(demand.getSupplierDocs());
+        dto.setTotalDays(demand.getTotalDays()); // Assuming this field exists in the `Demand` entity
         dto.setNotes(demand.getNotes());
+        dto.setFciDocs(demand.getFciDocs());
+        dto.setSupplierDocs(demand.getSupplierDocs());
         dto.setCreatedAt(demand.getCreatedAt());
         dto.setUpdatedAt(demand.getUpdatedAt());
 
-        dto.setDemandCategory(demand.getDemandCategory());
-        dto.setDemandProduct(demand.getDemandProduct());
-        dto.setBeneficery(demand.getBeneficery());
+        // 🔹 demand category
+        if (demand.getDemandCategory() != null) {
+            DemandCategoryDTO cat = new DemandCategoryDTO();
+            cat.setId(demand.getDemandCategory().getId());
+            cat.setCategory(demand.getDemandCategory().getCategory());
+            dto.setDemandCategory(cat);
+        }
 
-        // Map related entities
+        // 🔹 beneficiary
+        if (demand.getBeneficery() != null) {
+            BeneficiaryDTO ben = new BeneficiaryDTO();
+            ben.setId(demand.getBeneficery().getId());
+            ben.setBeneficiaryName(demand.getBeneficery().getBeneficiaryName());
+            dto.setBeneficiary(ben);
+        }
+
+        // 🔹 supplier
+        if (demand.getSupplier() != null) {
+            SupplierDTO sup = new SupplierDTO();
+            sup.setId(demand.getSupplier().getId());
+            sup.setName(demand.getSupplier().getName());
+            dto.setSupplier(sup);
+        }
+
+        // 🔹 district
         if (demand.getDistrict() != null) {
-            DistrictDTO districtDTO = new DistrictDTO();
-            districtDTO.setId(demand.getDistrict().getId());
-            districtDTO.setDistrictName(demand.getDistrict().getDistrictName());
-            dto.setDistrict(districtDTO);
+            DistrictDTO dist = new DistrictDTO();
+            dist.setId(demand.getDistrict().getId());
+            dist.setDistrictName(demand.getDistrict().getDistrictName());
+            dto.setDistrict(dist);
         }
 
-        if (demand.getCdpo() != null) {
-            CdpoDTO cdpoDTO = new CdpoDTO();
-            cdpoDTO.setId(demand.getCdpo().getId());
-            cdpoDTO.setCdpoName(demand.getCdpo().getCdpoName());
-            dto.setCdpo(cdpoDTO);
+        // 🔹 fci
+        if (demand.getFci() != null) {
+            FciDTO fci = new FciDTO();
+            fci.setId(demand.getFci().getId());
+            fci.setName(demand.getFci().getName());
+            dto.setFci(fci);
         }
 
-        if (demand.getSectors() != null) {
-            SectorDTO sectorDTO = new SectorDTO();
-            sectorDTO.setId(demand.getSectors().getId());
-            sectorDTO.setName(demand.getSectors().getName());
-            dto.setSectorDTO(sectorDTO);
+        // 🔹 cdpo details
+        if (demand.getCdpoDetails() != null) {
+            List<DemandCdpoDetailResponseDTO> cdpoDtos = demand.getCdpoDetails().stream().map(cdpo -> {
+                DemandCdpoDetailResponseDTO cdpoDto = new DemandCdpoDetailResponseDTO();
+                cdpoDto.setId(cdpo.getId());
+                cdpoDto.setCdpoId(cdpo.getCdpo().getId());
+                cdpoDto.setCdpoName(cdpo.getCdpo().getCdpoName());
+                cdpoDto.setQuantity(cdpo.getQuantity());
+                cdpoDto.setQuantityUnits(cdpo.getQuantityUnits());
+                cdpoDto.setBeneficiaryCount(cdpo.getBeneficiaryCount());
+                return cdpoDto;
+            }).toList();
+            dto.setCdpoDetails(cdpoDtos);
         }
 
-        // Map AWC details
-        List<DemandAwcDetailDTO> awcDTOs = demand.getAwcDetails().stream().map(d -> {
-            DemandAwcDetailDTO awcDto = new DemandAwcDetailDTO();
-            awcDto.setAwcId(d.getAnganwadi().getId());
-            awcDto.setType(d.getType());
-            awcDto.setQuantity(d.getQuantity());
-            return awcDto;
-        }).collect(Collectors.toList());
-        dto.setAwcDetails(awcDTOs);
+        // 🔹 product + commodities
+        if (demand.getDemandProducts() != null && !demand.getDemandProducts().isEmpty()) {
+            DemandProduct product = demand.getDemandProducts().get(0); // only one
+            ProductQuantityResponse pqDto = new ProductQuantityResponse();
+            pqDto.setDemandProductId(product.getId());
+            pqDto.setProductType(product.getType());
 
-        // Map Supplier Mappings (including supplier names, districts, etc.)
-        if (demand.getSupplierMappings() != null && !demand.getSupplierMappings().isEmpty()) {
-            List<SupplierMappingResponseDTO> supplierDTOs = demand.getSupplierMappings().stream().map(mapping -> {
-                SupplierMappingResponseDTO supplierDTO = new SupplierMappingResponseDTO();
-                supplierDTO.setId(mapping.getId());
+            Map<String, Double> commodities = product.getProductQuantities().stream()
+                    .collect(Collectors.toMap(
+                            q -> q.getCommodity().getName(),
+                            ProductCommodityQuantity::getQuantity
+                    ));
+            pqDto.setCommodityQuantities(commodities);
 
-                // Map Demand (as DemandDTO)
-                SupplierMappingResponseDTO.DemandDTO demandDTO = new SupplierMappingResponseDTO.DemandDTO();
-                demandDTO.setId(demand.getId());
-                demandDTO.setName(demand.getDescription());
-                supplierDTO.setDemand(demandDTO);
-
-                // Map Supplier (as SupplierDTO)
-                SupplierMappingResponseDTO.SupplierDTO supplierDTOObj = new SupplierMappingResponseDTO.SupplierDTO();
-                supplierDTOObj.setId(mapping.getSupplier().getId());
-                supplierDTOObj.setName(mapping.getSupplier().getName());
-                supplierDTO.setSupplier(supplierDTOObj);
-
-                // Map District (as DistrictDTO)
-                SupplierMappingResponseDTO.DistrictDTO districtDTOObj = new SupplierMappingResponseDTO.DistrictDTO();
-                districtDTOObj.setId(mapping.getDistrict().getId());
-                districtDTOObj.setName(mapping.getDistrict().getDistrictName());
-                supplierDTO.setDistrict(districtDTOObj);
-
-                // Map CDPOs (as CdpoDTO)
-                List<SupplierMappingResponseDTO.CdpoDTO> cdpoDTOs = mapping.getCdpos().stream().map(cdpo -> {
-                    SupplierMappingResponseDTO.CdpoDTO cdpoDTO = new SupplierMappingResponseDTO.CdpoDTO();
-                    cdpoDTO.setId(cdpo.getId());
-                    cdpoDTO.setCdpoName(cdpo.getCdpoName());
-                    return cdpoDTO;
-                }).collect(Collectors.toList());
-                supplierDTO.setCdpos(cdpoDTOs);
-
-                // Map Sectors (as SectorDTO)
-                List<SupplierMappingResponseDTO.SectorDTO> sectorDTOs = mapping.getSectors().stream().map(sector -> {
-                    SupplierMappingResponseDTO.SectorDTO sectorDTO = new SupplierMappingResponseDTO.SectorDTO();
-                    sectorDTO.setId(sector.getId());
-                    sectorDTO.setName(sector.getName());
-                    return sectorDTO;
-                }).collect(Collectors.toList());
-                supplierDTO.setSectors(sectorDTOs);
-
-                return supplierDTO;
-            }).collect(Collectors.toList());
-            dto.setSupplierMappings(supplierDTOs);
-        } else {
-            dto.setSupplierMappings(Collections.emptyList());
+            dto.setProductQuantity(pqDto);
         }
 
         return dto;
     }
 
 
-
-    // Admin & DWCD can view all demands
-//    @PreAuthorize("hasAnyRole('ADMIN','DWCD')")
-//    @GetMapping
-//    public ResponseEntity<List<Demand>> getAllDemands() {
-//        logCurrentUserAuthorities("getAllDemands");
-//        List<Demand> demands = demandService.getAllDemands();
-
-    /// /        List<DemandDTO> demandDTOs = demands.stream()
-    /// ///                .map(demand -> new DemandDTO(demand)) // Convert Demand entity to DTO
-    /// /                .collect(Collectors.toList());
-//        return ResponseEntity.ok(demands);
-//    }
     @PreAuthorize("hasAnyRole('ADMIN','DWCD')")
     @GetMapping
     public ResponseEntity<List<DemandResponseDTO>> getAllDemands() {
@@ -178,6 +152,14 @@ public class DemandController {
         Demand demand = demandService.getDemandById(id);
         return ResponseEntity.ok(demand);
     }
+
+    // Updte quantity
+//    @PreAuthorize("hasRole('FCI')")
+//    @PutMapping("/{demandId}/quantity")
+//    public ResponseEntity<Demand> updateQuantity(@PathVariable Long demandId, @RequestParam Integer newQuantity) {
+//        Demand updatedDemand = demandService.updateQuantity(demandId, newQuantity);
+//        return new ResponseEntity<>(updatedDemand, HttpStatus.OK);
+//    }
 
     // *** CRITICAL: Admin only - delete demand with enhanced security ***
     @PreAuthorize("hasRole('ADMIN')")
@@ -251,6 +233,14 @@ public class DemandController {
         return ResponseEntity.ok(Map.of("message", message, "status", status));
     }
 
+    @PreAuthorize("hasRole('FCI')")
+    @PostMapping("/{id}/fci-dispatch")
+    public ResponseEntity<Map<String, String>> fciDispatch(@PathVariable Long id) {
+        logCurrentUserAuthorities("fciDispatch");
+        demandService.updateStatus(id, "FCI_DISPATCHED");
+        return ResponseEntity.ok(Map.of("message", "FCI dispatched to Supplier", "status", "FCI_DISPATCHED"));
+    }
+
     // Supplier-specific endpoints
 //    @PreAuthorize("hasRole('SUPPLIER')")
 //    @GetMapping("/fci-accepted")
@@ -276,6 +266,26 @@ public class DemandController {
 
         String message = request.isAccept() ? "Supplier accepted and started manufacturing" : "Supplier rejected the demand";
         return ResponseEntity.ok(Map.of("message", message, "status", status));
+    }
+
+    @PreAuthorize("hasRole('SUPPLIER')")
+    @PostMapping("/{id}/supplier-self-declare")
+    public ResponseEntity<Map<String, String>> supplierSelfDeclare(@PathVariable Long id) {
+        logCurrentUserAuthorities("supplierSelfDeclare");
+        demandService.updateStatus(id, "SUPPLIER_SELF_DECLARED");
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Supplier self-declared demand (bypassing FCI)",
+                "status", "SUPPLIER_SELF_DECLARED"
+        ));
+    }
+
+    @PreAuthorize("hasRole('SUPPLIER')")
+    @PostMapping("/{id}/supplier-dispatch")
+    public ResponseEntity<Map<String, String>> supplierDispatch(@PathVariable Long id) {
+        logCurrentUserAuthorities("supplierDispatch");
+        demandService.updateStatus(id, "SUPPLIER_DISPATCHED");
+        return ResponseEntity.ok(Map.of("message", "Supplier dispatched to CDPO", "status", "SUPPLIER_DISPATCHED"));
     }
 
     // CDPO-specific endpoints

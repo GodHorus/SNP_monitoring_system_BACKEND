@@ -7,11 +7,11 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "demands")
-//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Demand {
 
     @Id
@@ -23,59 +23,54 @@ public class Demand {
 
     private LocalDate fromDate;
     private LocalDate toDate;
+    private Integer totalDays;
 
-    private String demandCategory;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "demand_category_id")
+    private DemandCategory demandCategory;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "beneficiary_id")
+    private Benificiary beneficery;
 
-    private String demandProduct;
-
-    private String beneficery;
-
-    private String fciId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "fci_id")
+    private Fci fci;
     private String fciDocs;
 
-    private Integer quantity;
-    private String quantityUnit; // "kg", "packets", "metric ton"
-
-    private String supplierId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
     private String supplierDocs;
 
     // Workflow timestamps
     private LocalDateTime fciAcceptedAt;
     private LocalDateTime fciRejectedAt;
+    private LocalDateTime fciDispatchedAt;
     private LocalDateTime supplierAcceptedAt;
     private LocalDateTime supplierRejectedAt;
+    private LocalDateTime supplierSelfDeclaredAt;
+    private LocalDateTime supplierDispatchedAt;
     private LocalDateTime cdpoDispatchedAt;
     private LocalDateTime awcAcceptedAt;
-
+    private LocalDateTime awcDistributedAt;
     private String rejectionReason;
     private String notes;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "district_id")
-//    @JsonIgnore
     private District district;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "cdpo_id")
-//    @JsonIgnore
-    private Cdpo cdpo;
-
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "supervisor_id")
-    /// /    @JsonIgnore
-//    private Supervisor supervisor;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "sector_id")
-    private Sector sectors;
+    @ManyToMany
+    @JoinTable(
+            name = "demand_demand_product",
+            joinColumns = @JoinColumn(name = "demand_id"),
+            inverseJoinColumns = @JoinColumn(name = "demand_product_id")
+    )
+    private List<DemandProduct> demandProducts = new ArrayList<>();
 
     @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<DemandAwcDetail> awcDetails;
-
-    @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<SupplierMapping> supplierMappings;
+    private List<DemandCdpoDetail> cdpoDetails;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -138,14 +133,6 @@ public class Demand {
         this.toDate = toDate;
     }
 
-    public String getFciId() {
-        return fciId;
-    }
-
-    public void setFciId(String fciId) {
-        this.fciId = fciId;
-    }
-
     public String getFciDocs() {
         return fciDocs;
     }
@@ -154,28 +141,12 @@ public class Demand {
         this.fciDocs = fciDocs;
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public List<DemandCdpoDetail> getCdpoDetails() {
+        return cdpoDetails;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getQuantityUnit() {
-        return quantityUnit;
-    }
-
-    public void setQuantityUnit(String quantityUnit) {
-        this.quantityUnit = quantityUnit;
-    }
-
-    public String getSupplierId() {
-        return supplierId;
-    }
-
-    public void setSupplierId(String supplierId) {
-        this.supplierId = supplierId;
+    public void setCdpoDetails(List<DemandCdpoDetail> cdpoDetails) {
+        this.cdpoDetails = cdpoDetails;
     }
 
     public String getSupplierDocs() {
@@ -258,61 +229,20 @@ public class Demand {
         this.district = district;
     }
 
-    public Cdpo getCdpo() {
-        return cdpo;
+    public List<DemandProduct> getDemandProducts() {
+        return demandProducts;
     }
 
-    public void setCdpo(Cdpo cdpo) {
-        this.cdpo = cdpo;
+    public void setDemandProducts(List<DemandProduct> demandProducts) {
+        this.demandProducts = demandProducts;
     }
 
-//    public Supervisor getSupervisor() {
-//        return supervisor;
-//    }
-//
-//    public void setSupervisor(Supervisor supervisor) {
-//        this.supervisor = supervisor;
-//    }
-
-
-    public String getDemandCategory() {
+    public DemandCategory getDemandCategory() {
         return demandCategory;
     }
 
-    public void setDemandCategory(String demandCategory) {
+    public void setDemandCategory(DemandCategory demandCategory) {
         this.demandCategory = demandCategory;
-    }
-
-    public String getDemandProduct() {
-        return demandProduct;
-    }
-
-    public void setDemandProduct(String demandProduct) {
-        this.demandProduct = demandProduct;
-    }
-
-    public String getBeneficery() {
-        return beneficery;
-    }
-
-    public void setBeneficery(String beneficery) {
-        this.beneficery = beneficery;
-    }
-
-    public Sector getSectors() {
-        return sectors;
-    }
-
-    public void setSectors(Sector sectors) {
-        this.sectors = sectors;
-    }
-
-    public List<DemandAwcDetail> getAwcDetails() {
-        return awcDetails;
-    }
-
-    public void setAwcDetails(List<DemandAwcDetail> awcDetails) {
-        this.awcDetails = awcDetails;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -331,11 +261,67 @@ public class Demand {
         this.updatedAt = updatedAt;
     }
 
-    public List<SupplierMapping> getSupplierMappings() {
-        return supplierMappings;
+    public Integer getTotalDays() {
+        return totalDays;
     }
 
-    public void setSupplierMappings(List<SupplierMapping> supplierMappings) {
-        this.supplierMappings = supplierMappings;
+    public void setTotalDays(Integer totalDays) {
+        this.totalDays = totalDays;
+    }
+
+    public Fci getFci() {
+        return fci;
+    }
+
+    public void setFci(Fci fci) {
+        this.fci = fci;
+    }
+
+    public Supplier getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
+    }
+
+    public LocalDateTime getFciDispatchedAt() {
+        return fciDispatchedAt;
+    }
+
+    public void setFciDispatchedAt(LocalDateTime fciDispatchedAt) {
+        this.fciDispatchedAt = fciDispatchedAt;
+    }
+
+    public LocalDateTime getSupplierSelfDeclaredAt() {
+        return supplierSelfDeclaredAt;
+    }
+
+    public void setSupplierSelfDeclaredAt(LocalDateTime supplierSelfDeclaredAt) {
+        this.supplierSelfDeclaredAt = supplierSelfDeclaredAt;
+    }
+
+    public LocalDateTime getSupplierDispatchedAt() {
+        return supplierDispatchedAt;
+    }
+
+    public void setSupplierDispatchedAt(LocalDateTime supplierDispatchedAt) {
+        this.supplierDispatchedAt = supplierDispatchedAt;
+    }
+
+    public LocalDateTime getAwcDistributedAt() {
+        return awcDistributedAt;
+    }
+
+    public void setAwcDistributedAt(LocalDateTime awcDistributedAt) {
+        this.awcDistributedAt = awcDistributedAt;
+    }
+
+    public Benificiary getBeneficery() {
+        return beneficery;
+    }
+
+    public void setBeneficery(Benificiary beneficery) {
+        this.beneficery = beneficery;
     }
 }

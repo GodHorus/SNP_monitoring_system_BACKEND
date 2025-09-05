@@ -31,20 +31,34 @@ public interface DemandRepository extends JpaRepository<Demand, Long> {
     Long countByStatus(@Param("status") String status);
 
     // Find pending demands (for FCI)
-    @Query("SELECT d FROM Demand d WHERE d.status = 'PENDING' ORDER BY d.createdAt ASC")
-    List<DemandResponseDTO> findPendingDemands();
+//    @Query("SELECT d FROM Demand d WHERE d.status IN ('PENDING', 'FCI_ACCEPTED') ORDER BY d.createdAt ASC")
+//    List<DemandResponseDTO> findPendingDemands();
+    @Query("SELECT d FROM Demand d WHERE d.status IN ('PENDING', 'FCI_ACCEPTED') ORDER BY d.createdAt ASC")
+    List<Demand> findPendingAndAcceptedDemandsForFci();
 
-    // Find FCI accepted demands (for Supplier)
-    @Query("SELECT d FROM Demand d WHERE d.status = 'FCI_ACCEPTED' ORDER BY d.fciAcceptedAt ASC")
-    List<DemandResponseDTO> findFciAcceptedDemands();
+    // Supplier: FCI accepted or Supplier accepted
+    @Query("SELECT d FROM Demand d WHERE d.status IN ('FCI_ACCEPTED', 'FCI_DISPATCHED', 'SUPPLIER_ACCEPTED', 'SUPPLIER_SELF_DECLARED', 'SUPPLIER_DISPATCHED', 'CDPO_DISPATCHED','AWC_ACCEPTED', 'AWC_DISTRIBUTED') ORDER BY d.fciAcceptedAt ASC")
+    List<Demand> findAcceptedDemandsForSupplier();
 
-    // Find supplier accepted demands (for CDPO)
-    @Query("SELECT d FROM Demand d WHERE d.status = 'SUPPLIER_ACCEPTED' ORDER BY d.supplierAcceptedAt ASC")
-    List<DemandResponseDTO> findSupplierAcceptedDemands();
+    // CDPO: Supplier accepted or CDPO dispatched
+    @Query("SELECT d FROM Demand d WHERE d.status IN ('SUPPLIER_ACCEPTED', 'CDPO_DISPATCHED') ORDER BY d.supplierAcceptedAt ASC")
+    List<Demand> findDemandsForCdpo();
 
-    // Find dispatched demands (for AWC)
-    @Query("SELECT d FROM Demand d WHERE d.status = 'CDPO_DISPATCHED' ORDER BY d.cdpoDispatchedAt ASC")
-    List<DemandResponseDTO> findDispatchedDemands();
+    // AWC: CDPO dispatched or AWC accepted
+    @Query("SELECT d FROM Demand d WHERE d.status IN ('CDPO_DISPATCHED', 'AWC_ACCEPTED') ORDER BY d.cdpoDispatchedAt ASC")
+    List<Demand> findDemandsForAwc();
+
+//    // Find FCI accepted demands (for Supplier)
+//    @Query("SELECT d FROM Demand d WHERE d.status IN ('FCI_ACCEPTED', 'SUPPLIER_ACCEPTED') ORDER BY d.fciAcceptedAt ASC")
+//    List<DemandResponseDTO> findFciAcceptedDemands();
+//
+//    // Find supplier accepted demands (for CDPO)
+//    @Query("SELECT d FROM Demand d WHERE d.status IN ('SUPPLIER_ACCEPTED', 'CDPO_DISPATCHED') ORDER BY d.cdpoDispatchedAt ASC")
+//    List<DemandResponseDTO> findSupplierAcceptedDemands();
+//
+//    // Find dispatched demands (for AWC)
+//    @Query("SELECT d FROM Demand d WHERE d.status IN ('CDPO_DISPATCHED', 'AWC_ACCEPTED') ORDER BY d.cdpoDispatchedAt ASC")
+//    List<DemandResponseDTO> findDispatchedDemands();
 
     // Find completed demands
     @Query("SELECT d FROM Demand d WHERE d.status = 'AWC_ACCEPTED' ORDER BY d.awcAcceptedAt DESC")

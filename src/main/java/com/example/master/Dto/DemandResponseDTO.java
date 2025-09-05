@@ -8,48 +8,24 @@ public class DemandResponseDTO {
     private Long id;
     private String description;
     private String status;
-
     private LocalDate fromDate;
     private LocalDate toDate;
-
-    private String fciId;
+    private Integer totalDays;
+    private String notes;
     private String fciDocs;
-
-    private Integer quantity;
-    private String quantityUnit;
-
-    private String supplierId;
     private String supplierDocs;
 
-    private LocalDateTime fciAcceptedAt;
-    private LocalDateTime fciRejectedAt;
-    private LocalDateTime supplierAcceptedAt;
-    private LocalDateTime supplierRejectedAt;
-    private LocalDateTime cdpoDispatchedAt;
-    private LocalDateTime awcAcceptedAt;
-
-    private String demandCategory;
-
-    private String demandProduct;
-
-    private String beneficery;
-
-    private String rejectionReason;
-    private String notes;
-
+    private DemandCategoryDTO demandCategory;
+    private BeneficiaryDTO beneficiary;
+    private SupplierDTO supplier;
     private DistrictDTO district;
-    private CdpoDTO cdpo;
-    private SectorDTO sectorDTO;
+    private FciDTO fci;
 
-    private List<DemandAwcDetailDTO> awcDetails;
-
-    private List<SupplierMappingResponseDTO> supplierMappings;
+    private List<DemandCdpoDetailResponseDTO> cdpoDetails;
+    private ProductQuantityResponse productQuantity;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    // getters + setters
-
 
     public Long getId() {
         return id;
@@ -91,132 +67,12 @@ public class DemandResponseDTO {
         this.toDate = toDate;
     }
 
-    public String getDemandCategory() {
-        return demandCategory;
+    public Integer getTotalDays() {
+        return totalDays;
     }
 
-    public void setDemandCategory(String demandCategory) {
-        this.demandCategory = demandCategory;
-    }
-
-    public String getDemandProduct() {
-        return demandProduct;
-    }
-
-    public void setDemandProduct(String demandProduct) {
-        this.demandProduct = demandProduct;
-    }
-
-    public String getBeneficery() {
-        return beneficery;
-    }
-
-    public void setBeneficery(String beneficery) {
-        this.beneficery = beneficery;
-    }
-
-    public String getFciId() {
-        return fciId;
-    }
-
-    public void setFciId(String fciId) {
-        this.fciId = fciId;
-    }
-
-    public String getFciDocs() {
-        return fciDocs;
-    }
-
-    public void setFciDocs(String fciDocs) {
-        this.fciDocs = fciDocs;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getQuantityUnit() {
-        return quantityUnit;
-    }
-
-    public void setQuantityUnit(String quantityUnit) {
-        this.quantityUnit = quantityUnit;
-    }
-
-    public String getSupplierId() {
-        return supplierId;
-    }
-
-    public void setSupplierId(String supplierId) {
-        this.supplierId = supplierId;
-    }
-
-    public String getSupplierDocs() {
-        return supplierDocs;
-    }
-
-    public void setSupplierDocs(String supplierDocs) {
-        this.supplierDocs = supplierDocs;
-    }
-
-    public LocalDateTime getFciAcceptedAt() {
-        return fciAcceptedAt;
-    }
-
-    public void setFciAcceptedAt(LocalDateTime fciAcceptedAt) {
-        this.fciAcceptedAt = fciAcceptedAt;
-    }
-
-    public LocalDateTime getFciRejectedAt() {
-        return fciRejectedAt;
-    }
-
-    public void setFciRejectedAt(LocalDateTime fciRejectedAt) {
-        this.fciRejectedAt = fciRejectedAt;
-    }
-
-    public LocalDateTime getSupplierAcceptedAt() {
-        return supplierAcceptedAt;
-    }
-
-    public void setSupplierAcceptedAt(LocalDateTime supplierAcceptedAt) {
-        this.supplierAcceptedAt = supplierAcceptedAt;
-    }
-
-    public LocalDateTime getSupplierRejectedAt() {
-        return supplierRejectedAt;
-    }
-
-    public void setSupplierRejectedAt(LocalDateTime supplierRejectedAt) {
-        this.supplierRejectedAt = supplierRejectedAt;
-    }
-
-    public LocalDateTime getCdpoDispatchedAt() {
-        return cdpoDispatchedAt;
-    }
-
-    public void setCdpoDispatchedAt(LocalDateTime cdpoDispatchedAt) {
-        this.cdpoDispatchedAt = cdpoDispatchedAt;
-    }
-
-    public LocalDateTime getAwcAcceptedAt() {
-        return awcAcceptedAt;
-    }
-
-    public void setAwcAcceptedAt(LocalDateTime awcAcceptedAt) {
-        this.awcAcceptedAt = awcAcceptedAt;
-    }
-
-    public String getRejectionReason() {
-        return rejectionReason;
-    }
-
-    public void setRejectionReason(String rejectionReason) {
-        this.rejectionReason = rejectionReason;
+    public void setTotalDays(Integer totalDays) {
+        this.totalDays = totalDays;
     }
 
     public String getNotes() {
@@ -227,6 +83,46 @@ public class DemandResponseDTO {
         this.notes = notes;
     }
 
+    public String getFciDocs() {
+        return fciDocs;
+    }
+
+    public void setFciDocs(String fciDocs) {
+        this.fciDocs = fciDocs;
+    }
+
+    public String getSupplierDocs() {
+        return supplierDocs;
+    }
+
+    public void setSupplierDocs(String supplierDocs) {
+        this.supplierDocs = supplierDocs;
+    }
+
+    public DemandCategoryDTO getDemandCategory() {
+        return demandCategory;
+    }
+
+    public void setDemandCategory(DemandCategoryDTO demandCategory) {
+        this.demandCategory = demandCategory;
+    }
+
+    public BeneficiaryDTO getBeneficiary() {
+        return beneficiary;
+    }
+
+    public void setBeneficiary(BeneficiaryDTO beneficiary) {
+        this.beneficiary = beneficiary;
+    }
+
+    public SupplierDTO getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(SupplierDTO supplier) {
+        this.supplier = supplier;
+    }
+
     public DistrictDTO getDistrict() {
         return district;
     }
@@ -235,28 +131,28 @@ public class DemandResponseDTO {
         this.district = district;
     }
 
-    public CdpoDTO getCdpo() {
-        return cdpo;
+    public FciDTO getFci() {
+        return fci;
     }
 
-    public void setCdpo(CdpoDTO cdpo) {
-        this.cdpo = cdpo;
+    public void setFci(FciDTO fci) {
+        this.fci = fci;
     }
 
-    public SectorDTO getSectorDTO() {
-        return sectorDTO;
+    public List<DemandCdpoDetailResponseDTO> getCdpoDetails() {
+        return cdpoDetails;
     }
 
-    public void setSectorDTO(SectorDTO sectorDTO) {
-        this.sectorDTO = sectorDTO;
+    public void setCdpoDetails(List<DemandCdpoDetailResponseDTO> cdpoDetails) {
+        this.cdpoDetails = cdpoDetails;
     }
 
-    public List<DemandAwcDetailDTO> getAwcDetails() {
-        return awcDetails;
+    public ProductQuantityResponse getProductQuantity() {
+        return productQuantity;
     }
 
-    public void setAwcDetails(List<DemandAwcDetailDTO> awcDetails) {
-        this.awcDetails = awcDetails;
+    public void setProductQuantity(ProductQuantityResponse productQuantity) {
+        this.productQuantity = productQuantity;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -273,13 +169,5 @@ public class DemandResponseDTO {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public List<SupplierMappingResponseDTO> getSupplierMappings() {
-        return supplierMappings;
-    }
-
-    public void setSupplierMappings(List<SupplierMappingResponseDTO> supplierMappings) {
-        this.supplierMappings = supplierMappings;
     }
 }

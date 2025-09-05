@@ -15,6 +15,8 @@ public interface DemandService {
     void deleteDemand(Long id);
     Demand updateStatus(Long id, String status);
 
+//    Demand updateQuantity(Long demandId, Integer newQuantity);
+
     // Additional methods for role-specific queries
     List<DemandResponseDTO> getDemandsByStatus(String status);
     List<DemandResponseDTO> getPendingDemandsForFCI();
