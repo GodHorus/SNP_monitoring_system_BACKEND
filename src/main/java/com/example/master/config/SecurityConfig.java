@@ -40,6 +40,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/ingredients").permitAll()
                                 .requestMatchers("/api/batches").permitAll()
                                 .requestMatchers("/api/demands/**").authenticated()
+                                .requestMatchers("/api/users/**").authenticated()
                                 .requestMatchers("/api/**").permitAll()
                                 .requestMatchers("/auth/login").permitAll()
                                 .requestMatchers("/auth/forgot-password").permitAll()

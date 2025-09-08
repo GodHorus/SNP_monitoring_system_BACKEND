@@ -6,8 +6,6 @@ import com.example.master.model.Demand;
 import com.example.master.model.DemandProduct;
 import com.example.master.model.ProductCommodityQuantity;
 import com.example.master.services.DemandService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,9 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,12 +27,14 @@ import java.util.stream.Collectors;
 public class DemandController {
 
 //    @Autowired
-//    private KafkaTemplate<String, String> kafkaTemplate;
+    private KafkaTemplate<String, String> kafkaTemplate;
     private static final Logger logger = LoggerFactory.getLogger(DemandController.class);
     private final DemandService demandService;
 
-    public DemandController(DemandService demandService) {
+    public DemandController(DemandService demandService,
+                            KafkaTemplate<String, String> kafkaTemplate) {
         this.demandService = demandService;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     // DWCD creates demand
@@ -45,6 +45,17 @@ public class DemandController {
         Demand savedDemand = demandService.createDemand(dto);
 
         DemandResponseDTO response = mapToResponseDTO(savedDemand);
+
+
+        // 🔹 Build Kafka event payload
+        String eventPayload = String.format(
+                "{\"type\":\"NEW_DEMAND\",\"demandId\":\"%d\"}", savedDemand.getId()
+        );
+
+        // 🔹 Publish Kafka event immediately
+        kafkaTemplate.send("demand-events", eventPayload).join(); // join() waits for ack
+
+
         return ResponseEntity.ok(response);
     }
 
@@ -119,14 +130,14 @@ public class DemandController {
 
         // 🔹 product + commodities
         if (demand.getDemandProducts() != null && !demand.getDemandProducts().isEmpty()) {
-            DemandProduct product = demand.getDemandProducts().get(0); // only one
+            String product = demand.getDemandProducts(); // only one
             ProductQuantityResponse pqDto = new ProductQuantityResponse();
-            pqDto.setDemandProductId(product.getId());
-            pqDto.setProductType(product.getType());
+//            pqDto.setDemandProductId(product.getId());
+            pqDto.setProductType(product);
 
-            Map<String, Double> commodities = product.getProductQuantities().stream()
+            Map<String, Double> commodities = demand.getProductQuantities().stream()
                     .collect(Collectors.toMap(
-                            q -> q.getCommodity().getName(),
+                            q -> q.getCommodity(),
                             ProductCommodityQuantity::getQuantity
                     ));
             pqDto.setCommodityQuantities(commodities);
@@ -147,10 +158,21 @@ public class DemandController {
     // All authenticated roles can view a specific demand
     @PreAuthorize("hasAnyRole('ADMIN','DWCD','FCI','SUPPLIER','CDPO','AWC')")
     @GetMapping("/{id}")
-    public ResponseEntity<Demand> getDemandById(@PathVariable Long id) {
+    public ResponseEntity<Optional<DemandResponseDTO>> getDemandById(@PathVariable Long id) {
         logCurrentUserAuthorities("getDemandById");
-        Demand demand = demandService.getDemandById(id);
+        Optional<DemandResponseDTO> demand = demandService.getDemandById(id);
         return ResponseEntity.ok(demand);
+    }
+
+
+    @PreAuthorize("hasAnyRole('ADMIN','DWCD','FCI','SUPPLIER','CDPO','AWC')")
+    @PutMapping("/{demandId}/rejection-reason")
+    public ResponseEntity<Void> updateRejectionReason(
+            @PathVariable Long demandId,
+            @RequestBody DemandDTO demandDTO) {
+        // Call the service to update the rejection reason
+        demandService.updateRejectionReason(demandId, demandDTO.getRejectionReason());
+        return ResponseEntity.noContent().build();
     }
 
     // Updte quantity
@@ -288,7 +310,7 @@ public class DemandController {
         return ResponseEntity.ok(Map.of("message", "Supplier dispatched to CDPO", "status", "SUPPLIER_DISPATCHED"));
     }
 
-    // CDPO-specific endpoints
+//     CDPO-specific endpoints
 //    @PreAuthorize("hasRole('CDPO')")
 //    @GetMapping("/manufactured")
 //    public ResponseEntity<List<DemandResponseDTO>> getManufacturedDemands() {
@@ -369,7 +391,9 @@ public class DemandController {
     @GetMapping("/{id}/status-history")
     public ResponseEntity<Map<String, Object>> getStatusHistory(@PathVariable Long id) {
         logCurrentUserAuthorities("getStatusHistory");
-        Demand demand = demandService.getDemandById(id);
+//        Optional<DemandResponseDTO> demand = demandService.getDemandById(id);
+
+        Demand demand = new Demand();
 
         Map<String, Object> history = Map.of(
                 "id", demand.getId(),

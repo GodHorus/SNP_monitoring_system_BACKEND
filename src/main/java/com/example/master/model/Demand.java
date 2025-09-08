@@ -58,15 +58,35 @@ public class Demand {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "district_id")
+//    @JsonIgnoreProperties({"cdpos"})
     private District district;
 
-    @ManyToMany
-    @JoinTable(
-            name = "demand_demand_product",
-            joinColumns = @JoinColumn(name = "demand_id"),
-            inverseJoinColumns = @JoinColumn(name = "demand_product_id")
-    )
-    private List<DemandProduct> demandProducts = new ArrayList<>();
+
+    @Column(name = "demand_product")
+    private String demandProducts;
+
+//    @ManyToMany
+//    @JoinTable(
+//            name = "demand_demand_product",
+//            joinColumns = @JoinColumn(name = "demand_id"),
+//            inverseJoinColumns = @JoinColumn(name = "demand_product_id")
+//    )
+//    @JsonManagedReference
+//    private List<DemandProduct> demandProducts = new ArrayList<>();
+
+
+
+//    @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonManagedReference
+//    private List<DemandProduct> demandProducts = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonManagedReference
+//    private List<DemandProductQuantity> productQuantities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<ProductCommodityQuantity> productQuantities;
 
     @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -149,6 +169,14 @@ public class Demand {
         this.cdpoDetails = cdpoDetails;
     }
 
+    public List<ProductCommodityQuantity> getProductQuantities() {
+        return productQuantities;
+    }
+
+    public void setProductQuantities(List<ProductCommodityQuantity> productQuantities) {
+        this.productQuantities = productQuantities;
+    }
+
     public String getSupplierDocs() {
         return supplierDocs;
     }
@@ -229,13 +257,13 @@ public class Demand {
         this.district = district;
     }
 
-    public List<DemandProduct> getDemandProducts() {
-        return demandProducts;
-    }
-
-    public void setDemandProducts(List<DemandProduct> demandProducts) {
-        this.demandProducts = demandProducts;
-    }
+//    public List<DemandProduct> getDemandProducts() {
+//        return demandProducts;
+//    }
+//
+//    public void setDemandProducts(List<DemandProduct> demandProducts) {
+//        this.demandProducts = demandProducts;
+//    }
 
     public DemandCategory getDemandCategory() {
         return demandCategory;
@@ -323,5 +351,21 @@ public class Demand {
 
     public void setBeneficery(Benificiary beneficery) {
         this.beneficery = beneficery;
+    }
+
+//    public List<DemandProduct> getDemandProducts() {
+//        return demandProducts;
+//    }
+//
+//    public void setDemandProducts(List<DemandProduct> demandProducts) {
+//        this.demandProducts = demandProducts;
+//    }
+
+    public String getDemandProducts() {
+        return demandProducts;
+    }
+
+    public void setDemandProducts(String demandProducts) {
+        this.demandProducts = demandProducts;
     }
 }

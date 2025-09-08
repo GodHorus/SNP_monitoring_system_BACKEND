@@ -1,83 +1,60 @@
 package com.example.master.services.impl;
 
-import com.example.master.Dto.UserDTO;
-import com.example.master.exception.NotFoundException;
+import com.example.master.Dto.UserRequestDTO;
 import com.example.master.model.User;
 import com.example.master.repository.UserRepository;
+import com.example.master.config.KeycloakUserService;
 import com.example.master.services.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final KeycloakUserService keycloakUserService;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, KeycloakUserService keycloakUserService) {
         this.userRepository = userRepository;
+        this.keycloakUserService = keycloakUserService;
     }
 
-    private UserDTO mapToDTO(User user) {
-        return new UserDTO(
-                user.getId(),
+    @Transactional
+    public User createUser(User user, String password, String role, String firstName, String lastName) {
+        // 1. Create user in Keycloak
+        String keycloakUserId = keycloakUserService.createUser(
                 user.getName(),
                 user.getEmail(),
-                user.getMobile(),
-                user.getPassword(),
-                user.getRole(),
-                user.getDistrict(),
-                user.getProject()
+                password,
+                role,
+                firstName,   // send to Keycloak
+                lastName     // send to Keycloak
         );
+
+        // 2. Save in DB (without firstName and lastName)
+        user.setKeycloakUserId(keycloakUserId);
+        return userRepository.save(user);
     }
 
-    private User mapToEntity(UserDTO dto) {
-        User user = new User();
-        user.setId(dto.getId());
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-        user.setMobile(dto.getMobile());
-        user.setPassword(dto.getPassword());
-        user.setRole(dto.getRole());
-        user.setDistrict(dto.getDistrict());
-        user.setProject(dto.getProject());
-        return user;
+    @Transactional
+    @Override
+    public void updateUserRole(String userId, String oldRole, String newRole) {
+        User user = userRepository.findByKeycloakUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        keycloakUserService.updateUserRole(user.getKeycloakUserId(), oldRole, newRole);
     }
 
     @Override
-    public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream().map(this::mapToDTO).collect(Collectors.toList());
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override
-    public UserDTO getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
-        return mapToDTO(user);
-    }
-
-    @Override
-    public UserDTO createUser(UserDTO userDTO) {
-        User user = mapToEntity(userDTO);
-        return mapToDTO(userRepository.save(user));
-    }
-
-    @Override
-    public UserDTO updateUser(Long id, UserDTO userDTO) {
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
-        user.setMobile(userDTO.getMobile());
-        user.setPassword(userDTO.getPassword());
-        user.setRole(userDTO.getRole());
-        user.setDistrict(userDTO.getDistrict());
-        user.setProject(userDTO.getProject());
-        return mapToDTO(userRepository.save(user));
-    }
-
-    @Override
-    public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) throw new NotFoundException("User not found");
-        userRepository.deleteById(id);
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

@@ -1,12 +1,19 @@
 package com.example.master.services;
 
-import com.example.master.Dto.UserDTO;
+import com.example.master.model.User;
+
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
-    List<UserDTO> getAllUsers();
-    UserDTO getUserById(Long id);
-    UserDTO createUser(UserDTO userDTO);
-    UserDTO updateUser(Long id, UserDTO userDTO);
-    void deleteUser(Long id);
+
+//    User createUser(User user, String password, String role);
+
+    User createUser(User user, String password, String role, String firstName, String lastName);
+
+    void updateUserRole(String userId, String oldRole, String newRole);
+
+    Optional<User> getUserByEmail(String email);
+
+    List<User> getAllUsers();
 }

@@ -1,5 +1,8 @@
 package com.example.master.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,13 +14,24 @@ public class ProductCommodityQuantity {
 
     private Double quantity; // input by user
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "commodity_id", nullable = false)
-    private Commodity commodity;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "commodity_id", nullable = false)
+//    @JsonBackReference
+//    private Commodity commodity;
+
+    @Column(name = "commodity")
+    private String commodity;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "demand_product", nullable = false)
+    @JsonBackReference
+    @Column(name = "demand_product")
+    private String demandProduct;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "demand_product_id", nullable = false)
-    private DemandProduct demandProduct;
+    @JoinColumn(name = "demand_id", nullable = false)
+    @JsonBackReference
+    private Demand demand;
 
     public Long getId() {
         return id;
@@ -34,20 +48,45 @@ public class ProductCommodityQuantity {
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
     }
+//
+//    public Commodity getCommodity() {
+//        return commodity;
+//    }
+//
+//    public void setCommodity(Commodity commodity) {
+//        this.commodity = commodity;
+//    }
 
-    public Commodity getCommodity() {
+    public String getCommodity() {
         return commodity;
     }
 
-    public void setCommodity(Commodity commodity) {
+    public void setCommodity(String commodity) {
         this.commodity = commodity;
     }
 
-    public DemandProduct getDemandProduct() {
+//    public DemandProduct getDemandProduct() {
+//        return demandProduct;
+//    }
+//
+//    public void setDemandProduct(DemandProduct demandProduct) {
+//        this.demandProduct = demandProduct;
+//    }
+
+
+    public String getDemandProduct() {
         return demandProduct;
     }
 
-    public void setDemandProduct(DemandProduct demandProduct) {
+    public void setDemandProduct(String demandProduct) {
         this.demandProduct = demandProduct;
+    }
+
+    public Demand getDemand() {
+        return demand;
+    }
+
+    public void setDemand(Demand demand) {
+        this.demand = demand;
     }
 }

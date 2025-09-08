@@ -1,5 +1,7 @@
 package com.example.master.config;
 
+import com.example.master.Dto.UserRequestDTO;
+import jakarta.ws.rs.core.Response;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -13,6 +15,7 @@ import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -165,4 +168,62 @@ public class KeycloakUserService {
 
         userResource.resetPassword(newCred);
     }
+
+    //    h handeling the users in the keycloak userserservice
+    public String createUser(String username, String email, String password, String roleName, String firstName, String lastName) {
+        Keycloak keycloakInstance = getKeycloakInstance();
+        RealmResource realmResource = keycloakInstance.realm(realm);
+        UsersResource usersResource = realmResource.users();
+
+        // Create Keycloak user
+        UserRepresentation user = new UserRepresentation();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setEnabled(true);
+        user.setFirstName(firstName);  // set first name
+        user.setLastName(lastName);    // set last name
+        user.setEmailVerified(true);
+
+        Response response = usersResource.create(user);
+        if (response.getStatus() != 201) {
+            throw new RuntimeException("Failed to create user: " + response.getStatus());
+        }
+
+        // Get created user ID
+        String userId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
+
+        // Set password
+        CredentialRepresentation credential = new CredentialRepresentation();
+        credential.setTemporary(false);
+        credential.setType(CredentialRepresentation.PASSWORD);
+        credential.setValue(password);
+        usersResource.get(userId).resetPassword(credential);
+
+        // Assign role
+        RoleRepresentation role = realmResource.roles().get(roleName).toRepresentation();
+        usersResource.get(userId).roles().realmLevel().add(List.of(role));
+
+        return userId;
+    }
+
+
+//     this si for updating th euser roles and manging theri roles
+
+    public void updateUserRole(String userId, String oldRole, String newRole) {
+        Keycloak keycloakInstance = getKeycloakInstance();
+        RealmResource realmResource = keycloakInstance.realm(realm);
+        UsersResource usersResource = realmResource.users();
+
+        UserResource userResource = usersResource.get(userId);
+
+        // Remove old role
+        RoleRepresentation oldRoleRep = realmResource.roles().get(oldRole).toRepresentation();
+        userResource.roles().realmLevel().remove(List.of(oldRoleRep));
+
+        // Add new role
+        RoleRepresentation newRoleRep = realmResource.roles().get(newRole).toRepresentation();
+        userResource.roles().realmLevel().add(List.of(newRoleRep));
+    }
+
+
 }

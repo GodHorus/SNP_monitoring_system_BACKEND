@@ -21,6 +21,8 @@ public class DemandDTO {
     private String supplierDocs;
     private Long districtId;
 
+    private String rejectionReason;
+
 //    private List<DemandProductDTO> demandProducts;
     private List<DemandCdpoDetailRequestDTO> cdpoDetails;
     private ProductQuantityRequest productQuantities;
@@ -153,5 +155,13 @@ public class DemandDTO {
 
     public void setProductQuantities(ProductQuantityRequest productQuantities) {
         this.productQuantities = productQuantities;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
     }
 }

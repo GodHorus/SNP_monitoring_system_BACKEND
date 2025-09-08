@@ -1,6 +1,8 @@
 package com.example.master.services.impl;
 
 import com.example.master.Dto.*;
+import com.example.master.Dto.Commodity;
+import com.example.master.Dto.DemandProduct;
 import com.example.master.event.DemandEventPublisher;
 import com.example.master.exception.NotFoundException;
 import com.example.master.model.*;
@@ -10,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,13 +23,10 @@ public class DemandServiceImpl implements DemandService {
     private final SupplierRepository supplierRepository;
     private final DistrictRepository districtRepository;
     private final CdpoRepository cdpoRepository;
-    private final SectorRepository sectorRepository;
     private final DemandEventPublisher eventPublisher;
     private final DemandCategoryRepository demandCategoryRepository;
     private final BeneficiaryRepository beneficiaryRepository;
     private final FciRepository fciRepository;
-    private final DemandProductRepository demandProductRepository;
-    private final CommodityRepository commodityRepository;
 
     public DemandServiceImpl(
             DemandRepository demandRepository,
@@ -49,13 +45,10 @@ public class DemandServiceImpl implements DemandService {
         this.supplierRepository = supplierRepository;
         this.districtRepository = districtRepository;
         this.cdpoRepository = cdpoRepository;
-        this.sectorRepository = sectorRepository;
         this.eventPublisher = eventPublisher;
         this.demandCategoryRepository = demandCategoryRepository;
         this.beneficiaryRepository = beneficiaryRepository;
         this.fciRepository = fciRepository;
-        this.demandProductRepository = demandProductRepository;
-        this.commodityRepository = commodityRepository;
     }
 
     @Override
@@ -118,113 +111,61 @@ public class DemandServiceImpl implements DemandService {
             demand.setCdpoDetails(cdpoDetails);
         }
 
-
-        // 🔹 Product + Commodity Quantities
-        // 🔹 Product + Commodity Quantities
+        // 🔹 Product Quantities
         if (dto.getProductQuantities() != null) {
             ProductQuantityRequest pqReq = dto.getProductQuantities();
 
-            // Step 1: Fetch DemandProduct by ID
-            DemandProduct demandProduct = demandProductRepository.findById(pqReq.getDemandProductId())
-                    .orElseThrow(() -> new RuntimeException("DemandProduct not found: " + pqReq.getDemandProductId()));
+//            DemandProduct demandProduct = demandProductRepository.findById(pqReq.getDemandProductId())
+//                    .orElseThrow(() -> new NotFoundException("DemandProduct not found"));
+            DemandProduct demandProduct = DemandProduct.getById(pqReq.getDemandProductId());
 
-            // Step 2: Prepare the list of ProductCommodityQuantity objects
-            Map<Long, Double> commodityQuantities = pqReq.getCommodityQuantities();
+            // link product to demand
+//            demandProduct.setDemand(demand);
 
-            // Step 3: Loop through the commodity quantities and update existing or add new ones
-            for (Map.Entry<Long, Double> entry : commodityQuantities.entrySet()) {
-                Commodity commodity = commodityRepository.findById(entry.getKey())
-                        .orElseThrow(() -> new RuntimeException("Commodity not found: " + entry.getKey()));
+            List<ProductCommodityQuantity> quantities = pqReq.getCommodityQuantities().entrySet().stream()
+                    .map(entry -> {
+                        Long commodityId = entry.getKey();
+                        Double qty = entry.getValue();
 
-                // Check if this commodity already exists in the DemandProduct's productQuantities
-                ProductCommodityQuantity existingPcq = demandProduct.getProductQuantities().stream()
-                        .filter(pcq -> pcq.getCommodity().getId().equals(commodity.getId()))
-                        .findFirst()
-                        .orElse(null);
+//                        Commodity commodity = commodityRepository.findById(commodityId)
+//                                .orElseThrow(() -> new NotFoundException("Commodity not found"));
 
-                if (existingPcq != null) {
-                    // If it exists, update the quantity
-                    existingPcq.setQuantity(entry.getValue());
-                } else {
-                    // If it does not exist, create a new ProductCommodityQuantity
-                    ProductCommodityQuantity newPcq = new ProductCommodityQuantity();
-                    newPcq.setCommodity(commodity);
-                    newPcq.setQuantity(entry.getValue());
-                    newPcq.setDemandProduct(demandProduct);
-                    demandProduct.getProductQuantities().add(newPcq); // Add to existing list
-                }
-            }
+                        Commodity commodity = Commodity.getById(commodityId);
 
-            // Step 4: Remove any orphaned ProductCommodityQuantities (those that are not in the request)
-            demandProduct.getProductQuantities().removeIf(pcq ->
-                    !commodityQuantities.containsKey(pcq.getCommodity().getId())
-                            && pcq.getDemandProduct().equals(demandProduct));
+                        ProductCommodityQuantity pcq = new ProductCommodityQuantity();
+                        pcq.setDemand(demand);
+                        pcq.setDemandProduct(demandProduct.getName());
+                        pcq.setCommodity(commodity.getName());
+                        pcq.setQuantity(qty);
 
-            // Step 5: Persist the updated DemandProduct
-            demand.setDemandProducts(Collections.singletonList(demandProduct));
+                        return pcq;
+                    }).toList();
+
+            demand.setProductQuantities(quantities);
+
+            demand.setDemandProducts((demandProduct.getName()));
+
+            return demandRepository.save(demand);
         }
 
-
-//        // Map suppliers (supplierMappings)
-//        List<SupplierMapping> mappings = dto.getSupplierIds().stream().map(s -> {
-//            SupplierMapping mapping = new SupplierMapping();
-//            mapping.setDemand(demand);
-//
-//            // Fetch the Supplier, District, Cdpo, and Sector by ID
-//            Supplier supplier = supplierRepository.getReferenceById(s.getId());
-//            District district = districtRepository.getReferenceById(s.getDistrictId());
-//
-//            mapping.setSupplier(supplier);
-//            mapping.setDistrict(district);
-//
-//            // Map CDPOs
-//            List<Cdpo> cdpos = s.getCdpoIds().stream()
-//                    .map(cdpoId -> cdpoRepository.getReferenceById(cdpoId))
-//                    .collect(Collectors.toList());
-//            mapping.setCdpos(cdpos);
-//
-//            // Map Sectors
-//            List<Sector> sectors = s.getSectorIds().stream()
-//                    .map(sectorId -> sectorRepository.getReferenceById(sectorId))
-//                    .collect(Collectors.toList());
-//            mapping.setSectors(sectors);
-//
-//            return mapping;
-//        }).collect(Collectors.toList());
-//        demand.setSupplierMappings(mappings);
-//
-//        // Map AWC details
-//        List<DemandAwcDetail> awcDetails = dto.getAwcDetails().stream().map(awcDto -> {
-//            DemandAwcDetail detail = new DemandAwcDetail();
-//            detail.setDemand(demand);
-//
-//            AnganwadiCenter awc = new AnganwadiCenter();
-//            awc.setId(awcDto.getAwcId());
-//            detail.setAnganwadi(awc);
-//
-//            detail.setQuantity(awcDto.getQuantity());
-//            detail.setType(awcDto.getType());
-//            return detail;
-//        }).collect(Collectors.toList());
-//        demand.setAwcDetails(awcDetails);
-
         Demand savedDemand = demandRepository.save(demand);
+
         eventPublisher.publish("NEW_DEMAND:" + savedDemand.getId());
         return savedDemand;
     }
 
-//    @Override
-//    public Demand updateQuantity(Long demandId, Integer newQuantity) {
-//        // Find the demand by ID
-//        Demand demand = demandRepository.findById(demandId)
-//                .orElseThrow(() -> new RuntimeException("Demand not found"));
-//
-//        // Update the quantity
-//        demand.setQuantity(newQuantity);
-//
-//        // Save the updated demand
-//        return demandRepository.save(demand);
-//    }
+    @Override
+    public void updateRejectionReason(Long demandId, String rejectionReason) {
+        // Find the demand by ID
+        Demand demand = demandRepository.findById(demandId)
+                .orElseThrow(() -> new RuntimeException("Demand not found"));
+
+        // Update the rejection reason
+        demand.setRejectionReason(rejectionReason);
+
+        // Save the updated demand
+        demandRepository.save(demand);
+    }
 
 
     @Override
@@ -235,9 +176,10 @@ public class DemandServiceImpl implements DemandService {
     }
 
     @Override
-    public Demand getDemandById(Long id) {
+    public Optional<DemandResponseDTO> getDemandById(Long id) {
         return demandRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Demand not found with id: " + id));
+                .map(this::convertToDTO);
+//                .orElseThrow(() -> new NotFoundException("Demand not found with id: " + id));
     }
 
     @Override
@@ -250,11 +192,32 @@ public class DemandServiceImpl implements DemandService {
 
     @Override
     public Demand updateStatus(Long id, String status) {
-        Demand demand = getDemandById(id);
-        demand.setStatus(status);
-        demand.setUpdatedAt(LocalDateTime.now());
-        return demandRepository.save(demand);
+        // Get the demand object from the repository
+        Optional<DemandResponseDTO> demandOptional = getDemandById(id);
+
+        // Check if the demand is present
+        if (demandOptional.isPresent()) {
+            // Extract the actual DTO
+            DemandResponseDTO demandDTO = demandOptional.get();
+
+            // Map DTO to Demand entity
+            Demand demand = new Demand();
+            demand.setId(demandDTO.getId());
+            demand.setDescription(demandDTO.getDescription());
+            demand.setStatus(status);  // Updating the status
+            demand.setUpdatedAt(LocalDateTime.now());  // Setting the updated time
+
+            // Optionally map other fields from the DTO to the entity
+            // Example: demand.setFromDate(demandDTO.getFromDate()); etc.
+
+            // Save the updated entity
+            return demandRepository.save(demand);
+        } else {
+            // Handle the case when demand is not found
+            throw new RuntimeException("Demand not found with id: " + id);
+        }
     }
+
 
     @Override
     public List<DemandResponseDTO> getDemandsByStatus(String status) {
@@ -301,6 +264,21 @@ public class DemandServiceImpl implements DemandService {
         dto.setSupplierDocs(demand.getSupplierDocs());
         dto.setCreatedAt(demand.getCreatedAt());
         dto.setUpdatedAt(demand.getUpdatedAt());
+
+//        List<ProductQuantityResponse> productQuantityResponses = new ArrayList<>();
+        Map<String, Double> commodityQuantities = new HashMap<>();
+        ProductQuantityResponse productQuantityResponse = new ProductQuantityResponse();
+
+        for (ProductCommodityQuantity productCommodityQuantity: demand.getProductQuantities()) {
+            productQuantityResponse.setProductType(productCommodityQuantity.getDemandProduct());
+//            productQuantityResponses.add(productQuantityResponse);
+            commodityQuantities.put(productCommodityQuantity.getCommodity(),productCommodityQuantity.getQuantity());
+        }
+
+        productQuantityResponse.setCommodityQuantities(commodityQuantities);
+        dto.setProductQuantity(productQuantityResponse);
+
+
 
         // 🔹 demand category
         if (demand.getDemandCategory() != null) {
@@ -357,22 +335,43 @@ public class DemandServiceImpl implements DemandService {
             dto.setCdpoDetails(cdpoDtos);
         }
 
-        // 🔹 product + commodities
-        if (demand.getDemandProducts() != null && !demand.getDemandProducts().isEmpty()) {
-            DemandProduct product = demand.getDemandProducts().get(0); // only one
-            ProductQuantityResponse pqDto = new ProductQuantityResponse();
-            pqDto.setDemandProductId(product.getId());
-            pqDto.setProductType(product.getType());
-
-            Map<String, Double> commodities = product.getProductQuantities().stream()
-                    .collect(Collectors.toMap(
-                            q -> q.getCommodity().getName(),
-                            ProductCommodityQuantity::getQuantity
-                    ));
-            pqDto.setCommodityQuantities(commodities);
-
-            dto.setProductQuantity(pqDto);
+        // 🔹 Check and conditionally set LocalDateTime fields
+        if (demand.getFciAcceptedAt() != null) {
+            dto.setFciAcceptedAt(demand.getFciAcceptedAt());
         }
+        if (demand.getFciRejectedAt() != null) {
+            dto.setFciRejectedAt(demand.getFciRejectedAt());
+        }
+        if (demand.getFciDispatchedAt() != null) {
+            dto.setFciDispatchedAt(demand.getFciDispatchedAt());
+        }
+        if (demand.getSupplierAcceptedAt() != null) {
+            dto.setSupplierAcceptedAt(demand.getSupplierAcceptedAt());
+        }
+        if (demand.getSupplierRejectedAt() != null) {
+            dto.setSupplierRejectedAt(demand.getSupplierRejectedAt());
+        }
+        if (demand.getSupplierSelfDeclaredAt() != null) {
+            dto.setSupplierSelfDeclaredAt(demand.getSupplierSelfDeclaredAt());
+        }
+        if (demand.getSupplierDispatchedAt() != null) {
+            dto.setSupplierDispatchedAt(demand.getSupplierDispatchedAt());
+        }
+        if (demand.getCdpoDispatchedAt() != null) {
+            dto.setCdpoDispatchedAt(demand.getCdpoDispatchedAt());
+        }
+        if (demand.getAwcAcceptedAt() != null) {
+            dto.setAwcAcceptedAt(demand.getAwcAcceptedAt());
+        }
+        if (demand.getAwcDistributedAt() != null) {
+            dto.setAwcDistributedAt(demand.getAwcDistributedAt());
+        }
+
+        // 🔹 Rejection reason (if present)
+        if (demand.getRejectionReason() != null && !demand.getRejectionReason().isEmpty()) {
+            dto.setRejectionReason(demand.getRejectionReason());
+        }
+
 
         return dto;
     }

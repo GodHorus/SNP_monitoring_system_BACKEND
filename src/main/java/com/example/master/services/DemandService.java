@@ -7,15 +7,17 @@ import com.example.master.model.Demand;
 
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DemandService {
     Demand createDemand(DemandDTO dto);
     List<DemandResponseDTO> getAllDemands();
-    Demand getDemandById(Long id);
+    Optional<DemandResponseDTO> getDemandById(Long id);
     void deleteDemand(Long id);
     Demand updateStatus(Long id, String status);
 
-//    Demand updateQuantity(Long demandId, Integer newQuantity);
+    void updateRejectionReason(Long demandId, String rejectionReason);
+
 
     // Additional methods for role-specific queries
     List<DemandResponseDTO> getDemandsByStatus(String status);

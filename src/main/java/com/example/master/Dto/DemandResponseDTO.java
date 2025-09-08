@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 public class DemandResponseDTO {
     private Long id;
     private String description;
@@ -14,6 +15,17 @@ public class DemandResponseDTO {
     private String notes;
     private String fciDocs;
     private String supplierDocs;
+    private LocalDateTime fciAcceptedAt;
+    private LocalDateTime fciRejectedAt;
+    private LocalDateTime fciDispatchedAt;
+    private LocalDateTime supplierAcceptedAt;
+    private LocalDateTime supplierRejectedAt;
+    private LocalDateTime supplierSelfDeclaredAt;
+    private LocalDateTime supplierDispatchedAt;
+    private LocalDateTime cdpoDispatchedAt;
+    private LocalDateTime awcAcceptedAt;
+    private LocalDateTime awcDistributedAt;
+    private String rejectionReason;
 
     private DemandCategoryDTO demandCategory;
     private BeneficiaryDTO beneficiary;
@@ -169,5 +181,93 @@ public class DemandResponseDTO {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getFciAcceptedAt() {
+        return fciAcceptedAt;
+    }
+
+    public void setFciAcceptedAt(LocalDateTime fciAcceptedAt) {
+        this.fciAcceptedAt = fciAcceptedAt;
+    }
+
+    public LocalDateTime getFciRejectedAt() {
+        return fciRejectedAt;
+    }
+
+    public void setFciRejectedAt(LocalDateTime fciRejectedAt) {
+        this.fciRejectedAt = fciRejectedAt;
+    }
+
+    public LocalDateTime getFciDispatchedAt() {
+        return fciDispatchedAt;
+    }
+
+    public void setFciDispatchedAt(LocalDateTime fciDispatchedAt) {
+        this.fciDispatchedAt = fciDispatchedAt;
+    }
+
+    public LocalDateTime getSupplierAcceptedAt() {
+        return supplierAcceptedAt;
+    }
+
+    public void setSupplierAcceptedAt(LocalDateTime supplierAcceptedAt) {
+        this.supplierAcceptedAt = supplierAcceptedAt;
+    }
+
+    public LocalDateTime getSupplierRejectedAt() {
+        return supplierRejectedAt;
+    }
+
+    public void setSupplierRejectedAt(LocalDateTime supplierRejectedAt) {
+        this.supplierRejectedAt = supplierRejectedAt;
+    }
+
+    public LocalDateTime getSupplierSelfDeclaredAt() {
+        return supplierSelfDeclaredAt;
+    }
+
+    public void setSupplierSelfDeclaredAt(LocalDateTime supplierSelfDeclaredAt) {
+        this.supplierSelfDeclaredAt = supplierSelfDeclaredAt;
+    }
+
+    public LocalDateTime getSupplierDispatchedAt() {
+        return supplierDispatchedAt;
+    }
+
+    public void setSupplierDispatchedAt(LocalDateTime supplierDispatchedAt) {
+        this.supplierDispatchedAt = supplierDispatchedAt;
+    }
+
+    public LocalDateTime getCdpoDispatchedAt() {
+        return cdpoDispatchedAt;
+    }
+
+    public void setCdpoDispatchedAt(LocalDateTime cdpoDispatchedAt) {
+        this.cdpoDispatchedAt = cdpoDispatchedAt;
+    }
+
+    public LocalDateTime getAwcAcceptedAt() {
+        return awcAcceptedAt;
+    }
+
+    public void setAwcAcceptedAt(LocalDateTime awcAcceptedAt) {
+        this.awcAcceptedAt = awcAcceptedAt;
+    }
+
+    public LocalDateTime getAwcDistributedAt() {
+        return awcDistributedAt;
+    }
+
+    public void setAwcDistributedAt(LocalDateTime awcDistributedAt) {
+        this.awcDistributedAt = awcDistributedAt;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
     }
 }

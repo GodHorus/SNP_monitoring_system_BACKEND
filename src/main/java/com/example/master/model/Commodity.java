@@ -1,5 +1,6 @@
 package com.example.master.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public class Commodity {
 
     // reverse mapping to quantity
     @OneToMany(mappedBy = "commodity", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("commodity")
     private List<ProductCommodityQuantity> productQuantities;
 
     public Long getId() {

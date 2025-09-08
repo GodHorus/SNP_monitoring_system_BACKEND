@@ -1,6 +1,7 @@
 package com.example.master.controller;
 
 import com.example.master.config.KeycloakUserService;
+import com.example.master.model.PasswordResetRequest;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -51,9 +52,11 @@ public class PasswordController {
     /**
      * Reset password - API-driven (if you don’t want to rely on Keycloak email link)
      */
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String email,
-                                                @RequestParam String newPassword) {
+    @PostMapping("/auth/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetRequest request) {
+        String email = request.getEmail();
+        String newPassword = request.getNewPassword();
+
         UserRepresentation user = keycloakUserService.getUserByEmail(email);
 
         if (user == null) {
@@ -67,4 +70,5 @@ public class PasswordController {
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
     }
+
 }
