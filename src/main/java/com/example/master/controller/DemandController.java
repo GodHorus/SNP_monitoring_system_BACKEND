@@ -1,9 +1,7 @@
 package com.example.master.controller;
 
 import com.example.master.Dto.*;
-//import com.example.master.mapper.DemandMapper;
 import com.example.master.model.Demand;
-import com.example.master.model.DemandProduct;
 import com.example.master.model.ProductCommodityQuantity;
 import com.example.master.services.DemandService;
 import org.springframework.http.ResponseEntity;

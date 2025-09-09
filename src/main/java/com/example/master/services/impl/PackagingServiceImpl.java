@@ -127,10 +127,10 @@ public class PackagingServiceImpl implements PackagingService {
                         ingredientDTO.setId(batch.getIngredient().getId());
                         ingredientDTO.setName(batch.getIngredient().getName());
                         ingredientDTO.setType(batch.getIngredient().getType());
-                        ingredientDTO.setPrice(batch.getIngredient().getPrice());
+//                        ingredientDTO.setPrice(batch.getIngredient().getPrice());
                         ingredientDTO.setQuantity(batch.getIngredient().getQuantity());
                         ingredientDTO.setUnit(batch.getIngredient().getUnit());
-                        ingredientDTO.setVendor(batch.getIngredient().getVendor());
+//                        ingredientDTO.setVendor(batch.getIngredient().getVendor());
                         ingredientDTO.setTotal(batch.getIngredient().getTotal());
                     }
                     batchDTO.setIngredient(ingredientDTO);

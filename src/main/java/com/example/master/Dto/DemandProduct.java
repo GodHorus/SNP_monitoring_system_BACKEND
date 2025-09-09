@@ -1,7 +1,7 @@
 package com.example.master.Dto;
 
 public enum DemandProduct {
-    KHICHIDI(1L, "Khichidi"),
+    KHICHDI(1L, "Khichdi"),
     SUJI_HALWA(2L, "Suji Halwa");
 
     private final Long id;

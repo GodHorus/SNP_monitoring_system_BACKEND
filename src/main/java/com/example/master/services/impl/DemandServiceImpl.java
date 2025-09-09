@@ -3,6 +3,7 @@ package com.example.master.services.impl;
 import com.example.master.Dto.*;
 import com.example.master.Dto.Commodity;
 import com.example.master.Dto.DemandProduct;
+import com.example.master.config.KeycloakUserService;
 import com.example.master.event.DemandEventPublisher;
 import com.example.master.exception.NotFoundException;
 import com.example.master.model.*;
@@ -18,6 +19,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class DemandServiceImpl implements DemandService {
+
+    private final KeycloakUserService keycloakUserService;
 
     private final DemandRepository demandRepository;
     private final SupplierRepository supplierRepository;
@@ -39,7 +42,8 @@ public class DemandServiceImpl implements DemandService {
             FciRepository fciRepository,
             DemandProductRepository demandProductRepository,
             CommodityRepository commodityRepository,
-            DemandEventPublisher eventPublisher
+            DemandEventPublisher eventPublisher,
+            KeycloakUserService keycloakUserService
     ) {
         this.demandRepository = demandRepository;
         this.supplierRepository = supplierRepository;
@@ -49,6 +53,7 @@ public class DemandServiceImpl implements DemandService {
         this.demandCategoryRepository = demandCategoryRepository;
         this.beneficiaryRepository = beneficiaryRepository;
         this.fciRepository = fciRepository;
+        this.keycloakUserService = keycloakUserService;
     }
 
     @Override
@@ -193,22 +198,19 @@ public class DemandServiceImpl implements DemandService {
     @Override
     public Demand updateStatus(Long id, String status) {
         // Get the demand object from the repository
-        Optional<DemandResponseDTO> demandOptional = getDemandById(id);
+        Optional<Demand> demandOptional = demandRepository.findById(id);
 
         // Check if the demand is present
         if (demandOptional.isPresent()) {
-            // Extract the actual DTO
-            DemandResponseDTO demandDTO = demandOptional.get();
+            // Extract the existing demand entity
+            Demand demand = demandOptional.get();
 
-            // Map DTO to Demand entity
-            Demand demand = new Demand();
-            demand.setId(demandDTO.getId());
-            demand.setDescription(demandDTO.getDescription());
-            demand.setStatus(status);  // Updating the status
-            demand.setUpdatedAt(LocalDateTime.now());  // Setting the updated time
+            // Update the status and the updated time
+            demand.setStatus(status);
+            demand.setUpdatedAt(LocalDateTime.now());
 
-            // Optionally map other fields from the DTO to the entity
-            // Example: demand.setFromDate(demandDTO.getFromDate()); etc.
+            // Optionally, you can update other fields here if needed
+            // e.g., demand.setSomeField(newValue);
 
             // Save the updated entity
             return demandRepository.save(demand);
@@ -217,6 +219,7 @@ public class DemandServiceImpl implements DemandService {
             throw new RuntimeException("Demand not found with id: " + id);
         }
     }
+
 
 
     @Override
@@ -232,11 +235,28 @@ public class DemandServiceImpl implements DemandService {
                 .stream().map(this::convertToDTO).toList();
     }
 
+//    @Override
+//    public List<DemandResponseDTO> getAcceptedDemandsForSupplier() {
+//        return demandRepository.findAcceptedDemandsForSupplier()
+//                .stream().map(this::convertToDTO).toList();
+//    }
+
     @Override
     public List<DemandResponseDTO> getAcceptedDemandsForSupplier() {
-        return demandRepository.findAcceptedDemandsForSupplier()
-                .stream().map(this::convertToDTO).toList();
+        // 1. Get current Keycloak userId (UUID)
+        String keycloakUserId = keycloakUserService.getCurrentUserId();
+
+        // 2. Find supplier from DB using that UUID
+        Supplier supplier = supplierRepository.findByKeycloakUserId(keycloakUserId)
+                .orElseThrow(() -> new RuntimeException("Supplier not found for user " + keycloakUserId));
+
+        // 3. Fetch demands by supplier.id
+        return demandRepository.findAcceptedDemandsForSupplier(supplier.getId())
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
+
 
     @Override
     public List<DemandResponseDTO> getManufacturedDemandsForCDPO() {

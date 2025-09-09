@@ -78,12 +78,12 @@ public class BatchServiceImpl implements BatchService {
             ingDto.setId(batch.getIngredient().getId());
             ingDto.setName(batch.getIngredient().getName());
             ingDto.setType(batch.getIngredient().getType());
-            ingDto.setPrice(batch.getIngredient().getPrice());
+//            ingDto.setPrice(batch.getIngredient().getPrice());
             ingDto.setDemandId(batch.getIngredient().getDemand().getId());
             ingDto.setBatchNo(batch.getIngredient().getBatchNo());
             ingDto.setQuantity(batch.getIngredient().getQuantity());
             ingDto.setUnit(batch.getIngredient().getUnit());
-            ingDto.setVendor(batch.getIngredient().getVendor());
+//            ingDto.setVendor(batch.getIngredient().getVendor());
             ingDto.setTotal(batch.getIngredient().getTotal());
             dto.setIngredient(ingDto);
         }

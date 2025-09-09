@@ -10,6 +10,8 @@ import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
@@ -223,6 +225,14 @@ public class KeycloakUserService {
         // Add new role
         RoleRepresentation newRoleRep = realmResource.roles().get(newRole).toRepresentation();
         userResource.roles().realmLevel().add(List.of(newRoleRep));
+    }
+
+    public String getCurrentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            throw new IllegalStateException("No authenticated user found");
+        }
+        return auth.getName(); // usually the Keycloak userId (UUID)
     }
 
 

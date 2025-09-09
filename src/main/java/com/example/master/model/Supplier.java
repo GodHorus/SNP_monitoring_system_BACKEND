@@ -13,12 +13,20 @@ public class Supplier {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column( unique = true)
+    private String email;
+
+    @Column(nullable = true)
+    private String keycloakUserId;  // link with Keycloak
+
     // Constructors
     public Supplier() {}
 
-    public Supplier(Long id, String name) {
+    public Supplier(Long id, String name, String email, String keycloakUserId) {
         this.id = id;
         this.name = name;
+        this.email = email;
+        this.keycloakUserId = keycloakUserId;
     }
 
     // Getters & Setters
@@ -27,4 +35,10 @@ public class Supplier {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getKeycloakUserId() { return keycloakUserId; }
+    public void setKeycloakUserId(String keycloakUserId) { this.keycloakUserId = keycloakUserId; }
 }

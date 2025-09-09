@@ -13,10 +13,10 @@ public class IngredientDetail {
 
     private String type;
     private String name;
-    private BigDecimal price;
+//    private BigDecimal price;
     private BigDecimal quantity;
     private String unit;
-    private String vendor;
+//    private String vendor;
     private BigDecimal total;
 
     private String batchNo;
@@ -69,13 +69,13 @@ public class IngredientDetail {
         this.name = name;
     }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
+//    public BigDecimal getPrice() {
+//        return price;
+//    }
+//
+//    public void setPrice(BigDecimal price) {
+//        this.price = price;
+//    }
 
     public BigDecimal getQuantity() {
         return quantity;
@@ -93,14 +93,14 @@ public class IngredientDetail {
         this.unit = unit;
     }
 
-    public String getVendor() {
-        return vendor;
-    }
-
-    public void setVendor(String vendor) {
-        this.vendor = vendor;
-    }
-
+//    public String getVendor() {
+//        return vendor;
+//    }
+//
+//    public void setVendor(String vendor) {
+//        this.vendor = vendor;
+//    }
+//
     public BigDecimal getTotal() {
         return total;
     }

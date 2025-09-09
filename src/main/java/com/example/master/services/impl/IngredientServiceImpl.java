@@ -54,10 +54,10 @@ public class IngredientServiceImpl implements IngredientService {
         IngredientDetail ingredient = new IngredientDetail();
         ingredient.setType(dto.getType());
         ingredient.setName(dto.getName());
-        ingredient.setPrice(dto.getPrice());
+//        ingredient.setPrice(dto.getPrice());
         ingredient.setQuantity(dto.getQuantity());
         ingredient.setUnit(dto.getUnit());
-        ingredient.setVendor(dto.getVendor());
+//        ingredient.setVendor(dto.getVendor());
         ingredient.setTotal(dto.getTotal());
 
         // Auto-generate batchNo
@@ -107,10 +107,10 @@ public class IngredientServiceImpl implements IngredientService {
             dto.setId(ing.getId());
             dto.setType(ing.getType());
             dto.setName(ing.getName());
-            dto.setPrice(ing.getPrice());
+//            dto.setPrice(ing.getPrice());
             dto.setQuantity(ing.getQuantity());
             dto.setUnit(ing.getUnit());
-            dto.setVendor(ing.getVendor());
+//            dto.setVendor(ing.getVendor());
             dto.setTotal(ing.getTotal());
             dto.setBatchNo(ing.getBatchNo());
             dto.setDemandId(ing.getDemand().getId());
@@ -187,10 +187,10 @@ public class IngredientServiceImpl implements IngredientService {
         dto.setId(ing.getId());
         dto.setType(ing.getType());
         dto.setName(ing.getName());
-        dto.setPrice(ing.getPrice());
+//        dto.setPrice(ing.getPrice());
         dto.setQuantity(ing.getQuantity());
         dto.setUnit(ing.getUnit());
-        dto.setVendor(ing.getVendor());
+//        dto.setVendor(ing.getVendor());
         dto.setTotal(ing.getTotal());
         dto.setBatchNo(ing.getBatchNo());
         dto.setDemandId(ing.getDemand().getId());
@@ -207,10 +207,10 @@ public class IngredientServiceImpl implements IngredientService {
             dto.setId(ing.getId());
             dto.setType(ing.getType());
             dto.setName(ing.getName());
-            dto.setPrice(ing.getPrice());
+//            dto.setPrice(ing.getPrice());
             dto.setQuantity(ing.getQuantity());
             dto.setUnit(ing.getUnit());
-            dto.setVendor(ing.getVendor());
+//            dto.setVendor(ing.getVendor());
             dto.setTotal(ing.getTotal());
             dto.setBatchNo(ing.getBatchNo());
             dto.setDemandId(ing.getDemand().getId());
