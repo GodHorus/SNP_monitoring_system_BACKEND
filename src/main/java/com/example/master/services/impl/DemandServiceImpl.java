@@ -107,6 +107,8 @@ public class DemandServiceImpl implements DemandService {
                 detail.setDemand(demand);
                 detail.setCdpo(cdpoRepository.findById(cdpoDto.getCdpoId())
                         .orElseThrow(() -> new RuntimeException("CDPO not found")));
+                detail.setDistrict(districtRepository.findById(cdpoDto.getDistrictId())
+                        .orElseThrow(() -> new RuntimeException("District not found")));
                 detail.setQuantity(cdpoDto.getQuantity());
                 detail.setQuantityUnits(cdpoDto.getQuantityUnits());
                 detail.setBeneficiaryCount(cdpoDto.getBeneficiaryCount());
@@ -325,12 +327,12 @@ public class DemandServiceImpl implements DemandService {
         }
 
         // 🔹 district
-        if (demand.getDistrict() != null) {
-            DistrictDTO dist = new DistrictDTO();
-            dist.setId(demand.getDistrict().getId());
-            dist.setDistrictName(demand.getDistrict().getDistrictName());
-            dto.setDistrict(dist);
-        }
+//        if (demand.getDistrict() != null) {
+//            DistrictDTO dist = new DistrictDTO();
+//            dist.setId(demand.getDistrict().getId());
+//            dist.setDistrictName(demand.getDistrict().getDistrictName());
+//            dto.setDistrict(dist);
+//        }
 
         // 🔹 fci
         if (demand.getFci() != null) {
@@ -347,6 +349,8 @@ public class DemandServiceImpl implements DemandService {
                 cdpoDto.setId(cdpo.getId());
                 cdpoDto.setCdpoId(cdpo.getCdpo().getId());
                 cdpoDto.setCdpoName(cdpo.getCdpo().getCdpoName());
+                cdpoDto.setDistrictId(cdpo.getDistrict().getId());
+                cdpoDto.setDistrictName(cdpo.getDistrict().getDistrictName());
                 cdpoDto.setQuantity(cdpo.getQuantity());
                 cdpoDto.setQuantityUnits(cdpo.getQuantityUnits());
                 cdpoDto.setBeneficiaryCount(cdpo.getBeneficiaryCount());

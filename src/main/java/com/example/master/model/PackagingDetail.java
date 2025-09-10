@@ -2,6 +2,9 @@ package com.example.master.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "packaging_details")
 public class PackagingDetail {
@@ -21,17 +24,27 @@ public class PackagingDetail {
     @JoinColumn(name = "batch_id", nullable = false)
     private BatchDetail batchDetail;
 
-    @OneToOne(mappedBy = "packagingDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private DispatchDetail dispatchDetail;
+//    @OneToOne(mappedBy = "packagingDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private DispatchDetail dispatchDetail;
 
-    public DispatchDetail getDispatchDetail() {
-        return dispatchDetail;
+    @OneToMany(mappedBy = "packagingDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DispatchDetail> dispatchDetails = new ArrayList<>();
+
+//    public DispatchDetail getDispatchDetail() {
+//        return dispatchDetail;
+//    }
+//
+//    public void setDispatchDetail(DispatchDetail dispatchDetail) {
+//        this.dispatchDetail = dispatchDetail;
+//    }
+
+    public List<DispatchDetail> getDispatchDetails() {
+        return dispatchDetails;
     }
 
-    public void setDispatchDetail(DispatchDetail dispatchDetail) {
-        this.dispatchDetail = dispatchDetail;
+    public void setDispatchDetails(List<DispatchDetail> dispatchDetails) {
+        this.dispatchDetails = dispatchDetails;
     }
-
     // Getters & Setters
     public Long getId() {
         return id;

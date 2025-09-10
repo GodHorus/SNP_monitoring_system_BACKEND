@@ -3,6 +3,7 @@ package com.example.master.Dto;
 public class DemandCdpoDetailRequestDTO {
     private Long demandId;
     private Long cdpoId;
+    private Long districtId;
     private Integer quantity;
     private String quantityUnits;
     private Integer beneficiaryCount;
@@ -22,4 +23,12 @@ public class DemandCdpoDetailRequestDTO {
 
     public Integer getBeneficiaryCount() { return beneficiaryCount; }
     public void setBeneficiaryCount(Integer beneficiaryCount) { this.beneficiaryCount = beneficiaryCount; }
+
+    public Long getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Long districtId) {
+        this.districtId = districtId;
+    }
 }

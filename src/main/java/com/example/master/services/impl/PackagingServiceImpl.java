@@ -96,48 +96,48 @@ public class PackagingServiceImpl implements PackagingService {
                 BatchDetailDTO batchDTO = new BatchDetailDTO();
                 batchDTO.setId(batch.getId());
 
-                // Check if ingredient is null
-                if (batch.getIngredient() != null) {
-                    batchDTO.setIngredientId(batch.getIngredient().getId());
-                    batchDTO.setQrCode(batch.getQrCode());
-
-                    // Check if labReport is null
-                    if (batch.getLabReport() != null) {
-                        batchDTO.setLabReportId(batch.getLabReport().getId());
-
-                        LabReportDTO labDTO = new LabReportDTO();
-                        labDTO.setId(batch.getLabReport().getId());
-                        labDTO.setLabName(batch.getLabReport().getLabName());
-                        labDTO.setManufacturingDate(batch.getLabReport().getManufacturingDate());
-                        labDTO.setExpiryDate(batch.getLabReport().getExpiryDate());
-                        labDTO.setTestDate(batch.getLabReport().getTestDate());
-                        labDTO.setStatus(batch.getLabReport().getStatus());
-                        labDTO.setRemarks(batch.getLabReport().getRemarks());
-                        labDTO.setFilePath(batch.getLabReport().getFilePath());
-
-                        batchDTO.setLabReport(labDTO);
-                    } else {
-                        // Optionally set null or empty LabReportDTO if batch.getLabReport() is null
-                        batchDTO.setLabReport(new LabReportDTO());
-                    }
-
-                    // Map ingredient if not null
-                    IngredientDetailDTO ingredientDTO = new IngredientDetailDTO();
-                    if (batch.getIngredient() != null) {
-                        ingredientDTO.setId(batch.getIngredient().getId());
-                        ingredientDTO.setName(batch.getIngredient().getName());
-                        ingredientDTO.setType(batch.getIngredient().getType());
-//                        ingredientDTO.setPrice(batch.getIngredient().getPrice());
-                        ingredientDTO.setQuantity(batch.getIngredient().getQuantity());
-                        ingredientDTO.setUnit(batch.getIngredient().getUnit());
-//                        ingredientDTO.setVendor(batch.getIngredient().getVendor());
-                        ingredientDTO.setTotal(batch.getIngredient().getTotal());
-                    }
-                    batchDTO.setIngredient(ingredientDTO);
-                } else {
-                    // Optionally set null or empty BatchDetailDTO if packaging.getBatchDetail() is null
-                    batchDTO.setIngredient(new IngredientDetailDTO());
-                }
+//                // Check if ingredient is null
+//                if (batch.getIngredient() != null) {
+//                    batchDTO.setIngredientId(batch.getIngredient().getId());
+//                    batchDTO.setQrCode(batch.getQrCode());
+//
+//                    // Check if labReport is null
+//                    if (batch.getLabReport() != null) {
+//                        batchDTO.setLabReportId(batch.getLabReport().getId());
+//
+//                        LabReportDTO labDTO = new LabReportDTO();
+//                        labDTO.setId(batch.getLabReport().getId());
+//                        labDTO.setLabName(batch.getLabReport().getLabName());
+//                        labDTO.setManufacturingDate(batch.getLabReport().getManufacturingDate());
+//                        labDTO.setExpiryDate(batch.getLabReport().getExpiryDate());
+//                        labDTO.setTestDate(batch.getLabReport().getTestDate());
+//                        labDTO.setStatus(batch.getLabReport().getStatus());
+//                        labDTO.setRemarks(batch.getLabReport().getRemarks());
+//                        labDTO.setFilePath(batch.getLabReport().getFilePath());
+//
+//                        batchDTO.setLabReport(labDTO);
+//                    } else {
+//                        // Optionally set null or empty LabReportDTO if batch.getLabReport() is null
+//                        batchDTO.setLabReport(new LabReportDTO());
+//                    }
+//
+//                    // Map ingredient if not null
+//                    IngredientDetailDTO ingredientDTO = new IngredientDetailDTO();
+//                    if (batch.getIngredient() != null) {
+//                        ingredientDTO.setId(batch.getIngredient().getId());
+//                        ingredientDTO.setName(batch.getIngredient().getName());
+//                        ingredientDTO.setType(batch.getIngredient().getType());
+////                        ingredientDTO.setPrice(batch.getIngredient().getPrice());
+//                        ingredientDTO.setQuantity(batch.getIngredient().getQuantity());
+//                        ingredientDTO.setUnit(batch.getIngredient().getUnit());
+////                        ingredientDTO.setVendor(batch.getIngredient().getVendor());
+//                        ingredientDTO.setTotal(batch.getIngredient().getTotal());
+//                    }
+//                    batchDTO.setIngredient(ingredientDTO);
+//                } else {
+//                    // Optionally set null or empty BatchDetailDTO if packaging.getBatchDetail() is null
+//                    batchDTO.setIngredient(new IngredientDetailDTO());
+//                }
 
                 dto.setBatchDetailDTO(batchDTO);
             }

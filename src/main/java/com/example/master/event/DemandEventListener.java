@@ -9,6 +9,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class DemandEventListener {
@@ -67,21 +68,16 @@ public class DemandEventListener {
                 keycloakUserService.getUserEmailsByRole("SUPPLIER")
                         .forEach(mail -> sendRoleBasedMail("SUPPLIER", mail, status, dto));
             }
-            case "FCI_REJECTED" ->
-                    keycloakUserService.getUserEmailsByRole("DWCD")
-                            .forEach(mail -> sendRoleBasedMail("DWCD", mail, status, dto));
-            case "SUPPLIER_ACCEPTED" ->
-                    keycloakUserService.getUserEmailsByRole("DWCD")
-                            .forEach(mail -> sendRoleBasedMail("DWCD", mail, status, dto));
-            case "SUPPLIER_REJECTED" ->
-                    keycloakUserService.getUserEmailsByRole("DWCD")
-                            .forEach(mail -> sendRoleBasedMail("DWCD", mail, status, dto));
-            case "CDPO_DISPATCHED" ->
-                    keycloakUserService.getUserEmailsByRole("AWC")
-                            .forEach(mail -> sendRoleBasedMail("AWC", mail, status, dto));
-            case "AWC_ACCEPTED" ->
-                    keycloakUserService.getUserEmailsByRole("DWCD")
-                            .forEach(mail -> sendRoleBasedMail("DWCD", mail, status, dto));
+            case "FCI_REJECTED" -> keycloakUserService.getUserEmailsByRole("DWCD")
+                    .forEach(mail -> sendRoleBasedMail("DWCD", mail, status, dto));
+            case "SUPPLIER_ACCEPTED" -> keycloakUserService.getUserEmailsByRole("DWCD")
+                    .forEach(mail -> sendRoleBasedMail("DWCD", mail, status, dto));
+            case "SUPPLIER_REJECTED" -> keycloakUserService.getUserEmailsByRole("DWCD")
+                    .forEach(mail -> sendRoleBasedMail("DWCD", mail, status, dto));
+            case "CDPO_DISPATCHED" -> keycloakUserService.getUserEmailsByRole("AWC")
+                    .forEach(mail -> sendRoleBasedMail("AWC", mail, status, dto));
+            case "AWC_ACCEPTED" -> keycloakUserService.getUserEmailsByRole("DWCD")
+                    .forEach(mail -> sendRoleBasedMail("DWCD", mail, status, dto));
         }
     }
 
@@ -93,29 +89,33 @@ public class DemandEventListener {
             case "SUPPLIER" -> {
                 subject = "Request for Supply of " + dto.getProductQuantity().getProductType() + " for ICDS Projects";
                 body = String.format("""
-                        Dear %s,
-
-                        We request the supply of %s under the Supplementary Nutrition Programme (SNP)
-                        for beneficiaries: %s in %s district.
-
-                        Demand Details:
-                        • Product: %s
-                        • Duration: %s to %s (%d days)
-                        • Quantity Required (per CDPO):
-                          %s
-                        • Notes: %s
-
-                        Regards,
-                        DWCD Office
-                        """,
+                                Dear %s,
+                                
+                                We request the supply of %s under the Supplementary Nutrition Programme (SNP)
+                                for beneficiaries: %s in %s district(s).
+                                
+                                Demand Details:
+                                • Product: %s
+                                • Duration: %s to %s (%d days)
+                                • Quantity Required (per CDPO):
+                                  %s
+                                • Notes: %s
+                                
+                                Regards,
+                                DWCD Office
+                                """,
                         dto.getSupplier() != null ? dto.getSupplier().getName() : "Supplier",
                         dto.getProductQuantity().getProductType(),
                         dto.getBeneficiary().getBeneficiaryName(),
-                        dto.getDistrict().getDistrictName(),
+                        dto.getCdpoDetails().stream()
+                                .map(cdpo -> cdpo.getDistrictName())
+                                .distinct() // avoid duplicates
+                                .collect(Collectors.joining(", ")),   // 🔹 all persisted districts
                         dto.getProductQuantity().getProductType(),
                         dto.getFromDate(), dto.getToDate(), dto.getTotalDays(),
                         dto.getCdpoDetails().stream()
-                                .map(cdpo -> cdpo.getCdpoName() + ": " + cdpo.getQuantity() + " " + cdpo.getQuantityUnits())
+                                .map(cdpo -> cdpo.getCdpoName() + ": " + cdpo.getQuantity() + " " + cdpo.getQuantityUnits()
+                                        + " (" + cdpo.getDistrictName() + ")") // 🔹 show district per CDPO
                                 .reduce((a, b) -> a + "\n  " + b).orElse("N/A"),
                         dto.getNotes()
                 );
@@ -123,69 +123,77 @@ public class DemandEventListener {
             case "FCI" -> {
                 subject = "Request for Supply of Fortified Rice for SNP Production";
                 body = String.format("""
-                        Dear Sir/Madam,
-
-                        Please provide fortified rice for SNP demand (ID: %d) for beneficiaries: %s.
-
-                        Manufacturer: %s
-                        District: %s
-
-                        Commodity Requirement:
-                        %s
-
-                        Regards,
-                        DWCD Office
-                        """,
+                                Dear Sir/Madam,
+                                
+                                Please provide fortified rice for SNP demand (ID: %d) for beneficiaries: %s.
+                                
+                                Manufacturer: %s
+                                District(s): %s
+                                
+                                Commodity Requirement:
+                                %s
+                                
+                                Regards,
+                                DWCD Office
+                                """,
                         dto.getId(),
                         dto.getBeneficiary().getBeneficiaryName(),
                         dto.getSupplier().getName(),
-                        dto.getDistrict().getDistrictName(),
+                        dto.getCdpoDetails().stream()
+                                .map(cdpo -> cdpo.getDistrictName())
+                                .distinct()
+                                .collect(Collectors.joining(", ")),
                         dto.getProductQuantity().getCommodityQuantities().entrySet().stream()
                                 .map(e -> e.getKey() + " → " + e.getValue() + " Kg")
                                 .reduce((a, b) -> a + "\n" + b).orElse("N/A")
                 );
             }
+
             case "DWCD", "CDPO", "DSWO", "DC" -> {
                 subject = "Intimation of SNP Supply Initiation - Demand " + dto.getId();
                 body = String.format("""
-                        Dear Sir/Madam,
-
-                        SNP supply has been initiated for beneficiaries: %s.
-
-                        Supply Details:
-                        • Total beneficiaries (from CDPOs): %d
-                        • Feeding Days: %d
-                        • Product: %s
-                        • Supplier: %s
-                        • District: %s
-
-                        Kindly ensure monitoring and smooth implementation.
-
-                        Regards,
-                        DWCD Office
-                        """,
+                                Dear Sir/Madam,
+                                
+                                SNP supply has been initiated for beneficiaries: %s.
+                                
+                                Supply Details:
+                                • Total beneficiaries (from CDPOs): %d
+                                • Feeding Days: %d
+                                • Product: %s
+                                • Supplier: %s
+                                • District(s): %s
+                                
+                                Kindly ensure monitoring and smooth implementation.
+                                
+                                Regards,
+                                DWCD Office
+                                """,
                         dto.getBeneficiary().getBeneficiaryName(),
                         dto.getCdpoDetails().stream().mapToInt(c -> c.getBeneficiaryCount()).sum(),
                         dto.getTotalDays(),
                         dto.getProductQuantity().getProductType(),
                         dto.getSupplier().getName(),
-                        dto.getDistrict().getDistrictName()
+                        dto.getCdpoDetails().stream()
+                                .map(cdpo -> cdpo.getDistrictName())
+                                .distinct()
+                                .collect(Collectors.joining(", "))
                 );
             }
+
             case "AWC" -> {
                 subject = "CDPO Dispatched Items for SNP Distribution - Demand " + dto.getId();
                 body = String.format("""
-                        Dear Anganwadi Worker,
-
-                        CDPO has dispatched items for demand %d (%s).
-                        Product: %s
-                        Beneficiaries: %s
-
-                        Please ensure timely distribution.
-
-                        Regards,
-                        CDPO/DWCD Office
-                        """,
+                                Dear Anganwadi Worker,
+                                
+                                CDPO has dispatched items for demand %d (%s).
+                                Product: %s
+                                Beneficiaries: %s
+                                
+                                Please ensure timely distribution.
+                                
+                                Regards,
+                                CDPO/DWCD Office
+                                """,
                         dto.getId(),
                         dto.getDescription(),
                         dto.getProductQuantity().getProductType(),

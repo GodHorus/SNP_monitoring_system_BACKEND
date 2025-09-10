@@ -1,5 +1,7 @@
 package com.example.master.Dto;
 
+import java.util.List;
+
 public class PackagingDetailDTO {
     private Long id;
 //    private Double availableStock;
@@ -10,6 +12,17 @@ public class PackagingDetailDTO {
     private Long batchId;
 
     private BatchDetailDTO batchDetailDTO;
+
+    private List<DispatchDetailDTO> dispatchDetailDTOs;
+
+    // Getters and Setters
+    public List<DispatchDetailDTO> getDispatchDetailDTOs() {
+        return dispatchDetailDTOs;
+    }
+
+    public void setDispatchDetailDTOs(List<DispatchDetailDTO> dispatchDetailDTOs) {
+        this.dispatchDetailDTOs = dispatchDetailDTOs;
+    }
 
     public BatchDetailDTO getBatchDetailDTO() {
         return batchDetailDTO;

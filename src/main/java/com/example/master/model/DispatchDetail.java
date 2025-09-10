@@ -17,7 +17,11 @@ public class DispatchDetail {
     private String qrCode;
 
     // Relation with PackagingDetail
-    @OneToOne(fetch = FetchType.LAZY)
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "packaging_id", nullable = false)
+//    private PackagingDetail packagingDetail;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "packaging_id", nullable = false)
     private PackagingDetail packagingDetail;
 

@@ -5,6 +5,9 @@ public class DemandCdpoDetailResponseDTO {
     private Long demandId;
     private Long cdpoId;
     private String cdpoName;
+
+    private Long districtId;
+    private String districtName;
     private Integer quantity;
     private String quantityUnits;
     private Integer beneficiaryCount;
@@ -30,4 +33,20 @@ public class DemandCdpoDetailResponseDTO {
 
     public Integer getBeneficiaryCount() { return beneficiaryCount; }
     public void setBeneficiaryCount(Integer beneficiaryCount) { this.beneficiaryCount = beneficiaryCount; }
+
+    public Long getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(Long districtId) {
+        this.districtId = districtId;
+    }
+
+    public String getDistrictName() {
+        return districtName;
+    }
+
+    public void setDistrictName(String districtName) {
+        this.districtName = districtName;
+    }
 }

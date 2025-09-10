@@ -19,6 +19,8 @@ public interface IngredientService {
     IngredientDetailDTO getIngredientById(Long id);
 
     LabReportDTO saveLabReport(LabReportDTO dto);
+//    LabReportDTO getLabReportByIngredientId(Long ingredientId);
+
     LabReportDTO getLabReportByIngredientId(Long ingredientId);
 
     List<IngredientDetailDTO> getIngredientsByDemandId(Long demandId);

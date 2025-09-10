@@ -10,6 +10,8 @@ public class AcceptDemandDTO {
     private Integer receivedPackets;
     private String remarks;
 
+    private String qrCode;
+
 //    private DispatchDetail dispatch;
 
 //    public DispatchDetail getDispatch() {
@@ -38,4 +40,12 @@ public class AcceptDemandDTO {
 
     public String getRemarks() { return remarks; }
     public void setRemarks(String remarks) { this.remarks = remarks; }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
+    }
 }

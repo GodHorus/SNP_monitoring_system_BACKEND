@@ -1,132 +1,72 @@
 package com.example.master.Dto;
-import java.math.BigDecimal;
 
+import java.math.BigDecimal;
+import java.util.List;
 
 public class IngredientDetailDTO {
     private Long id;
     private String type;
     private String name;
-//    private BigDecimal price;
     private BigDecimal quantity;
     private String unit;
-//    private String vendor;
     private BigDecimal total;
     private String batchNo;
     private Long demandId;
+    private Long batchId; // ✅ direct link to batch
 
     private BatchDetailDTO batchDetailDTO;
-    private PackagingDetailDTO packagingDetailDTO;
     private DispatchDetailDTO dispatchDetailDTO;
     private LabReportDTO labReportDTO;
-    public LabReportDTO getLabReportDTO() {
-        return labReportDTO;
+
+    // ✅ List of PackagingDetails instead of single packagingDetailDTO
+    private List<PackagingDetailDTO> packagingDetailDTOs;
+
+    // Getters and Setters
+    public List<PackagingDetailDTO> getPackagingDetailDTOs() {
+        return packagingDetailDTOs;
     }
 
-    public void setLabReportDTO(LabReportDTO labReportDTO) {
-        this.labReportDTO = labReportDTO;
+    public void setPackagingDetailDTOs(List<PackagingDetailDTO> packagingDetailDTOs) {
+        this.packagingDetailDTOs = packagingDetailDTOs;
     }
 
-    public BatchDetailDTO getBatchDetailDTO() {
-        return batchDetailDTO;
-    }
+    // --- Getters & Setters ---
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setBatchDetailDTO(BatchDetailDTO batchDetailDTO) {
-        this.batchDetailDTO = batchDetailDTO;
-    }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
-    public PackagingDetailDTO getPackagingDetailDTO() {
-        return packagingDetailDTO;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setPackagingDetailDTO(PackagingDetailDTO packagingDetailDTO) {
-        this.packagingDetailDTO = packagingDetailDTO;
-    }
+    public BigDecimal getQuantity() { return quantity; }
+    public void setQuantity(BigDecimal quantity) { this.quantity = quantity; }
 
-    public DispatchDetailDTO getDispatchDetailDTO() {
-        return dispatchDetailDTO;
-    }
+    public String getUnit() { return unit; }
+    public void setUnit(String unit) { this.unit = unit; }
 
-    public void setDispatchDetailDTO(DispatchDetailDTO dispatchDetailDTO) {
-        this.dispatchDetailDTO = dispatchDetailDTO;
-    }
+    public BigDecimal getTotal() { return total; }
+    public void setTotal(BigDecimal total) { this.total = total; }
 
-    public Long getId() {
-        return id;
-    }
+    public String getBatchNo() { return batchNo; }
+    public void setBatchNo(String batchNo) { this.batchNo = batchNo; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getDemandId() { return demandId; }
+    public void setDemandId(Long demandId) { this.demandId = demandId; }
 
-    public String getType() {
-        return type;
-    }
+    public Long getBatchId() { return batchId; }
+    public void setBatchId(Long batchId) { this.batchId = batchId; }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+    public BatchDetailDTO getBatchDetailDTO() { return batchDetailDTO; }
+    public void setBatchDetailDTO(BatchDetailDTO batchDetailDTO) { this.batchDetailDTO = batchDetailDTO; }
 
-    public String getName() {
-        return name;
-    }
+//    public PackagingDetailDTO getPackagingDetailDTO() { return packagingDetailDTO; }
+//    public void setPackagingDetailDTO(PackagingDetailDTO packagingDetailDTO) { this.packagingDetailDTO = packagingDetailDTO; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public DispatchDetailDTO getDispatchDetailDTO() { return dispatchDetailDTO; }
+    public void setDispatchDetailDTO(DispatchDetailDTO dispatchDetailDTO) { this.dispatchDetailDTO = dispatchDetailDTO; }
 
-//    public BigDecimal getPrice() {
-//        return price;
-//    }
-//
-//    public void setPrice(BigDecimal price) {
-//        this.price = price;
-//    }
-
-    public BigDecimal getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(BigDecimal quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
-//    public String getVendor() {
-//        return vendor;
-//    }
-//
-//    public void setVendor(String vendor) {
-//        this.vendor = vendor;
-//    }
-
-    public BigDecimal getTotal() {
-        return total;
-    }
-
-    public void setTotal(BigDecimal total) {
-        this.total = total;
-    }
-
-    public String getBatchNo() {
-        return batchNo;
-    }
-
-    public void setBatchNo(String batchNo) {
-        this.batchNo = batchNo;
-    }
-
-    public Long getDemandId() {
-        return demandId;
-    }
-
-    public void setDemandId(Long demandId) {
-        this.demandId = demandId;
-    }
+    public LabReportDTO getLabReportDTO() { return labReportDTO; }
+    public void setLabReportDTO(LabReportDTO labReportDTO) { this.labReportDTO = labReportDTO; }
 }

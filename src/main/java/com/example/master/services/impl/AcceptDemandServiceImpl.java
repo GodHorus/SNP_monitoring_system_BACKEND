@@ -51,6 +51,7 @@ public class AcceptDemandServiceImpl implements AcceptDemandService {
             acceptDemand.setDispatchDetail(dispatchDetail);
             acceptDemand.setReceivedPackets(dto.getReceivedPackets());
             acceptDemand.setRemarks(dto.getRemarks());
+            acceptDemand.setQrCode(dto.getQrCode());
 
             savedDemands.add(acceptDemandRepository.save(acceptDemand));
         }
@@ -70,6 +71,7 @@ public class AcceptDemandServiceImpl implements AcceptDemandService {
             dto.setDispatchId(entity.getDispatchDetail().getId());
             dto.setReceivedPackets(entity.getReceivedPackets());
             dto.setRemarks(entity.getRemarks());
+            dto.setQrCode(entity.getQrCode());
             return dto;
         }).collect(Collectors.toList());
     }

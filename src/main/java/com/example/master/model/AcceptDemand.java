@@ -13,10 +13,11 @@ public class AcceptDemand {
     private Integer receivedPackets;   // NEW field
     private String remarks;            // NEW field
 
-    // Mapping with DispatchDetail (lotNo, cdpo, packets, qrCode come from here)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dispatch_id", nullable = false)
     private DispatchDetail dispatchDetail;
+
+    private String qrCode;
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -30,4 +31,12 @@ public class AcceptDemand {
 
     public DispatchDetail getDispatchDetail() { return dispatchDetail; }
     public void setDispatchDetail(DispatchDetail dispatchDetail) { this.dispatchDetail = dispatchDetail; }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
+    }
 }

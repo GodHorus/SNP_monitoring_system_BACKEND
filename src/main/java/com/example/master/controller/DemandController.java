@@ -96,12 +96,12 @@ public class DemandController {
         }
 
         // 🔹 district
-        if (demand.getDistrict() != null) {
-            DistrictDTO dist = new DistrictDTO();
-            dist.setId(demand.getDistrict().getId());
-            dist.setDistrictName(demand.getDistrict().getDistrictName());
-            dto.setDistrict(dist);
-        }
+//        if (demand.getDistrict() != null) {
+//            DistrictDTO dist = new DistrictDTO();
+//            dist.setId(demand.getDistrict().getId());
+//            dist.setDistrictName(demand.getDistrict().getDistrictName());
+//            dto.setDistrict(dist);
+//        }
 
         // 🔹 fci
         if (demand.getFci() != null) {
@@ -118,6 +118,8 @@ public class DemandController {
                 cdpoDto.setId(cdpo.getId());
                 cdpoDto.setCdpoId(cdpo.getCdpo().getId());
                 cdpoDto.setCdpoName(cdpo.getCdpo().getCdpoName());
+                cdpoDto.setDistrictId(cdpo.getDistrict().getId());
+                cdpoDto.setDistrictName(cdpo.getDistrict().getDistrictName());
                 cdpoDto.setQuantity(cdpo.getQuantity());
                 cdpoDto.setQuantityUnits(cdpo.getQuantityUnits());
                 cdpoDto.setBeneficiaryCount(cdpo.getBeneficiaryCount());

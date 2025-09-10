@@ -21,6 +21,10 @@ public class DemandCdpoDetail {
     @JoinColumn(name = "cdpo_id", nullable = false)
     private Cdpo cdpo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "district_id", nullable = false)
+    private District district;
+
     private Integer Quantity;
 
     private String quantityUnits;
@@ -73,5 +77,13 @@ public class DemandCdpoDetail {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public District getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(District district) {
+        this.district = district;
     }
 }

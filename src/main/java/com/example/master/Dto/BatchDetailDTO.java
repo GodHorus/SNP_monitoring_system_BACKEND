@@ -1,21 +1,33 @@
 package com.example.master.Dto;
 
+import java.util.List;
+
 public class BatchDetailDTO {
     private Long id;
-    private Long ingredientId;
     private String qrCode;
     private Long labReportId;
 
-    // Nested DTOs for response
-    private IngredientDetailDTO ingredient;
+    private Long totalQuantity;
+
+    // ✅ Instead of single ingredientId → list of ingredients
+    private List<IngredientDetailDTO> ingredients;
     private LabReportDTO labReport;
 
+    private String batchNo;
+
     // --- Getters & Setters ---
+
+
+    public Long getTotalQuantity() {
+        return totalQuantity;
+    }
+
+    public void setTotalQuantity(Long totalQuantity) {
+        this.totalQuantity = totalQuantity;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
-    public Long getIngredientId() { return ingredientId; }
-    public void setIngredientId(Long ingredientId) { this.ingredientId = ingredientId; }
 
     public String getQrCode() { return qrCode; }
     public void setQrCode(String qrCode) { this.qrCode = qrCode; }
@@ -23,9 +35,17 @@ public class BatchDetailDTO {
     public Long getLabReportId() { return labReportId; }
     public void setLabReportId(Long labReportId) { this.labReportId = labReportId; }
 
-    public IngredientDetailDTO getIngredient() { return ingredient; }
-    public void setIngredient(IngredientDetailDTO ingredient) { this.ingredient = ingredient; }
+    public List<IngredientDetailDTO> getIngredients() { return ingredients; }
+    public void setIngredients(List<IngredientDetailDTO> ingredients) { this.ingredients = ingredients; }
 
     public LabReportDTO getLabReport() { return labReport; }
     public void setLabReport(LabReportDTO labReport) { this.labReport = labReport; }
+
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
+    }
 }

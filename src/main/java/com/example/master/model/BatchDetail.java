@@ -4,8 +4,8 @@ import com.example.master.model.IngredientDetail;
 import com.example.master.model.LabReport;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @Table(name = "batch_details")
 public class BatchDetail {
@@ -14,20 +14,62 @@ public class BatchDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //  Relation with IngredientDetail (foreign key)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ingredient_id", nullable = false)
-    private IngredientDetail ingredient;
+    @OneToMany(mappedBy = "batchDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IngredientDetail> ingredients = new ArrayList<>();
 
     private String qrCode;
 
-    //  Relation with LabReport
+    private Long totalQuantity;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "lab_report_id")
     private LabReport labReport;
 
     @OneToMany(mappedBy = "batchDetail", cascade = CascadeType.ALL)
-    private List<PackagingDetail> packagingDetails;
+    private List<PackagingDetail> packagingDetails = new ArrayList<>();
+
+    // --- getters/setters ---
+
+
+    public Long getTotalQuantity() {
+        return totalQuantity;
+    }
+
+    public void setTotalQuantity(Long totalQuantity) {
+        this.totalQuantity = totalQuantity;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<IngredientDetail> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<IngredientDetail> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
+    }
+
+    public LabReport getLabReport() {
+        return labReport;
+    }
+
+    public void setLabReport(LabReport labReport) {
+        this.labReport = labReport;
+    }
 
     public List<PackagingDetail> getPackagingDetails() {
         return packagingDetails;
@@ -36,18 +78,4 @@ public class BatchDetail {
     public void setPackagingDetails(List<PackagingDetail> packagingDetails) {
         this.packagingDetails = packagingDetails;
     }
-
-    // --- Getters & Setters ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public IngredientDetail getIngredient() { return ingredient; }
-    public void setIngredient(IngredientDetail ingredient) { this.ingredient = ingredient; }
-
-    public String getQrCode() { return qrCode; }
-    public void setQrCode(String qrCode) { this.qrCode = qrCode; }
-
-    public LabReport getLabReport() { return labReport; }
-    public void setLabReport(LabReport labReport) { this.labReport = labReport; }
-
 }

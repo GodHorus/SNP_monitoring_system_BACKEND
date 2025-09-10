@@ -30,7 +30,7 @@ public class DemandResponseDTO {
     private DemandCategoryDTO demandCategory;
     private BeneficiaryDTO beneficiary;
     private SupplierDTO supplier;
-    private DistrictDTO district;
+//    private DistrictDTO district;
     private FciDTO fci;
 
     private List<DemandCdpoDetailResponseDTO> cdpoDetails;
@@ -135,13 +135,13 @@ public class DemandResponseDTO {
         this.supplier = supplier;
     }
 
-    public DistrictDTO getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(DistrictDTO district) {
-        this.district = district;
-    }
+//    public DistrictDTO getDistrict() {
+//        return district;
+//    }
+//
+//    public void setDistrict(DistrictDTO district) {
+//        this.district = district;
+//    }
 
     public FciDTO getFci() {
         return fci;

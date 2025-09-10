@@ -50,37 +50,90 @@ public class IngredientServiceImpl implements IngredientService {
         Demand demand = demandRepo.findById(dto.getDemandId())
                 .orElseThrow(() -> new RuntimeException("Demand not found"));
 
-        // Save Ingredient
-        IngredientDetail ingredient = new IngredientDetail();
+        IngredientDetail ingredient = dto.getId() != null ?
+                ingredientRepo.findById(dto.getId()).orElse(new IngredientDetail()) :
+                new IngredientDetail();
+
         ingredient.setType(dto.getType());
         ingredient.setName(dto.getName());
-//        ingredient.setPrice(dto.getPrice());
         ingredient.setQuantity(dto.getQuantity());
         ingredient.setUnit(dto.getUnit());
-//        ingredient.setVendor(dto.getVendor());
-        ingredient.setTotal(dto.getTotal());
-
-        // Auto-generate batchNo
-        String batchNo = generateNextBatchNo();
-        ingredient.setBatchNo(batchNo);
         ingredient.setDemand(demand);
+//        ingredient.setTotal(dto.getTotal());
+
+        if (dto.getBatchId() != null) {
+            BatchDetail batch = batchRepo.findById(dto.getBatchId())
+                    .orElseThrow(() -> new RuntimeException("Batch not found"));
+            ingredient.setBatchDetail(batch);
+            ingredient.setBatchNo("B-" + batch.getId());
+        }
+
         ingredient = ingredientRepo.save(ingredient);
 
-        // Create BatchDetail linked to Ingredient
-        BatchDetail batch = new BatchDetail();
-        batch.setIngredient(ingredient); // ✅ FIXED setter
-        batch.setQrCode("QR-" + ingredient.getId()); // placeholder QR
-        batchRepo.save(batch);
-
         dto.setId(ingredient.getId());
-        dto.setBatchNo(batchNo);
+        dto.setBatchNo(ingredient.getBatchNo());
         return dto;
     }
 
-    @Override
-    public List<IngredientDetailDTO> saveIngredients(List<IngredientDetailDTO> dtos) {
-        return dtos.stream().map(this::saveIngredient).collect(Collectors.toList());
+
+
+//    @Override
+//    public List<IngredientDetailDTO> saveIngredients(List<IngredientDetailDTO> dtos) {
+//        return dtos.stream().map(this::saveIngredient).collect(Collectors.toList());
+//    }
+@Override
+@Transactional
+public List<IngredientDetailDTO> saveIngredients(List<IngredientDetailDTO> dtos) {
+    if (dtos == null || dtos.isEmpty()) {
+        throw new RuntimeException("Ingredient list cannot be empty");
     }
+
+    // ✅ Step 1: Generate unique batch number once
+    String batchNo = generateNextBatchNo();
+
+    // ✅ Step 2: Create one BatchDetail row
+    BatchDetail batch = new BatchDetail();
+    batch.setQrCode("QR-" + batchNo);  // You can change how QR is generated
+    batch = batchRepo.save(batch);
+
+    // ✅ Step 3: Save all ingredients linked to the same batch
+    BatchDetail finalBatch = batch;
+    List<IngredientDetail> ingredients = dtos.stream().map(dto -> {
+        Demand demand = demandRepo.findById(dto.getDemandId())
+                .orElseThrow(() -> new RuntimeException("Demand not found"));
+
+        IngredientDetail ingredient = new IngredientDetail();
+        ingredient.setType(dto.getType());
+        ingredient.setName(dto.getName());
+        ingredient.setQuantity(dto.getQuantity());
+        ingredient.setUnit(dto.getUnit());
+        ingredient.setDemand(demand);
+
+        // link with batch
+        ingredient.setBatchDetail(finalBatch);
+        ingredient.setBatchNo(batchNo);
+
+        return ingredient;
+    }).collect(Collectors.toList());
+
+    ingredients = ingredientRepo.saveAll(ingredients);
+
+    // ✅ Step 4: Convert back to DTO
+    BatchDetail finalBatch1 = batch;
+    return ingredients.stream().map(ing -> {
+        IngredientDetailDTO dto = new IngredientDetailDTO();
+        dto.setId(ing.getId());
+        dto.setType(ing.getType());
+        dto.setName(ing.getName());
+        dto.setQuantity(ing.getQuantity());
+        dto.setUnit(ing.getUnit());
+        dto.setBatchNo(ing.getBatchNo());
+        dto.setBatchId(finalBatch1.getId());
+        dto.setDemandId(ing.getDemand().getId());
+        return dto;
+    }).collect(Collectors.toList());
+}
+
 
 //    @Override
 //    public List<IngredientDetailDTO> getAllIngredients() {
@@ -100,49 +153,122 @@ public class IngredientServiceImpl implements IngredientService {
 //        }).collect(Collectors.toList());
 //    }
 
-    @Override
-    public List<IngredientDetailDTO> getAllIngredients() {
-        return ingredientRepo.findAll().stream().map(ing -> {
-            IngredientDetailDTO dto = new IngredientDetailDTO();
-            dto.setId(ing.getId());
-            dto.setType(ing.getType());
-            dto.setName(ing.getName());
-//            dto.setPrice(ing.getPrice());
-            dto.setQuantity(ing.getQuantity());
-            dto.setUnit(ing.getUnit());
-//            dto.setVendor(ing.getVendor());
-            dto.setTotal(ing.getTotal());
-            dto.setBatchNo(ing.getBatchNo());
-            dto.setDemandId(ing.getDemand().getId());
+//    @Override
+//    public List<IngredientDetailDTO> getAllIngredients() {
+//        return ingredientRepo.findAll().stream().map(ing -> {
+//            IngredientDetailDTO dto = new IngredientDetailDTO();
+//            dto.setId(ing.getId());
+//            dto.setType(ing.getType());
+//            dto.setName(ing.getName());
+////            dto.setPrice(ing.getPrice());
+//            dto.setQuantity(ing.getQuantity());
+//            dto.setUnit(ing.getUnit());
+////            dto.setVendor(ing.getVendor());
+////            dto.setTotal(ing.getTotal());
+//            dto.setBatchNo(ing.getBatchNo());
+//            dto.setDemandId(ing.getDemand().getId());
+//
+//            // ✅ Map BatchDetail
+//            BatchDetail batch = ing.getBatchDetail();
+//            if (batch != null) {
+//                BatchDetailDTO batchDTO = new BatchDetailDTO();
+//                batchDTO.setId(batch.getId());
+////                batchDTO.setIngredientId(ing.getId());
+//                batchDTO.setQrCode(batch.getQrCode());
+//
+//                dto.setBatchDetailDTO(batchDTO);
+//
+//                // ✅ Map LabReport
+//                LabReport lab = batch.getLabReport();
+//                if (lab != null) {
+//                    LabReportDTO labDTO = new LabReportDTO();
+//                    labDTO.setId(lab.getId());
+//                    labDTO.setLabName(lab.getLabName());
+//                    labDTO.setManufacturingDate(lab.getManufacturingDate());
+//                    labDTO.setExpiryDate(lab.getExpiryDate());
+//                    labDTO.setTestDate(lab.getTestDate());
+//                    labDTO.setStatus(lab.getStatus());
+//                    labDTO.setRemarks(lab.getRemarks());
+//                    labDTO.setFilePath(lab.getFilePath());
+//                    dto.setLabReportDTO(labDTO);
+//                }
+//
+//                // ✅ Map PackagingDetail (first one if multiple)
+//                if (batch.getPackagingDetails() != null && !batch.getPackagingDetails().isEmpty()) {
+//                    PackagingDetail pkg = batch.getPackagingDetails().get(0);
+//                    PackagingDetailDTO pkgDTO = new PackagingDetailDTO();
+//                    pkgDTO.setId(pkg.getId());
+//                    pkgDTO.setPacketSize(pkg.getPacketSize());
+//                    pkgDTO.setUnit(pkg.getUnit());
+//                    pkgDTO.setPackets(pkg.getPackets());
+//                    pkgDTO.setRemainingStock(pkg.getRemainingStock());
+//                    pkgDTO.setBatchId(batch.getId());
+//                    dto.setPackagingDetailDTO(pkgDTO);
+//
+//                    // ✅ Map DispatchDetail
+//                    DispatchDetail dispatch = pkg.getDispatchDetail();
+//                    if (dispatch != null) {
+//                        DispatchDetailDTO dispatchDTO = new DispatchDetailDTO();
+//                        dispatchDTO.setId(dispatch.getId());
+//                        dispatchDTO.setLotNo(dispatch.getLotNo());
+//                        dispatchDTO.setNoOfPackets(dispatch.getNoOfPackets());
+//                        dispatchDTO.setRemarks(dispatch.getRemarks());
+//                        dispatchDTO.setQrCode(dispatch.getLotNo()); // or actual QR if available
+//                        dispatchDTO.setPackagingId(pkg.getId());
+//
+//                        if (dispatch.getCdpo() != null) {
+//                            CdpoDTO cdpoDTO = new CdpoDTO();
+//                            cdpoDTO.setId(dispatch.getCdpo().getId());
+//                            cdpoDTO.setCdpoName(dispatch.getCdpo().getCdpoName());
+//                            dispatchDTO.setCdpo(cdpoDTO);
+//                        }
+//
+//                        dto.setDispatchDetailDTO(dispatchDTO);
+//                    }
+//                }
+//            }
+//
+//            return dto;
+//        }).collect(Collectors.toList());
+//    }
+@Override
+public List<IngredientDetailDTO> getAllIngredients() {
+    return ingredientRepo.findAll().stream().map(ing -> {
+        IngredientDetailDTO dto = new IngredientDetailDTO();
+        dto.setId(ing.getId());
+        dto.setType(ing.getType());
+        dto.setName(ing.getName());
+        dto.setQuantity(ing.getQuantity());
+        dto.setUnit(ing.getUnit());
+        dto.setBatchNo(ing.getBatchNo());
+        dto.setDemandId(ing.getDemand().getId());
 
-            // ✅ Map BatchDetail
-            BatchDetail batch = ing.getBatchDetail();
-            if (batch != null) {
-                BatchDetailDTO batchDTO = new BatchDetailDTO();
-                batchDTO.setId(batch.getId());
-                batchDTO.setIngredientId(ing.getId());
-                batchDTO.setQrCode(batch.getQrCode());
+        // ✅ Map BatchDetail
+        BatchDetail batch = ing.getBatchDetail();
+        if (batch != null) {
+            BatchDetailDTO batchDTO = new BatchDetailDTO();
+            batchDTO.setId(batch.getId());
+            batchDTO.setQrCode(batch.getQrCode());
+            dto.setBatchDetailDTO(batchDTO);
 
-                dto.setBatchDetailDTO(batchDTO);
+            // ✅ Map LabReport
+            LabReport lab = batch.getLabReport();
+            if (lab != null) {
+                LabReportDTO labDTO = new LabReportDTO();
+                labDTO.setId(lab.getId());
+                labDTO.setLabName(lab.getLabName());
+                labDTO.setManufacturingDate(lab.getManufacturingDate());
+                labDTO.setExpiryDate(lab.getExpiryDate());
+                labDTO.setTestDate(lab.getTestDate());
+                labDTO.setStatus(lab.getStatus());
+                labDTO.setRemarks(lab.getRemarks());
+                labDTO.setFilePath(lab.getFilePath());
+                dto.setLabReportDTO(labDTO);
+            }
 
-                // ✅ Map LabReport
-                LabReport lab = batch.getLabReport();
-                if (lab != null) {
-                    LabReportDTO labDTO = new LabReportDTO();
-                    labDTO.setId(lab.getId());
-                    labDTO.setLabName(lab.getLabName());
-                    labDTO.setManufacturingDate(lab.getManufacturingDate());
-                    labDTO.setExpiryDate(lab.getExpiryDate());
-                    labDTO.setTestDate(lab.getTestDate());
-                    labDTO.setStatus(lab.getStatus());
-                    labDTO.setRemarks(lab.getRemarks());
-                    labDTO.setFilePath(lab.getFilePath());
-                    dto.setLabReportDTO(labDTO);
-                }
-
-                // ✅ Map PackagingDetail (first one if multiple)
-                if (batch.getPackagingDetails() != null && !batch.getPackagingDetails().isEmpty()) {
-                    PackagingDetail pkg = batch.getPackagingDetails().get(0);
+            // ✅ Map PackagingDetails (all)
+            if (batch.getPackagingDetails() != null && !batch.getPackagingDetails().isEmpty()) {
+                List<PackagingDetailDTO> pkgDTOs = batch.getPackagingDetails().stream().map(pkg -> {
                     PackagingDetailDTO pkgDTO = new PackagingDetailDTO();
                     pkgDTO.setId(pkg.getId());
                     pkgDTO.setPacketSize(pkg.getPacketSize());
@@ -150,34 +276,42 @@ public class IngredientServiceImpl implements IngredientService {
                     pkgDTO.setPackets(pkg.getPackets());
                     pkgDTO.setRemainingStock(pkg.getRemainingStock());
                     pkgDTO.setBatchId(batch.getId());
-                    dto.setPackagingDetailDTO(pkgDTO);
 
-                    // ✅ Map DispatchDetail
-                    DispatchDetail dispatch = pkg.getDispatchDetail();
-                    if (dispatch != null) {
-                        DispatchDetailDTO dispatchDTO = new DispatchDetailDTO();
-                        dispatchDTO.setId(dispatch.getId());
-                        dispatchDTO.setLotNo(dispatch.getLotNo());
-                        dispatchDTO.setNoOfPackets(dispatch.getNoOfPackets());
-                        dispatchDTO.setRemarks(dispatch.getRemarks());
-                        dispatchDTO.setQrCode(dispatch.getLotNo()); // or actual QR if available
-                        dispatchDTO.setPackagingId(pkg.getId());
+                    // ✅ Map DispatchDetails (all)
+                    if (pkg.getDispatchDetails() != null && !pkg.getDispatchDetails().isEmpty()) {
+                        List<DispatchDetailDTO> dispatchDTOs = pkg.getDispatchDetails().stream().map(dispatch -> {
+                            DispatchDetailDTO dispatchDTO = new DispatchDetailDTO();
+                            dispatchDTO.setId(dispatch.getId());
+                            dispatchDTO.setLotNo(dispatch.getLotNo());
+                            dispatchDTO.setNoOfPackets(dispatch.getNoOfPackets());
+                            dispatchDTO.setRemarks(dispatch.getRemarks());
+                            dispatchDTO.setQrCode(dispatch.getQrCode());
+                            dispatchDTO.setPackagingId(pkg.getId());
 
-                        if (dispatch.getCdpo() != null) {
-                            CdpoDTO cdpoDTO = new CdpoDTO();
-                            cdpoDTO.setId(dispatch.getCdpo().getId());
-                            cdpoDTO.setCdpoName(dispatch.getCdpo().getCdpoName());
-                            dispatchDTO.setCdpo(cdpoDTO);
-                        }
+                            if (dispatch.getCdpo() != null) {
+                                CdpoDTO cdpoDTO = new CdpoDTO();
+                                cdpoDTO.setId(dispatch.getCdpo().getId());
+                                cdpoDTO.setCdpoName(dispatch.getCdpo().getCdpoName());
+                                dispatchDTO.setCdpo(cdpoDTO);
+                            }
 
-                        dto.setDispatchDetailDTO(dispatchDTO);
+                            return dispatchDTO;
+                        }).collect(Collectors.toList());
+
+                        pkgDTO.setDispatchDetailDTOs(dispatchDTOs); // list of dispatches
                     }
-                }
-            }
 
-            return dto;
-        }).collect(Collectors.toList());
-    }
+                    return pkgDTO;
+                }).collect(Collectors.toList());
+
+                dto.setPackagingDetailDTOs(pkgDTOs); // list of packaging details
+            }
+        }
+
+        return dto;
+    }).collect(Collectors.toList());
+}
+
 
     @Override
     public IngredientDetailDTO getIngredientById(Long id) {
@@ -191,7 +325,7 @@ public class IngredientServiceImpl implements IngredientService {
         dto.setQuantity(ing.getQuantity());
         dto.setUnit(ing.getUnit());
 //        dto.setVendor(ing.getVendor());
-        dto.setTotal(ing.getTotal());
+//        dto.setTotal(ing.getTotal());
         dto.setBatchNo(ing.getBatchNo());
         dto.setDemandId(ing.getDemand().getId());
         return dto;
@@ -211,7 +345,7 @@ public class IngredientServiceImpl implements IngredientService {
             dto.setQuantity(ing.getQuantity());
             dto.setUnit(ing.getUnit());
 //            dto.setVendor(ing.getVendor());
-            dto.setTotal(ing.getTotal());
+//            dto.setTotal(ing.getTotal());
             dto.setBatchNo(ing.getBatchNo());
             dto.setDemandId(ing.getDemand().getId());
             return dto;
@@ -239,9 +373,10 @@ public class IngredientServiceImpl implements IngredientService {
         dto.setStatus(report.getStatus());
         dto.setRemarks(report.getRemarks());
         dto.setFilePath(report.getFilePath());
-//        dto.setBatchId(batch.getId());
+
         return dto;
     }
+
 
     @Override
     public LabReportDTO saveLabReport(LabReportDTO dto) {
