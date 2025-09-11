@@ -1,9 +1,12 @@
 package com.example.master.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "accept_demands")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class AcceptDemand {
 
     @Id
@@ -15,6 +18,7 @@ public class AcceptDemand {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dispatch_id", nullable = false)
+    @JsonBackReference
     private DispatchDetail dispatchDetail;
 
     private String qrCode;

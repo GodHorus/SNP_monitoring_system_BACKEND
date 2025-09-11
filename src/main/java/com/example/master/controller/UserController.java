@@ -26,6 +26,8 @@ public class UserController {
         user.setEmail(request.getEmail());
         user.setMobile(request.getMobile());
         user.setDistrict(request.getDistrict());
+        user.setCdpo(request.getCdpo());
+        user.setSectors(request.getSectors());
 
         // Call service including firstName & lastName for Keycloak
         User savedUser = userService.createUser(

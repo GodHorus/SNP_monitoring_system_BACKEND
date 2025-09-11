@@ -37,4 +37,10 @@ public class CDPOSupplierDispatchController {
         dispatchService.deleteDispatch(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<List<CDPOSupplierDispatchDTO>> createDispatches(
+            @RequestBody List<CDPOSupplierDispatchDTO> dtos) {
+        return ResponseEntity.ok(dispatchService.createDispatches(dtos));
+    }
 }

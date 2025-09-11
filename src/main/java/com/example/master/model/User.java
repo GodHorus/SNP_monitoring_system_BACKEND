@@ -19,6 +19,8 @@ public class User {
     private String mobile;
     private String district;
 //    private String project;
+    private String cdpo;
+    private String sectors;
 
     // --- Getters and Setters ---
     public Long getId() { return id; }
@@ -41,4 +43,20 @@ public class User {
 
 //    public String getProject() { return project; }
 //    public void setProject(String project) { this.project = project; }
+
+    public String getCdpo() {
+        return cdpo;
+    }
+
+    public void setCdpo(String cdpo) {
+        this.cdpo = cdpo;
+    }
+
+    public String getSectors() {
+        return sectors;
+    }
+
+    public void setSectors(String sectors) {
+        this.sectors = sectors;
+    }
 }

@@ -12,13 +12,11 @@ public class IngredientDetailDTO {
     private BigDecimal total;
     private String batchNo;
     private Long demandId;
-    private Long batchId; // ✅ direct link to batch
-
+    private Long batchId;
     private BatchDetailDTO batchDetailDTO;
     private DispatchDetailDTO dispatchDetailDTO;
     private LabReportDTO labReportDTO;
 
-    // ✅ List of PackagingDetails instead of single packagingDetailDTO
     private List<PackagingDetailDTO> packagingDetailDTOs;
 
     // Getters and Setters

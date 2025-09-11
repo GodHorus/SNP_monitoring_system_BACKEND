@@ -8,4 +8,6 @@ public interface CDPOSupplierDispatchService {
     CDPOSupplierDispatchDTO getDispatchById(Long id);
     List<CDPOSupplierDispatchDTO> getAllDispatches();
     void deleteDispatch(Long id);
+    List<CDPOSupplierDispatchDTO> createDispatches(List<CDPOSupplierDispatchDTO> dtos);
+
 }

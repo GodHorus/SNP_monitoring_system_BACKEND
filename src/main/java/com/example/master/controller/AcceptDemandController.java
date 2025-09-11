@@ -23,6 +23,12 @@ public class AcceptDemandController {
 //        return acceptDemandService.createAcceptDemand(dto);
 //    }
 
+//    @PostMapping()
+//    public ResponseEntity<AcceptDemand> createAcceptDemand(
+//            @RequestBody AcceptDemandDTO dto) {
+//        return ResponseEntity.ok(acceptDemandService.createAcceptDemand(dto));
+//    }
+
 //    @PostMapping("/bulk")
     @PostMapping
     public ResponseEntity<List<AcceptDemand>> createAcceptDemands(@RequestBody List<AcceptDemandDTO> dtos) {

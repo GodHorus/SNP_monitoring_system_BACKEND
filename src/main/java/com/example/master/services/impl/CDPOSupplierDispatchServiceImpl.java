@@ -8,6 +8,7 @@ import com.example.master.repository.CDPOSupplierDispatchRepository;
 import com.example.master.services.CDPOSupplierDispatchService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,36 @@ public class CDPOSupplierDispatchServiceImpl implements CDPOSupplierDispatchServ
         dto.setAcceptDemandId(saved.getAcceptDemand().getId());
         return dto;
     }
+
+    @Override
+    public List<CDPOSupplierDispatchDTO> createDispatches(List<CDPOSupplierDispatchDTO> dtos) {
+        String lastSublotNo = dispatchRepository.findLastSublotNo();
+        int lastNumber = (lastSublotNo == null) ? 0 : Integer.parseInt(lastSublotNo.replace("SUBLOT-", ""));
+
+        List<CDPOSupplierDispatchDTO> results = new ArrayList<>();
+
+        for (CDPOSupplierDispatchDTO dto : dtos) {
+            AcceptDemand acceptDemand = acceptDemandRepository.findById(dto.getAcceptDemandId())
+                    .orElseThrow(() -> new RuntimeException("AcceptDemand not found: " + dto.getAcceptDemandId()));
+
+            // generate sublot number sequentially
+            lastNumber++;
+            String newSublotNo = "SUBLOT-" + lastNumber;
+
+            CDPOSupplierDispatch dispatch = new CDPOSupplierDispatch();
+            dispatch.setDispatchPackets(dto.getDispatchPackets());
+            dispatch.setRemarks(dto.getRemarks());
+            dispatch.setAcceptDemand(acceptDemand);
+            dispatch.setSublotNo(newSublotNo);
+
+            CDPOSupplierDispatch saved = dispatchRepository.save(dispatch);
+
+            results.add(mapToDTO(saved));
+        }
+
+        return results;
+    }
+
 
 
     @Override
