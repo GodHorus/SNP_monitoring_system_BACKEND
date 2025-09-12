@@ -47,7 +47,7 @@ public interface DemandRepository extends JpaRepository<Demand, Long> {
     List<Demand> findAcceptedDemandsForSupplier(@Param("supplierId") Long supplierId);
 
     // CDPO: Supplier accepted or CDPO dispatched
-    @Query("SELECT d FROM Demand d WHERE d.status IN ('SUPPLIER_ACCEPTED', 'CDPO_DISPATCHED') ORDER BY d.supplierAcceptedAt ASC")
+    @Query("SELECT d FROM Demand d WHERE d.status IN ('SUPPLIER_ACCEPTED', 'CDPO_DISPATCHED','CDPO_ACCEPTED') ORDER BY d.supplierAcceptedAt ASC")
     List<Demand> findDemandsForCdpo();
 
     // AWC: CDPO dispatched or AWC accepted

@@ -327,6 +327,18 @@ public class DemandController {
 
 
     @PreAuthorize("hasRole('CDPO')")
+    @PostMapping("/{id}/cdpo-decision")
+    public ResponseEntity<Map<String, String>> cdpoDecision(@PathVariable Long id, @RequestBody DecisionRequest request) {
+        logCurrentUserAuthorities("cdpoDecision");
+        String status = request.isAccept() ? "CDPO_ACCEPTED" : "CDPO_REJECTED";
+        demandService.updateStatus(id, status);
+
+        String message = request.isAccept() ? "CDPO accepted the demand" : "CDPO rejected the demand";
+        return ResponseEntity.ok(Map.of("message", message, "status", status));
+    }
+
+
+    @PreAuthorize("hasRole('CDPO')")
     @PostMapping("/{id}/cdpo-dispatch")
     public ResponseEntity<Map<String, String>> cdpoDispatch(@PathVariable Long id) {
         logCurrentUserAuthorities("cdpoDispatch");
