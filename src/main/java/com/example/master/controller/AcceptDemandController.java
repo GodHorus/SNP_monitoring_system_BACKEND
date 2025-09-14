@@ -35,6 +35,13 @@ public class AcceptDemandController {
         return ResponseEntity.ok(acceptDemandService.createAcceptDemands(dtos));
     }
 
+    @GetMapping("/by-demand/{demandId}")
+    public ResponseEntity<AcceptDemandDTO> getByDemandId(@PathVariable Long demandId) {
+        return acceptDemandService.getAcceptDemandByDemandId(demandId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping
     public ResponseEntity<List<AcceptDemandDTO>> getAllAcceptDemands() {
         return ResponseEntity.ok(acceptDemandService.getAllAcceptDemands());

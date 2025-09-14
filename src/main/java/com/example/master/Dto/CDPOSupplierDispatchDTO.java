@@ -8,7 +8,36 @@ public class CDPOSupplierDispatchDTO {
 
     private String sublotNo;
 
+    private Long sectorId;
+    private String sectorName;
+    private String sectorStatus;
+
     // Getters and Setters
+
+    public Long getSectorId() {
+        return sectorId;
+    }
+
+    public void setSectorId(Long sectorId) {
+        this.sectorId = sectorId;
+    }
+
+    public String getSectorName() {
+        return sectorName;
+    }
+
+    public void setSectorName(String sectorName) {
+        this.sectorName = sectorName;
+    }
+
+    public String getSectorStatus() {
+        return sectorStatus;
+    }
+
+    public void setSectorStatus(String sectorStatus) {
+        this.sectorStatus = sectorStatus;
+    }
+
     public Long getId() {
         return id;
     }

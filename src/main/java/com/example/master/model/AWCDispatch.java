@@ -1,6 +1,7 @@
 package com.example.master.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "awc_dispatch")
@@ -10,28 +11,74 @@ public class AWCDispatch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String awc;
-    private String remark;
-    private Integer dispatchPackets;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "anganwadi_id", nullable = false) // foreign key to AnganwadiCenter
+    private AnganwadiCenter anganwadiCenter;
 
-    // Mapping with PackagingDetail (batchNo, lotNo, cdpo, qrCode can be derived)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "packaging_id", nullable = false)
-    private PackagingDetail packagingDetail;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "demand_id", nullable = false)
+    private Demand demand;
+
+    private String sublotNo;
+    private Integer benficiaryCount;
+    private Integer distributedPackets;
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getAwc() { return awc; }
-    public void setAwc(String awc) { this.awc = awc; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getRemark() { return remark; }
-    public void setRemark(String remark) { this.remark = remark; }
+    public AnganwadiCenter getAnganwadiCenter() {
+        return anganwadiCenter;
+    }
 
-    public Integer getDispatchPackets() { return dispatchPackets; }
-    public void setDispatchPackets(Integer dispatchPackets) { this.dispatchPackets = dispatchPackets; }
+    public void setAnganwadiCenter(AnganwadiCenter anganwadiCenter) {
+        this.anganwadiCenter = anganwadiCenter;
+    }
 
-    public PackagingDetail getPackagingDetail() { return packagingDetail; }
-    public void setPackagingDetail(PackagingDetail packagingDetail) { this.packagingDetail = packagingDetail; }
+    public Demand getDemand() {
+        return demand;
+    }
+
+    public void setDemand(Demand demand) {
+        this.demand = demand;
+    }
+
+    public String getSublotNo() {
+        return sublotNo;
+    }
+
+    public void setSublotNo(String sublotNo) {
+        this.sublotNo = sublotNo;
+    }
+
+    public Integer getBenficiaryCount() {
+        return benficiaryCount;
+    }
+
+    public void setBenficiaryCount(Integer benficiaryCount) {
+        this.benficiaryCount = benficiaryCount;
+    }
+
+    public Integer getDistributedPackets() {
+        return distributedPackets;
+    }
+
+    public void setDistributedPackets(Integer distributedPackets) {
+        this.distributedPackets = distributedPackets;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 }

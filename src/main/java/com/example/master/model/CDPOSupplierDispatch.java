@@ -19,6 +19,18 @@ public class CDPOSupplierDispatch {
     @Column(unique = true, nullable = false)
     private String sublotNo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sector_id")
+    private Sector sector;
+
+    public Sector getSector() {
+        return sector;
+    }
+
+    public void setSector(Sector sector) {
+        this.sector = sector;
+    }
+
     public Long getId() {
         return id;
     }

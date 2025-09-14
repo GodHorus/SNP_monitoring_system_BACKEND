@@ -14,6 +14,7 @@ public class DispatchDetail {
 //    private String cdpo;
     private Integer noOfPackets;
     private String remarks;
+    @Column(name = "qr_code", length = 1024)
     private String qrCode;
 
     // Relation with PackagingDetail

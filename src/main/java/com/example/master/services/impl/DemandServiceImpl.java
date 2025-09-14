@@ -200,27 +200,52 @@ public class DemandServiceImpl implements DemandService {
     @Override
     public Demand updateStatus(Long id, String status) {
         // Get the demand object from the repository
-        Optional<Demand> demandOptional = demandRepository.findById(id);
+        Demand demand = demandRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Demand not found with id: " + id));
 
-        // Check if the demand is present
-        if (demandOptional.isPresent()) {
-            // Extract the existing demand entity
-            Demand demand = demandOptional.get();
+        // Update the status
+        demand.setStatus(status);
+        demand.setUpdatedAt(LocalDateTime.now());
 
-            // Update the status and the updated time
-            demand.setStatus(status);
-            demand.setUpdatedAt(LocalDateTime.now());
-
-            // Optionally, you can update other fields here if needed
-            // e.g., demand.setSomeField(newValue);
-
-            // Save the updated entity
-            return demandRepository.save(demand);
-        } else {
-            // Handle the case when demand is not found
-            throw new RuntimeException("Demand not found with id: " + id);
+        // Set workflow timestamps based on status
+        switch (status) {
+            case "FCI_ACCEPTED":
+                demand.setFciAcceptedAt(LocalDateTime.now());
+                break;
+            case "FCI_REJECTED":
+                demand.setFciRejectedAt(LocalDateTime.now());
+                break;
+            case "FCI_DISPATCHED":
+                demand.setFciDispatchedAt(LocalDateTime.now());
+                break;
+            case "SUPPLIER_ACCEPTED":
+                demand.setSupplierAcceptedAt(LocalDateTime.now());
+                break;
+            case "SUPPLIER_REJECTED":
+                demand.setSupplierRejectedAt(LocalDateTime.now());
+                break;
+            case "SUPPLIER_SELF_DECLARED":
+                demand.setSupplierSelfDeclaredAt(LocalDateTime.now());
+                break;
+            case "SUPPLIER_DISPATCHED":
+                demand.setSupplierDispatchedAt(LocalDateTime.now());
+                break;
+            case "CDPO_DISPATCHED":
+                demand.setCdpoDispatchedAt(LocalDateTime.now());
+                break;
+            case "AWC_ACCEPTED":
+                demand.setAwcAcceptedAt(LocalDateTime.now());
+                demand.setAwcDistributedAt(LocalDateTime.now()); // if distribution = acceptance
+                break;
+            default:
+                // no timestamp for other statuses
+                break;
         }
+
+        // Save the updated entity
+        return demandRepository.save(demand);
     }
+
 
 
 

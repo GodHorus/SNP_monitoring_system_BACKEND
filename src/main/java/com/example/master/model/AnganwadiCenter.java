@@ -34,6 +34,11 @@ public class AnganwadiCenter {
     @JsonBackReference
     private Sector sector;
 
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "awc_dispatch_id")
+//    @JsonBackReference
+//    private AWCDispatch awcDispatch;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "district_id")
     @JsonBackReference
@@ -102,4 +107,12 @@ public class AnganwadiCenter {
     public void setDistrict(District district) {
         this.district = district;
     }
+
+//    public AWCDispatch getAwcDispatch() {
+//        return awcDispatch;
+//    }
+//
+//    public void setAwcDispatch(AWCDispatch awcDispatch) {
+//        this.awcDispatch = awcDispatch;
+//    }
 }

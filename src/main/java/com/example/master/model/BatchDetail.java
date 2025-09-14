@@ -17,6 +17,7 @@ public class BatchDetail {
     @OneToMany(mappedBy = "batchDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IngredientDetail> ingredients = new ArrayList<>();
 
+    @Column(name = "qr_code", length = 1024)
     private String qrCode;
 
     private Long totalQuantity;

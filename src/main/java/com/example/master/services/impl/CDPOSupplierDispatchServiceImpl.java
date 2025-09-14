@@ -3,9 +3,12 @@ package com.example.master.services.impl;
 import com.example.master.Dto.CDPOSupplierDispatchDTO;
 import com.example.master.model.AcceptDemand;
 import com.example.master.model.CDPOSupplierDispatch;
+import com.example.master.model.Sector;
 import com.example.master.repository.AcceptDemandRepository;
 import com.example.master.repository.CDPOSupplierDispatchRepository;
+import com.example.master.repository.SectorRepository;
 import com.example.master.services.CDPOSupplierDispatchService;
+import com.example.master.mapper.CDPOSupplierDispatchMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,11 +20,15 @@ public class CDPOSupplierDispatchServiceImpl implements CDPOSupplierDispatchServ
 
     private final CDPOSupplierDispatchRepository dispatchRepository;
     private final AcceptDemandRepository acceptDemandRepository;
+    private final SectorRepository sectorRepository;
 
-    public CDPOSupplierDispatchServiceImpl(CDPOSupplierDispatchRepository dispatchRepository,
-                                           AcceptDemandRepository acceptDemandRepository) {
+    public CDPOSupplierDispatchServiceImpl(
+            CDPOSupplierDispatchRepository dispatchRepository,
+            AcceptDemandRepository acceptDemandRepository,
+            SectorRepository sectorRepository) {
         this.dispatchRepository = dispatchRepository;
         this.acceptDemandRepository = acceptDemandRepository;
+        this.sectorRepository = sectorRepository;
     }
 
     @Override
@@ -29,32 +36,19 @@ public class CDPOSupplierDispatchServiceImpl implements CDPOSupplierDispatchServ
         AcceptDemand acceptDemand = acceptDemandRepository.findById(dto.getAcceptDemandId())
                 .orElseThrow(() -> new RuntimeException("AcceptDemand not found"));
 
-        // 🔹 Fetch last sublotNo
+        Sector sector = sectorRepository.findById(dto.getSectorId())
+                .orElseThrow(() -> new RuntimeException("Sector not found: " + dto.getSectorId()));
+
         String lastSublotNo = dispatchRepository.findLastSublotNo();
+        String newSublotNo = (lastSublotNo == null)
+                ? "SUBLOT-1"
+                : "SUBLOT-" + (Integer.parseInt(lastSublotNo.replace("SUBLOT-", "")) + 1);
 
-        // 🔹 Generate new sublotNo
-        String newSublotNo;
-        if (lastSublotNo == null) {
-            newSublotNo = "SUBLOT-1";   // first entry
-        } else {
-            // Extract number part
-            int lastNumber = Integer.parseInt(lastSublotNo.replace("SUBLOT-", ""));
-            newSublotNo = "SUBLOT-" + (lastNumber + 1);
-        }
+        CDPOSupplierDispatch entity = CDPOSupplierDispatchMapper.toEntity(dto, acceptDemand, sector);
+        entity.setSublotNo(newSublotNo);
 
-        // 🔹 Save new Dispatch
-        CDPOSupplierDispatch dispatch = new CDPOSupplierDispatch();
-        dispatch.setDispatchPackets(dto.getDispatchPackets());
-        dispatch.setRemarks(dto.getRemarks());
-        dispatch.setAcceptDemand(acceptDemand);
-        dispatch.setSublotNo(newSublotNo);
-
-        CDPOSupplierDispatch saved = dispatchRepository.save(dispatch);
-
-        // Map back to DTO
-        dto.setId(saved.getId());
-        dto.setAcceptDemandId(saved.getAcceptDemand().getId());
-        return dto;
+        CDPOSupplierDispatch saved = dispatchRepository.save(entity);
+        return CDPOSupplierDispatchMapper.toDTO(saved);
     }
 
     @Override
@@ -68,54 +62,40 @@ public class CDPOSupplierDispatchServiceImpl implements CDPOSupplierDispatchServ
             AcceptDemand acceptDemand = acceptDemandRepository.findById(dto.getAcceptDemandId())
                     .orElseThrow(() -> new RuntimeException("AcceptDemand not found: " + dto.getAcceptDemandId()));
 
-            // generate sublot number sequentially
+            Sector sector = sectorRepository.findById(dto.getSectorId())
+                    .orElseThrow(() -> new RuntimeException("Sector not found: " + dto.getSectorId()));
+
             lastNumber++;
             String newSublotNo = "SUBLOT-" + lastNumber;
 
-            CDPOSupplierDispatch dispatch = new CDPOSupplierDispatch();
-            dispatch.setDispatchPackets(dto.getDispatchPackets());
-            dispatch.setRemarks(dto.getRemarks());
-            dispatch.setAcceptDemand(acceptDemand);
-            dispatch.setSublotNo(newSublotNo);
+            CDPOSupplierDispatch entity = CDPOSupplierDispatchMapper.toEntity(dto, acceptDemand, sector);
+            entity.setSublotNo(newSublotNo);
 
-            CDPOSupplierDispatch saved = dispatchRepository.save(dispatch);
-
-            results.add(mapToDTO(saved));
+            CDPOSupplierDispatch saved = dispatchRepository.save(entity);
+            results.add(CDPOSupplierDispatchMapper.toDTO(saved));
         }
 
         return results;
     }
-
-
 
     @Override
     public CDPOSupplierDispatchDTO getDispatchById(Long id) {
         CDPOSupplierDispatch dispatch = dispatchRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dispatch not found"));
 
-        return mapToDTO(dispatch);
+        return CDPOSupplierDispatchMapper.toDTO(dispatch);
     }
 
     @Override
     public List<CDPOSupplierDispatchDTO> getAllDispatches() {
         return dispatchRepository.findAll()
                 .stream()
-                .map(this::mapToDTO)
+                .map(CDPOSupplierDispatchMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void deleteDispatch(Long id) {
         dispatchRepository.deleteById(id);
-    }
-
-    private CDPOSupplierDispatchDTO mapToDTO(CDPOSupplierDispatch dispatch) {
-        CDPOSupplierDispatchDTO dto = new CDPOSupplierDispatchDTO();
-        dto.setId(dispatch.getId());
-        dto.setDispatchPackets(dispatch.getDispatchPackets());
-        dto.setRemarks(dispatch.getRemarks());
-        dto.setAcceptDemandId(dispatch.getAcceptDemand().getId());
-        dto.setSublotNo(dispatch.getSublotNo());
-        return dto;
     }
 }

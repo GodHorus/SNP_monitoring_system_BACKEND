@@ -2,15 +2,19 @@ package com.example.master.Dto;
 
 import com.example.master.model.DispatchDetail;
 
+import java.util.List;
+
 public class AcceptDemandDTO {
 
     private Long id;
 
-    private Long dispatchId;   // mapped from DispatchDetail
+    private Long demandId;      // mapped from DispatchDetail
     private Integer receivedPackets;
     private String remarks;
 
     private String qrCode;
+
+    private List<CDPOSupplierDispatchDTO> cdpoSupplierDispatches;
 
 //    private DispatchDetail dispatch;
 
@@ -24,6 +28,14 @@ public class AcceptDemandDTO {
     // Getters & Setters
 
 
+    public List<CDPOSupplierDispatchDTO> getCdpoSupplierDispatches() {
+        return cdpoSupplierDispatches;
+    }
+
+    public void setCdpoSupplierDispatches(List<CDPOSupplierDispatchDTO> cdpoSupplierDispatches) {
+        this.cdpoSupplierDispatches = cdpoSupplierDispatches;
+    }
+
     public Long getId() {
         return id;
     }
@@ -32,8 +44,13 @@ public class AcceptDemandDTO {
         this.id = id;
     }
 
-    public Long getDispatchId() { return dispatchId; }
-    public void setDispatchId(Long dispatchId) { this.dispatchId = dispatchId; }
+    public Long getDemandId() {
+        return demandId;
+    }
+
+    public void setDemandId(Long demandId) {
+        this.demandId = demandId;
+    }
 
     public Integer getReceivedPackets() { return receivedPackets; }
     public void setReceivedPackets(Integer receivedPackets) { this.receivedPackets = receivedPackets; }

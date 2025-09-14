@@ -403,20 +403,44 @@ public class DemandController {
     @GetMapping("/{id}/status-history")
     public ResponseEntity<Map<String, Object>> getStatusHistory(@PathVariable Long id) {
         logCurrentUserAuthorities("getStatusHistory");
-//        Optional<DemandResponseDTO> demand = demandService.getDemandById(id);
+
+        // Fetch the demand response DTO
+        Optional<DemandResponseDTO> demandResponseDTOOpt = demandService.getDemandById(id);
+
+        // If no demand is found, return 404
+        if (demandResponseDTOOpt.isEmpty()) {
+//            log.debug("Demand with ID " + id + " not found.");
+            return ResponseEntity.notFound().build();
+        }
+
+        // Map the DTO to a Demand entity
+        DemandResponseDTO demandResponseDTO = demandResponseDTOOpt.get();
+//        log.debug("Fetched demand response: " + demandResponseDTO);
 
         Demand demand = new Demand();
+        demand.setId(demandResponseDTO.getId());
+        demand.setStatus(demandResponseDTO.getStatus());
+        demand.setCreatedAt(demandResponseDTO.getCreatedAt());
+        demand.setFciAcceptedAt(demandResponseDTO.getFciAcceptedAt());
+        demand.setFciRejectedAt(demandResponseDTO.getFciRejectedAt());
+        demand.setSupplierAcceptedAt(demandResponseDTO.getSupplierAcceptedAt());
+        demand.setSupplierRejectedAt(demandResponseDTO.getSupplierRejectedAt());
+        demand.setCdpoDispatchedAt(demandResponseDTO.getCdpoDispatchedAt());
+        demand.setAwcAcceptedAt(demandResponseDTO.getAwcAcceptedAt());
 
+//        log.debug("Mapped Demand object: " + demand);
+
+        // Build the status history map
         Map<String, Object> history = Map.of(
-                "id", demand.getId(),
-                "currentStatus", demand.getStatus(),
-                "createdAt", demand.getCreatedAt(),
-                "fciAcceptedAt", demand.getFciAcceptedAt(),
-                "fciRejectedAt", demand.getFciRejectedAt(),
-                "supplierAcceptedAt", demand.getSupplierAcceptedAt(),
-                "supplierRejectedAt", demand.getSupplierRejectedAt(),
-                "cdpoDispatchedAt", demand.getCdpoDispatchedAt(),
-                "awcAcceptedAt", demand.getAwcAcceptedAt()
+                "id", demand.getId() != null ? demand.getId() : "N/A",
+                "currentStatus", demand.getStatus() != null ? demand.getStatus() : "Unknown",
+                "createdAt", demand.getCreatedAt() != null ? demand.getCreatedAt() : "Unknown",
+                "fciAcceptedAt", demand.getFciAcceptedAt() != null ? demand.getFciAcceptedAt() : "Unknown",
+                "fciRejectedAt", demand.getFciRejectedAt() != null ? demand.getFciRejectedAt() : "Unknown",
+                "supplierAcceptedAt", demand.getSupplierAcceptedAt() != null ? demand.getSupplierAcceptedAt() : "Unknown",
+                "supplierRejectedAt", demand.getSupplierRejectedAt() != null ? demand.getSupplierRejectedAt() : "Unknown",
+                "cdpoDispatchedAt", demand.getCdpoDispatchedAt() != null ? demand.getCdpoDispatchedAt() : "Unknown",
+                "awcAcceptedAt", demand.getAwcAcceptedAt() != null ? demand.getAwcAcceptedAt() : "Unknown"
         );
 
         return ResponseEntity.ok(history);
