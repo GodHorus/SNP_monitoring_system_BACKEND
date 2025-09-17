@@ -42,7 +42,7 @@ public class CorsConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 //        source.registerCorsConfiguration("/api/**", config);
-        config.setAllowCredentials(true);
+//        config.setAllowCredentials(true);
 
         source.registerCorsConfiguration("/**", config);
 
