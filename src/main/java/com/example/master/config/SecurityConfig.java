@@ -15,8 +15,10 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -25,15 +27,12 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+//                .cors(cors -> cors.configurationSource())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/auth/forgot-password").permitAll()
-                        .requestMatchers("/auth/reset-password").permitAll()
+                        .requestMatchers("/api/**", "/auth/login", "/auth/forgot-password", "/auth/reset-password").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -42,6 +41,41 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+
+        //config.setAllowedOrigins(List.of("*"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                "http://snp-assam.eighteenpixels.com",
+                "https://snp-assam.eighteenpixels.com",
+                "http://snp-assam.eighteenpixels.com:3000",
+                "https://snp-assam.eighteenpixels.com:3000",
+                "http://13.203.237.127",
+                "https://13.203.237.127",
+                "http://13.203.237.127:3000",
+                "https://13.203.237.127:3000",
+                "http://13.233.95.99",
+                "https://13.233.95.99",
+                "http://13.233.95.99:9909",
+                "https://13.233.95.99:9909",
+                "http://aanna-prabah-api.eighteenpixels.in",
+                "https://aanna-prabah-api.eighteenpixels.in",
+                "http://aanna-prabah-api.eighteenpixels.in:9909",
+                "https://aanna-prabah-api.eighteenpixels.in:9909"
+        ));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
 
 //    @Bean
 //    public CorsConfigurationSource corsConfigurationSource() {
@@ -106,9 +140,9 @@ public class SecurityConfig {
 //                })
 //                .authorizeHttpRequests(auth -> auth
 //                                .requestMatchers("/api/**").permitAll()
-////                                .requestMatchers("/api/fci").permitAll()
-////                                .requestMatchers("/api/districts").permitAll()
-////                                .requestMatchers("/api/supplier").permitAll()
+//                                .requestMatchers("/api/fci").permitAll()
+//                                .requestMatchers("/api/districts").permitAll()
+//                                .requestMatchers("/api/supplier").permitAll()
 //                                .requestMatchers("/api/ingredients/lab-report").permitAll()
 //                                .requestMatchers("/api/batches").permitAll()
 //                                .requestMatchers("/api/awc-dispatches/**").permitAll()
