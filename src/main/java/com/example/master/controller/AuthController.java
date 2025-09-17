@@ -10,7 +10,7 @@ import org.springframework.util.MultiValueMap;
 import java.util.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Value("${keycloak.auth-server-url}")

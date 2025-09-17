@@ -33,7 +33,7 @@ public interface DemandRepository extends JpaRepository<Demand, Long> {
     // Find pending demands (for FCI)
 //    @Query("SELECT d FROM Demand d WHERE d.status IN ('PENDING', 'FCI_ACCEPTED') ORDER BY d.createdAt ASC")
 //    List<DemandResponseDTO> findPendingDemands();
-    @Query("SELECT d FROM Demand d WHERE d.status IN ('PENDING', 'FCI_ACCEPTED') ORDER BY d.createdAt ASC")
+    @Query("SELECT d FROM Demand d WHERE d.status IN ('PENDING', 'FCI_ACCEPTED','FCI_DISPATCHED') ORDER BY d.createdAt ASC")
     List<Demand> findPendingAndAcceptedDemandsForFci();
 
     // Supplier: FCI accepted or Supplier accepted
@@ -47,7 +47,7 @@ public interface DemandRepository extends JpaRepository<Demand, Long> {
     List<Demand> findAcceptedDemandsForSupplier(@Param("supplierId") Long supplierId);
 
     // CDPO: Supplier accepted or CDPO dispatched
-    @Query("SELECT d FROM Demand d WHERE d.status IN ('SUPPLIER_ACCEPTED', 'SUPPLIER_SELF_DECLARED', 'SUPPLIER_DISPATCHED', 'CDPO_DISPATCHED','CDPO_ACCEPTED') ORDER BY d.supplierAcceptedAt ASC")
+    @Query("SELECT d FROM Demand d WHERE d.status IN ('SUPPLIER_DISPATCHED', 'CDPO_DISPATCHED','CDPO_ACCEPTED') ORDER BY d.supplierAcceptedAt ASC")
     List<Demand> findDemandsForCdpo();
 
     // AWC: CDPO dispatched or AWC accepted

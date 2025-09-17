@@ -398,53 +398,118 @@ public class DemandController {
         return ResponseEntity.ok(dashboard);
     }
 
-    // Status tracking endpoint
+
     @PreAuthorize("hasAnyRole('ADMIN','DWCD','FCI','SUPPLIER','CDPO','AWC')")
     @GetMapping("/{id}/status-history")
     public ResponseEntity<Map<String, Object>> getStatusHistory(@PathVariable Long id) {
         logCurrentUserAuthorities("getStatusHistory");
 
-        // Fetch the demand response DTO
         Optional<DemandResponseDTO> demandResponseDTOOpt = demandService.getDemandById(id);
 
-        // If no demand is found, return 404
         if (demandResponseDTOOpt.isEmpty()) {
-//            log.debug("Demand with ID " + id + " not found.");
             return ResponseEntity.notFound().build();
         }
 
-        // Map the DTO to a Demand entity
-        DemandResponseDTO demandResponseDTO = demandResponseDTOOpt.get();
-//        log.debug("Fetched demand response: " + demandResponseDTO);
+        DemandResponseDTO dto = demandResponseDTOOpt.get();
 
-        Demand demand = new Demand();
-        demand.setId(demandResponseDTO.getId());
-        demand.setStatus(demandResponseDTO.getStatus());
-        demand.setCreatedAt(demandResponseDTO.getCreatedAt());
-        demand.setFciAcceptedAt(demandResponseDTO.getFciAcceptedAt());
-        demand.setFciRejectedAt(demandResponseDTO.getFciRejectedAt());
-        demand.setSupplierAcceptedAt(demandResponseDTO.getSupplierAcceptedAt());
-        demand.setSupplierRejectedAt(demandResponseDTO.getSupplierRejectedAt());
-        demand.setCdpoDispatchedAt(demandResponseDTO.getCdpoDispatchedAt());
-        demand.setAwcAcceptedAt(demandResponseDTO.getAwcAcceptedAt());
+        // Build status timeline list
+        List<Map<String, Object>> statusHistory = new java.util.ArrayList<>();
 
-//        log.debug("Mapped Demand object: " + demand);
+        if (dto.getCreatedAt() != null) {
+            statusHistory.add(Map.of("status", "PENDING", "timestamp", dto.getCreatedAt()));
+        }
+        if (dto.getFciAcceptedAt() != null) {
+            statusHistory.add(Map.of("status", "FCI_ACCEPTED", "timestamp", dto.getFciAcceptedAt()));
+        }
+        if (dto.getFciRejectedAt() != null) {
+            statusHistory.add(Map.of("status", "FCI_REJECTED", "timestamp", dto.getFciRejectedAt()));
+        }
+        if (dto.getFciDispatchedAt() != null) {
+            statusHistory.add(Map.of("status", "FCI_DISPATCHED", "timestamp", dto.getFciDispatchedAt()));
+        }
+        if (dto.getSupplierAcceptedAt() != null) {
+            statusHistory.add(Map.of("status", "SUPPLIER_ACCEPTED", "timestamp", dto.getSupplierAcceptedAt()));
+        }
+        if (dto.getSupplierRejectedAt() != null) {
+            statusHistory.add(Map.of("status", "SUPPLIER_REJECTED", "timestamp", dto.getSupplierRejectedAt()));
+        }
+        if (dto.getSupplierSelfDeclaredAt() != null) {
+            statusHistory.add(Map.of("status", "SUPPLIER_SELF_DECLARED", "timestamp", dto.getSupplierSelfDeclaredAt()));
+        }
+        if (dto.getSupplierDispatchedAt() != null) {
+            statusHistory.add(Map.of("status", "SUPPLIER_DISPATCHED", "timestamp", dto.getSupplierDispatchedAt()));
+        }
+//        if (dto.getCdpoAcceptedAt() != null) {
+//            statusHistory.add(Map.of("status", "CDPO_ACCEPTED", "timestamp", dto.getCdpoAcceptedAt()));
+//        }
+//        if (dto.getCdpoRejectedAt() != null) {
+//            statusHistory.add(Map.of("status", "CDPO_REJECTED", "timestamp", dto.getCdpoRejectedAt()));
+//        }
+        if (dto.getCdpoDispatchedAt() != null) {
+            statusHistory.add(Map.of("status", "CDPO_DISPATCHED", "timestamp", dto.getCdpoDispatchedAt()));
+        }
+        if (dto.getAwcAcceptedAt() != null) {
+            statusHistory.add(Map.of("status", "AWC_ACCEPTED", "timestamp", dto.getAwcAcceptedAt()));
+        }
 
-        // Build the status history map
-        Map<String, Object> history = Map.of(
-                "id", demand.getId() != null ? demand.getId() : "N/A",
-                "currentStatus", demand.getStatus() != null ? demand.getStatus() : "Unknown",
-                "createdAt", demand.getCreatedAt() != null ? demand.getCreatedAt() : "Unknown",
-                "fciAcceptedAt", demand.getFciAcceptedAt() != null ? demand.getFciAcceptedAt() : "Unknown",
-                "fciRejectedAt", demand.getFciRejectedAt() != null ? demand.getFciRejectedAt() : "Unknown",
-                "supplierAcceptedAt", demand.getSupplierAcceptedAt() != null ? demand.getSupplierAcceptedAt() : "Unknown",
-                "supplierRejectedAt", demand.getSupplierRejectedAt() != null ? demand.getSupplierRejectedAt() : "Unknown",
-                "cdpoDispatchedAt", demand.getCdpoDispatchedAt() != null ? demand.getCdpoDispatchedAt() : "Unknown",
-                "awcAcceptedAt", demand.getAwcAcceptedAt() != null ? demand.getAwcAcceptedAt() : "Unknown"
+        // Response with timeline
+        Map<String, Object> response = Map.of(
+                "id", dto.getId(),
+                "currentStatus", dto.getStatus(),
+                "statusHistory", statusHistory
         );
 
-        return ResponseEntity.ok(history);
+        return ResponseEntity.ok(response);
     }
+
+
+    // Status tracking endpoint
+//    @PreAuthorize("hasAnyRole('ADMIN','DWCD','FCI','SUPPLIER','CDPO','AWC')")
+//    @GetMapping("/{id}/status-history")
+//    public ResponseEntity<Map<String, Object>> getStatusHistory(@PathVariable Long id) {
+//        logCurrentUserAuthorities("getStatusHistory");
+//
+//        // Fetch the demand response DTO
+//        Optional<DemandResponseDTO> demandResponseDTOOpt = demandService.getDemandById(id);
+//
+//        // If no demand is found, return 404
+//        if (demandResponseDTOOpt.isEmpty()) {
+////            log.debug("Demand with ID " + id + " not found.");
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        // Map the DTO to a Demand entity
+//        DemandResponseDTO demandResponseDTO = demandResponseDTOOpt.get();
+////        log.debug("Fetched demand response: " + demandResponseDTO);
+//
+//        Demand demand = new Demand();
+//        demand.setId(demandResponseDTO.getId());
+//        demand.setStatus(demandResponseDTO.getStatus());
+//        demand.setCreatedAt(demandResponseDTO.getCreatedAt());
+//        demand.setFciAcceptedAt(demandResponseDTO.getFciAcceptedAt());
+//        demand.setFciRejectedAt(demandResponseDTO.getFciRejectedAt());
+//        demand.setSupplierAcceptedAt(demandResponseDTO.getSupplierAcceptedAt());
+//        demand.setSupplierRejectedAt(demandResponseDTO.getSupplierRejectedAt());
+//        demand.setCdpoDispatchedAt(demandResponseDTO.getCdpoDispatchedAt());
+//        demand.setAwcAcceptedAt(demandResponseDTO.getAwcAcceptedAt());
+//
+////        log.debug("Mapped Demand object: " + demand);
+//
+//        // Build the status history map
+//        Map<String, Object> history = Map.of(
+//                "id", demand.getId() != null ? demand.getId() : "N/A",
+//                "currentStatus", demand.getStatus() != null ? demand.getStatus() : "Unknown",
+//                "createdAt", demand.getCreatedAt() != null ? demand.getCreatedAt() : "Unknown",
+//                "fciAcceptedAt", demand.getFciAcceptedAt() != null ? demand.getFciAcceptedAt() : "Unknown",
+//                "fciRejectedAt", demand.getFciRejectedAt() != null ? demand.getFciRejectedAt() : "Unknown",
+//                "supplierAcceptedAt", demand.getSupplierAcceptedAt() != null ? demand.getSupplierAcceptedAt() : "Unknown",
+//                "supplierRejectedAt", demand.getSupplierRejectedAt() != null ? demand.getSupplierRejectedAt() : "Unknown",
+//                "cdpoDispatchedAt", demand.getCdpoDispatchedAt() != null ? demand.getCdpoDispatchedAt() : "Unknown",
+//                "awcAcceptedAt", demand.getAwcAcceptedAt() != null ? demand.getAwcAcceptedAt() : "Unknown"
+//        );
+//
+//        return ResponseEntity.ok(history);
+//    }
 
     /**
      * Helper method to log current user's authorities for debugging
