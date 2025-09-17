@@ -26,16 +26,16 @@ public class AuthController {
     private String clientSecret;
 
     // Handle preflight requests
-    @CrossOrigin(origins = "*")
-    @RequestMapping(value = "/login", method = RequestMethod.OPTIONS)
-    public ResponseEntity<?> handleOptions() {
-        return ResponseEntity.ok()
-                .header("Access-Control-Allow-Origin", "*")
-                .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-                .header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-                .header("Access-Control-Max-Age", "3600")
-                .build();
-    }
+//    @CrossOrigin(origins = "*")
+//    @RequestMapping(value = "/login", method = RequestMethod.OPTIONS)
+//    public ResponseEntity<?> handleOptions() {
+//        return ResponseEntity.ok()
+//                .header("Access-Control-Allow-Origin", "*")
+//                .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+//                .header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+//                .header("Access-Control-Max-Age", "3600")
+//                .build();
+//    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
@@ -69,8 +69,8 @@ public class AuthController {
 
             // Return response with CORS headers
             return ResponseEntity.ok()
-                    .header("Access-Control-Allow-Origin", "*")
-                    .header("Access-Control-Allow-Credentials", "true")
+//                    .header("Access-Control-Allow-Origin", "*")
+//                    .header("Access-Control-Allow-Credentials", "true")
                     .body(response.getBody());
 
         } catch (HttpClientErrorException e) {
@@ -80,8 +80,8 @@ public class AuthController {
             System.err.println("Headers: " + e.getResponseHeaders());
 
             return ResponseEntity.status(e.getStatusCode())
-                    .header("Access-Control-Allow-Origin", "*")
-                    .header("Access-Control-Allow-Credentials", "true")
+//                    .header("Access-Control-Allow-Origin", "*")
+//                    .header("Access-Control-Allow-Credentials", "true")
                     .body(Map.of(
                             "error", "Authentication failed",
                             "details", e.getResponseBodyAsString(),
@@ -92,8 +92,8 @@ public class AuthController {
             System.err.println("Error message: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .header("Access-Control-Allow-Origin", "*")
-                    .header("Access-Control-Allow-Credentials", "true")
+//                    .header("Access-Control-Allow-Origin", "*")
+//                    .header("Access-Control-Allow-Credentials", "true")
                     .body(Map.of("error", "Internal server error", "message", e.getMessage()));
         }
     }

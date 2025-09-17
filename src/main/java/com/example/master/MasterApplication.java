@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @EnableAsync
 @SpringBootApplication
 @EnableMethodSecurity
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class MasterApplication {
 //CommandLineRunner run () {
 //    return args -> {
