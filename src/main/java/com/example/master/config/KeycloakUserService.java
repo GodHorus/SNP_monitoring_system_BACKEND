@@ -24,16 +24,16 @@ import java.util.stream.Collectors;
 @Service
 public class KeycloakUserService {
 
-    @Value("${app.keycloak.server-url:http://localhost:8080}")
+    @Value("${keycloak.auth-server-url}")
     private String serverUrl;
 
-    @Value("${app.keycloak.realm:master}")
+    @Value("${keycloak.realm}")
     private String realm;
 
-    @Value("${app.keycloak.admin-username:admin}")
+    @Value("${keycloak.admin-username:admin}")
     private String adminUsername;
 
-    @Value("${app.keycloak.admin-password:admin}")
+    @Value("${keycloak.admin-password:admin}")
     private String adminPassword;
 
     private Keycloak keycloak;
