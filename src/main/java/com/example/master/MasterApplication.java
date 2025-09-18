@@ -4,12 +4,14 @@ package com.example.master;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @EnableAsync
 @SpringBootApplication
+@EnableKafka
 @EnableMethodSecurity
 //@CrossOrigin(origins = "*")
 public class MasterApplication {
