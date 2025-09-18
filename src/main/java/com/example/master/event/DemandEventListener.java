@@ -29,19 +29,29 @@ public class DemandEventListener {
 
     @KafkaListener(topics = "demand-events", groupId = "demand-service")
     public void consumeEvent(String eventJson) {
+        // Check if the event JSON is null or empty before processing
+        if (eventJson == null || eventJson.trim().isEmpty()) {
+            System.err.println("⚠️ Skipping empty Kafka message");
+            return;  // Exit early if the message is empty or null
+        }
+
         System.out.println("📩 Received Kafka Event JSON: " + eventJson);
 
         try {
+            // Attempt to deserialize the JSON into a Map
             Map<String, String> event = objectMapper.readValue(eventJson, Map.class);
+
             String type = event.get("type");
             Long demandId = Long.parseLong(event.get("demandId"));
 
+            // Fetch the demand using the demandId
             DemandResponseDTO dto = demandService.getDemandById(demandId).orElse(null);
             if (dto == null) {
                 System.err.println("❌ Demand not found for ID " + demandId);
                 return;
             }
 
+            // Process the event based on the event type
             switch (type) {
                 case "NEW_DEMAND" -> {
                     keycloakUserService.getUserEmailsByRole("FCI")
@@ -56,9 +66,42 @@ public class DemandEventListener {
                 default -> System.out.println("⚠️ Unknown event type: " + type);
             }
         } catch (Exception e) {
-            System.err.println("❌ Failed to process Kafka event: " + e.getMessage());
+            System.err.println("❌ Failed to process Kafka event: " + eventJson + " | Error: " + e.getMessage());
         }
     }
+
+//    @KafkaListener(topics = "demand-events", groupId = "demand-service")
+//    public void consumeEvent(String eventJson) {
+//        System.out.println("📩 Received Kafka Event JSON: " + eventJson);
+//
+//        try {
+//            Map<String, String> event = objectMapper.readValue(eventJson, Map.class);
+//            String type = event.get("type");
+//            Long demandId = Long.parseLong(event.get("demandId"));
+//
+//            DemandResponseDTO dto = demandService.getDemandById(demandId).orElse(null);
+//            if (dto == null) {
+//                System.err.println("❌ Demand not found for ID " + demandId);
+//                return;
+//            }
+//
+//            switch (type) {
+//                case "NEW_DEMAND" -> {
+//                    keycloakUserService.getUserEmailsByRole("FCI")
+//                            .forEach(mail -> sendRoleBasedMail("FCI", mail, type, dto));
+//                    keycloakUserService.getUserEmailsByRole("SUPPLIER")
+//                            .forEach(mail -> sendRoleBasedMail("SUPPLIER", mail, type, dto));
+//                }
+//                case "STATUS_UPDATE" -> {
+//                    String status = event.get("status");
+//                    handleStatusUpdate(status, dto);
+//                }
+//                default -> System.out.println("⚠️ Unknown event type: " + type);
+//            }
+//        } catch (Exception e) {
+//            System.err.println("❌ Failed to process Kafka event: " + e.getMessage());
+//        }
+//    }
 
     private void handleStatusUpdate(String status, DemandResponseDTO dto) {
         switch (status) {
