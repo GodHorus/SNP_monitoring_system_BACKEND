@@ -33,6 +33,7 @@ public class SecurityConfig {
 //                .cors(cors -> cors.configurationSource())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**", "/auth/login", "/auth/forgot-password", "/auth/reset-password").permitAll()
+                        .requestMatchers("/api/demands/**","/api/ingredients/**","/api/users/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
