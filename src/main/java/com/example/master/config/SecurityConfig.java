@@ -33,49 +33,47 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**", "/auth/login", "/auth/forgot-password", "/auth/reset-password").permitAll()
-                        .requestMatchers("/api/demands/**","/api/ingredients/**","/api/users/**").authenticated()
+                        .requestMatchers("/api/demands/**", "/api/ingredients/**", "/api/users/**").authenticated()
                         .anyRequest().authenticated()
                 )
-                //.cors(cors -> cors.configurationSource())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 );
         return http.build();
     }
 
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-
-        //config.setAllowedOrigins(List.of("*"));
-        config.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "http://127.0.0.1:3000",
-                "http://snp-assam.eighteenpixels.com",
-                "https://snp-assam.eighteenpixels.com",
-                "http://snp-assam.eighteenpixels.com:3000",
-                "https://snp-assam.eighteenpixels.com:3000",
-                "http://13.203.237.127",
-                "https://13.203.237.127",
-                "http://13.203.237.127:3000",
-                "https://13.203.237.127:3000",
-                "http://13.233.95.99",
-                "https://13.233.95.99",
-                "http://13.233.95.99:9909",
-                "https://13.233.95.99:9909",
-                "http://aanna-prabah-api.eighteenpixels.in",
-                "https://aanna-prabah-api.eighteenpixels.in",
-                "http://aanna-prabah-api.eighteenpixels.in:9909",
-                "https://aanna-prabah-api.eighteenpixels.in:9909"
-        ));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
-
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
+//    @Bean
+//    public CorsFilter corsFilter() {
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        CorsConfiguration config = new CorsConfiguration();
+//
+//        config.setAllowedOrigins(List.of(
+//                "http://localhost:3000",
+//                "http://127.0.0.1:3000",
+//                "http://snp-assam.eighteenpixels.com",
+//                "https://snp-assam.eighteenpixels.com",
+//                "http://snp-assam.eighteenpixels.com:3000",
+//                "https://snp-assam.eighteenpixels.com:3000",
+//                "http://13.203.237.127",
+//                "https://13.203.237.127",
+//                "http://13.203.237.127:3000",
+//                "https://13.203.237.127:3000",
+//                "http://13.233.95.99",
+//                "https://13.233.95.99",
+//                "http://13.233.95.99:9909",
+//                "https://13.233.95.99:9909",
+//                "http://aanna-prabah-api.eighteenpixels.in",
+//                "https://aanna-prabah-api.eighteenpixels.in",
+//                "http://aanna-prabah-api.eighteenpixels.in:9909",
+//                "https://aanna-prabah-api.eighteenpixels.in:9909"
+//        ));
+//        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+//        config.setAllowedHeaders(List.of("*"));
+//        config.setAllowCredentials(true);
+//
+//        source.registerCorsConfiguration("/**", config);
+//        return new CorsFilter(source);
+//    }
 
 
     @Bean
