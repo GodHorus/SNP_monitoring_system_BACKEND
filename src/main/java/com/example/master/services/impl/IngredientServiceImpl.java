@@ -8,10 +8,8 @@ import com.example.master.services.IngredientService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -412,11 +410,11 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public LabReportDTO getLabReportById(Long labReportId) {
+    public LabreportResponseDTO getLabReportById(Long labReportId) {
         LabReport report = labReportRepo.findById(labReportId)
                 .orElseThrow(() -> new RuntimeException("Lab report not found with ID: " + labReportId));
 
-        return new LabReportDTO(
+        return new LabreportResponseDTO(
                 report.getId(),
                 report.getLabName(),
                 report.getManufacturingDate(),

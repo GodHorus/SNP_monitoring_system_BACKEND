@@ -2,6 +2,7 @@ package com.example.master.controller;
 
 import com.example.master.Dto.IngredientDetailDTO;
 import com.example.master.Dto.LabReportDTO;
+import com.example.master.Dto.LabreportResponseDTO;
 import com.example.master.services.IngredientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +51,7 @@ public class IngredientController {
     }
 
     @GetMapping("/lab-report/{id}")
-    public ResponseEntity<LabReportDTO> getLabReportById(@PathVariable Long id) {
+    public ResponseEntity<LabreportResponseDTO> getLabReportById(@PathVariable Long id) {
         return ResponseEntity.ok(ingredientService.getLabReportById(id));
     }
 

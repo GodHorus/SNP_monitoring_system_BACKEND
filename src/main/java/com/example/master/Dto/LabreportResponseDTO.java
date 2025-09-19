@@ -2,7 +2,7 @@ package com.example.master.Dto;
 
 import java.time.LocalDate;
 
-public class LabReportDTO {
+public class LabreportResponseDTO {
     private Long id;
     private String labName;
     private LocalDate manufacturingDate;
@@ -12,23 +12,16 @@ public class LabReportDTO {
     private String remarks;
     private String filePath;
 
-    // ✅ link via batchId (NOT ingredientId anymore)
-//    private Long batchId;
 
-
-//    public LabReportDTO(Long id, String labName, LocalDate manufacturingDate, LocalDate expiryDate, LocalDate testDate, String status, String remarks, String filePath) {
-//        this.id = id;
-//        this.labName = labName;
-//        this.manufacturingDate = manufacturingDate;
-//        this.expiryDate = expiryDate;
-//        this.testDate = testDate;
-//        this.status = status;
-//        this.remarks = remarks;
-//        this.filePath = filePath;
-//    }
-
-    public LabReportDTO() {
-
+    public LabreportResponseDTO(Long id, String labName, LocalDate manufacturingDate, LocalDate expiryDate, LocalDate testDate, String status, String remarks, String filePath) {
+        this.id = id;
+        this.labName = labName;
+        this.manufacturingDate = manufacturingDate;
+        this.expiryDate = expiryDate;
+        this.testDate = testDate;
+        this.status = status;
+        this.remarks = remarks;
+        this.filePath = filePath;
     }
 
     public Long getId() {
@@ -94,9 +87,4 @@ public class LabReportDTO {
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
-
-
-
-//    public Long getBatchId() { return batchId; }
-//    public void setBatchId(Long batchId) { this.batchId = batchId; }
 }

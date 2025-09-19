@@ -2,6 +2,8 @@ package com.example.master.services;
 
 import com.example.master.Dto.IngredientDetailDTO;
 import com.example.master.Dto.LabReportDTO;
+import com.example.master.Dto.LabreportResponseDTO;
+
 import java.util.List;
 
 public interface IngredientService {
@@ -25,5 +27,5 @@ public interface IngredientService {
 
     List<IngredientDetailDTO> getIngredientsByDemandId(Long demandId);
 
-    LabReportDTO getLabReportById(Long labReportId);
+    LabreportResponseDTO getLabReportById(Long labReportId);
 }
