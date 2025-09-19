@@ -1,5 +1,7 @@
 package com.example.master.services;
 
+import com.example.master.Dto.PasswordUpdateDTO;
+import com.example.master.Dto.UserProfileDTO;
 import com.example.master.model.User;
 
 import java.util.List;
@@ -16,4 +18,11 @@ public interface UserService {
     Optional<User> getUserByEmail(String email);
 
     List<User> getAllUsers();
+
+    UserProfileDTO getProfile(String keycloakUserId);
+
+    void updateProfile(String keycloakUserId, UserProfileDTO dto);
+
+    void updatePassword(String keycloakUserId, PasswordUpdateDTO dto);
+
 }

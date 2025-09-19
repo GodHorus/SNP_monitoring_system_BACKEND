@@ -2,11 +2,13 @@ package com.example.master.config;
 
 import com.example.master.Dto.UserRequestDTO;
 import jakarta.ws.rs.core.Response;
+import org.keycloak.KeycloakPrincipal;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +21,7 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,7 +45,7 @@ public class KeycloakUserService {
         if (keycloak == null) {
             keycloak = KeycloakBuilder.builder()
                     .serverUrl(serverUrl)
-                    .realm("master") // Use master realm for admin operations
+                    .realm("realm") // Use master realm for admin operations
                     .clientId("admin-cli")
                     .username(adminUsername)
                     .password(adminPassword)
@@ -233,6 +236,32 @@ public class KeycloakUserService {
             throw new IllegalStateException("No authenticated user found");
         }
         return auth.getName(); // usually the Keycloak userId (UUID)
+    }
+    public void updateUserPassword(String userId, String newPassword) {
+        CredentialRepresentation credential = new CredentialRepresentation();
+        credential.setTemporary(false);
+        credential.setType(CredentialRepresentation.PASSWORD);
+        credential.setValue(newPassword);
+
+        keycloak.realm("realm")
+                .users()
+                .get(userId)
+                .resetPassword(credential);
+    }
+
+
+
+    public Set<String> getCurrentUserRolesFromToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !(authentication.getPrincipal() instanceof KeycloakPrincipal)) {
+            throw new IllegalStateException("Cannot extract roles – no authenticated Keycloak user found.");
+        }
+
+        KeycloakPrincipal<?> principal = (KeycloakPrincipal<?>) authentication.getPrincipal();
+        AccessToken token = principal.getKeycloakSecurityContext().getToken();
+
+        return token.getRealmAccess().getRoles(); // Returns a Set<String> of roles
     }
 
 

@@ -411,6 +411,24 @@ public class IngredientServiceImpl implements IngredientService {
         return dto;
     }
 
+    @Override
+    public LabReportDTO getLabReportById(Long labReportId) {
+        LabReport report = labReportRepo.findById(labReportId)
+                .orElseThrow(() -> new RuntimeException("Lab report not found with ID: " + labReportId));
+
+        return new LabReportDTO(
+                report.getId(),
+                report.getLabName(),
+                report.getManufacturingDate(),
+                report.getExpiryDate(),
+                report.getTestDate(),
+                report.getStatus(),
+                report.getRemarks(),
+                report.getFilePath()
+        );
+    }
+
+
 
     @Override
     public LabReportDTO saveLabReport(LabReportDTO dto) {

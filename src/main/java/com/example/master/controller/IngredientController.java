@@ -49,6 +49,11 @@ public class IngredientController {
         return ResponseEntity.ok(ingredientService.getLabReportByIngredientId(id));
     }
 
+    @GetMapping("/lab-report/{id}")
+    public ResponseEntity<LabReportDTO> getLabReportById(@PathVariable Long id) {
+        return ResponseEntity.ok(ingredientService.getLabReportById(id));
+    }
+
 //    private final IngredientService ingredientService;
 //
 //    public IngredientController(IngredientService ingredientService) {

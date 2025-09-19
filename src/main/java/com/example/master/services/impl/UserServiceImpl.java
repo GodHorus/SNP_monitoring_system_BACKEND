@@ -1,5 +1,7 @@
 package com.example.master.services.impl;
 
+import com.example.master.Dto.PasswordUpdateDTO;
+import com.example.master.Dto.UserProfileDTO;
 import com.example.master.Dto.UserRequestDTO;
 import com.example.master.model.User;
 import com.example.master.repository.UserRepository;
@@ -57,4 +59,43 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    @Override
+    public UserProfileDTO getProfile(String keycloakUserId) {
+        User user = userRepository.findByKeycloakUserId(keycloakUserId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        UserProfileDTO dto = new UserProfileDTO();
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setMobile(user.getMobile());
+        dto.setDistrict(user.getDistrict());
+        dto.setCdpo(user.getCdpo());
+        dto.setSectors(user.getSectors());
+        return dto;
+    }
+
+    @Override
+    @Transactional
+    public void updateProfile(String keycloakUserId, UserProfileDTO profileDTO) {
+        userRepository.updateUserProfile(
+                keycloakUserId,
+                profileDTO.getName(),
+                profileDTO.getMobile(),
+                profileDTO.getDistrict(),
+                profileDTO.getCdpo(),
+                profileDTO.getSectors()
+        );
+    }
+
+    @Override
+    public void updatePassword(String keycloakUserId, PasswordUpdateDTO dto) {
+        if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+            throw new RuntimeException("Passwords do not match");
+        }
+
+        // delegate to Keycloak
+        keycloakUserService.updateUserPassword(keycloakUserId, dto.getNewPassword());
+    }
+
 }
