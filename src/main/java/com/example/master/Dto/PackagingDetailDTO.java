@@ -3,54 +3,128 @@ package com.example.master.Dto;
 import java.util.List;
 
 public class PackagingDetailDTO {
-    private Long id;
-//    private Double availableStock;
-    private Double packetSize;
-    private String unit;
-    private Integer packets;
-    private Double remainingStock;
-    private Long batchId;
 
-    private BatchDetailDTO batchDetailDTO;
+    public Long demandId;
+    public String batchNumber;
+    public String type;
+    public Double availableStock;
+    public Double packetSize;
+    public String unit;
+    public Integer packets;
+    public Double remainingStock;
 
-    private List<DispatchDetailDTO> dispatchDetailDTOs;
-
-    // Getters and Setters
-    public List<DispatchDetailDTO> getDispatchDetailDTOs() {
-        return dispatchDetailDTOs;
+    public Long getDemandId() {
+        return demandId;
     }
 
-    public void setDispatchDetailDTOs(List<DispatchDetailDTO> dispatchDetailDTOs) {
-        this.dispatchDetailDTOs = dispatchDetailDTOs;
+    public void setDemandId(Long demandId) {
+        this.demandId = demandId;
     }
 
-    public BatchDetailDTO getBatchDetailDTO() {
-        return batchDetailDTO;
+    public String getBatchNumber() {
+        return batchNumber;
     }
 
-    public void setBatchDetailDTO(BatchDetailDTO batchDetailDTO) {
-        this.batchDetailDTO = batchDetailDTO;
+    public void setBatchNumber(String batchNumber) {
+        this.batchNumber = batchNumber;
     }
 
-    // Getters & Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getType() {
+        return type;
+    }
 
-//    public Double getAvailableStock() { return availableStock; }
-//    public void setAvailableStock(Double availableStock) { this.availableStock = availableStock; }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-    public Double getPacketSize() { return packetSize; }
-    public void setPacketSize(Double packetSize) { this.packetSize = packetSize; }
+    public Double getAvailableStock() {
+        return availableStock;
+    }
 
-    public String getUnit() { return unit; }
-    public void setUnit(String unit) { this.unit = unit; }
+    public void setAvailableStock(Double availableStock) {
+        this.availableStock = availableStock;
+    }
 
-    public Integer getPackets() { return packets; }
-    public void setPackets(Integer packets) { this.packets = packets; }
+    public Double getPacketSize() {
+        return packetSize;
+    }
 
-    public Double getRemainingStock() { return remainingStock; }
-    public void setRemainingStock(Double remainingStock) { this.remainingStock = remainingStock; }
+    public void setPacketSize(Double packetSize) {
+        this.packetSize = packetSize;
+    }
 
-    public Long getBatchId() { return batchId; }
-    public void setBatchId(Long batchId) { this.batchId = batchId; }
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public Integer getPackets() {
+        return packets;
+    }
+
+    public void setPackets(Integer packets) {
+        this.packets = packets;
+    }
+
+    public Double getRemainingStock() {
+        return remainingStock;
+    }
+
+    public void setRemainingStock(Double remainingStock) {
+        this.remainingStock = remainingStock;
+    }
+
+    //    private Long id;
+////    private Double availableStock;
+//    private Double packetSize;
+//    private String unit;
+//    private Integer packets;
+//    private Double remainingStock;
+//    private Long batchId;
+//
+//    private BatchDetailDTO batchDetailDTO;
+//
+//    private List<DispatchDetailDTO> dispatchDetailDTOs;
+//
+//    // Getters and Setters
+//    public List<DispatchDetailDTO> getDispatchDetailDTOs() {
+//        return dispatchDetailDTOs;
+//    }
+//
+//    public void setDispatchDetailDTOs(List<DispatchDetailDTO> dispatchDetailDTOs) {
+//        this.dispatchDetailDTOs = dispatchDetailDTOs;
+//    }
+//
+//    public BatchDetailDTO getBatchDetailDTO() {
+//        return batchDetailDTO;
+//    }
+//
+//    public void setBatchDetailDTO(BatchDetailDTO batchDetailDTO) {
+//        this.batchDetailDTO = batchDetailDTO;
+//    }
+//
+//    // Getters & Setters
+//    public Long getId() { return id; }
+//    public void setId(Long id) { this.id = id; }
+//
+////    public Double getAvailableStock() { return availableStock; }
+////    public void setAvailableStock(Double availableStock) { this.availableStock = availableStock; }
+//
+//    public Double getPacketSize() { return packetSize; }
+//    public void setPacketSize(Double packetSize) { this.packetSize = packetSize; }
+//
+//    public String getUnit() { return unit; }
+//    public void setUnit(String unit) { this.unit = unit; }
+//
+//    public Integer getPackets() { return packets; }
+//    public void setPackets(Integer packets) { this.packets = packets; }
+//
+//    public Double getRemainingStock() { return remainingStock; }
+//    public void setRemainingStock(Double remainingStock) { this.remainingStock = remainingStock; }
+//
+//    public Long getBatchId() { return batchId; }
+//    public void setBatchId(Long batchId) { this.batchId = batchId; }
 }

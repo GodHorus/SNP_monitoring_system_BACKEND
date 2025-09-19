@@ -3,6 +3,8 @@ package com.example.master.Dto;
 import java.time.LocalDate;
 
 public class LabReportDTO {
+
+    public Long demandId;
     private Long id;
     private String labName;
     private LocalDate manufacturingDate;
@@ -29,6 +31,14 @@ public class LabReportDTO {
 
     public LabReportDTO() {
 
+    }
+
+    public Long getDemandId() {
+        return demandId;
+    }
+
+    public void setDemandId(Long demandId) {
+        this.demandId = demandId;
     }
 
     public Long getId() {

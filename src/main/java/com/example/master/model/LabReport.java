@@ -21,8 +21,11 @@ public class LabReport {
     private String filePath; // uploaded file path
 
     // ✅ Relation with BatchDetail (not IngredientDetail anymore)
-    @OneToOne(mappedBy = "labReport", fetch = FetchType.LAZY)
-    private BatchDetail batchDetail;
+//    @OneToOne(mappedBy = "labReport", fetch = FetchType.LAZY)
+//    private BatchDetail batchDetail;
+
+    @Column(name = "demand_id", nullable = false)
+    private Long demandId;
 
     // --- Getters & Setters ---
     public Long getId() { return id; }
@@ -49,6 +52,15 @@ public class LabReport {
     public String getFilePath() { return filePath; }
     public void setFilePath(String filePath) { this.filePath = filePath; }
 
-    public BatchDetail getBatchDetail() { return batchDetail; }
-    public void setBatchDetail(BatchDetail batchDetail) { this.batchDetail = batchDetail; }
+//    public BatchDetail getBatchDetail() { return batchDetail; }
+//    public void setBatchDetail(BatchDetail batchDetail) { this.batchDetail = batchDetail; }
+
+
+    public Long getDemandId() {
+        return demandId;
+    }
+
+    public void setDemandId(Long demandId) {
+        this.demandId = demandId;
+    }
 }
