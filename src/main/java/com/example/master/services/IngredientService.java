@@ -23,7 +23,7 @@ public interface IngredientService {
 //
 //    LabReportDTO saveLabReport(LabReportDTO dto);
 
-    /// /    LabReportDTO getLabReportByIngredientId(Long ingredientId);
+    //    LabReportDTO getLabReportByIngredientId(Long ingredientId);
 //
 //    LabReportDTO getLabReportByIngredientId(Long ingredientId);
 //
