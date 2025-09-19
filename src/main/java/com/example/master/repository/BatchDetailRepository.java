@@ -11,9 +11,9 @@
 //public interface BatchDetailRepository extends JpaRepository<BatchDetail, Long> {
 //
 //    // This works because BatchDetail.ingredient.id is the field path
-////    BatchDetail findByIngredientId(Long ingredientId);
-////    Optional<BatchDetail> findByIngredientId(Long ingredientId);
-////    Optional<BatchDetail> findByLabReportIsNull();
+//    BatchDetail findByIngredientId(Long ingredientId);
+//    Optional<BatchDetail> findByIngredientId(Long ingredientId);
+//    Optional<BatchDetail> findByLabReportIsNull();
 //
 //    @Query("SELECT b FROM BatchDetail b JOIN b.ingredients i WHERE i.batchNo = :batchNo")
 //    Optional<BatchDetail> findByIngredients_BatchNo(@Param("batchNo") String batchNo);
@@ -23,7 +23,7 @@
 //    Optional<BatchDetail> findByIngredients_Id(Long ingredientId);
 //    List<BatchDetail> findByLabReportIsNull();
 //
-////    Optional<Object> findByIngredientId(Long ingredientId);
+//   Optional<Object> findByIngredientId(Long ingredientId);
 //}
 
 // BatchDetailRepository.java
