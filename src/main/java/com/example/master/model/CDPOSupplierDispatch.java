@@ -1,73 +1,66 @@
 package com.example.master.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "cdpo_supplier_dispatch")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CDPOSupplierDispatch {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer dispatchPackets;   // NEW field
-    private String remarks;            // NEW field
+    @Column(name = "demand_id", nullable = false)
+    private Long demandId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accept_demand_id", nullable = false)
-    private AcceptDemand acceptDemand;
+    @Column(name = "batch_no")
+    private String batchNo;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "lot_no")
+    private String lotNo;
+
+    @Column(name = "cdpo")
+    private String cdpo;   // CDPO/Project Name
+
+    @Column(name = "sector")
+    private String sector;
+
+    @Column(name = "dispatch_packets")
+    private Integer dispatchPackets;
+
+    @Column(name = "remarks")
+    private String remarks;
+
+    @Column(name = "sublot_no", unique = true, nullable = false)
     private String sublotNo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sector_id")
-    private Sector sector;
+    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Sector getSector() {
-        return sector;
-    }
+    public Long getDemandId() { return demandId; }
+    public void setDemandId(Long demandId) { this.demandId = demandId; }
 
-    public void setSector(Sector sector) {
-        this.sector = sector;
-    }
+    public String getBatchNo() { return batchNo; }
+    public void setBatchNo(String batchNo) { this.batchNo = batchNo; }
 
-    public Long getId() {
-        return id;
-    }
+    public String getLotNo() { return lotNo; }
+    public void setLotNo(String lotNo) { this.lotNo = lotNo; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getCdpo() { return cdpo; }
+    public void setCdpo(String cdpo) { this.cdpo = cdpo; }
 
-    public Integer getDispatchPackets() {
-        return dispatchPackets;
-    }
+    public String getSector() { return sector; }
+    public void setSector(String sector) { this.sector = sector; }
 
-    public void setDispatchPackets(Integer dispatchPackets) {
-        this.dispatchPackets = dispatchPackets;
-    }
+    public Integer getDispatchPackets() { return dispatchPackets; }
+    public void setDispatchPackets(Integer dispatchPackets) { this.dispatchPackets = dispatchPackets; }
 
-    public String getRemarks() {
-        return remarks;
-    }
+    public String getRemarks() { return remarks; }
+    public void setRemarks(String remarks) { this.remarks = remarks; }
 
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
-
-    public AcceptDemand getAcceptDemand() {
-        return acceptDemand;
-    }
-
-    public void setAcceptDemand(AcceptDemand acceptDemand) {
-        this.acceptDemand = acceptDemand;
-    }
-
-    public String getSublotNo() {
-        return sublotNo;
-    }
-
-    public void setSublotNo(String sublotNo) {
-        this.sublotNo = sublotNo;
-    }
+    public String getSublotNo() { return sublotNo; }
+    public void setSublotNo(String sublotNo) { this.sublotNo = sublotNo; }
 }

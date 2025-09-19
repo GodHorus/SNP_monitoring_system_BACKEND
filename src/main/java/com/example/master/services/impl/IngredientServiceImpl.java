@@ -23,9 +23,12 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public List<Ingredient> createIngredients(List<Ingredient> ingredients) {
-        return repo.saveAll(ingredients);
+        long startTime = System.currentTimeMillis();
+        List<Ingredient> saved = repo.saveAll(ingredients);
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken for bulk insert: " + (endTime - startTime) + " ms");
+        return saved;
     }
-
 
     @Override
     public List<Ingredient> findByDemandId(Long demandId) {

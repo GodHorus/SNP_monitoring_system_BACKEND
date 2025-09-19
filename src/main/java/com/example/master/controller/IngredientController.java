@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/ingredients")
@@ -28,14 +29,24 @@ public class IngredientController {
         return ResponseEntity.status(201).body(saved);
     }
 
+//    @PostMapping("/bulk")
+//    public ResponseEntity<List<Ingredient>> createBulk(@RequestBody List<IngredientDto> dtos) {
+//        List<Ingredient> ingredients = dtos.stream()
+//                .map(dto -> new Ingredient(dto.demandId, dto.name, dto.quantity, dto.unit))
+//                .toList();
+//
+//        List<Ingredient> saved = service.createIngredients(ingredients);
+//        return ResponseEntity.status(201).body(saved);
+//    }
+
     @PostMapping("/bulk")
-    public ResponseEntity<List<Ingredient>> createBulk(@RequestBody List<IngredientDto> dtos) {
+    public CompletableFuture<ResponseEntity<List<Ingredient>>> createBulk(@RequestBody List<IngredientDto> dtos) {
         List<Ingredient> ingredients = dtos.stream()
                 .map(dto -> new Ingredient(dto.demandId, dto.name, dto.quantity, dto.unit))
                 .toList();
 
         List<Ingredient> saved = service.createIngredients(ingredients);
-        return ResponseEntity.status(201).body(saved);
+        return CompletableFuture.completedFuture(ResponseEntity.status(201).body(saved));
     }
 
 

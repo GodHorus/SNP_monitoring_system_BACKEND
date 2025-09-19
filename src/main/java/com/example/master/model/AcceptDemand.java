@@ -1,10 +1,7 @@
 package com.example.master.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-
-import java.util.List;
 
 @Entity
 @Table(name = "accept_demands")
@@ -15,28 +12,47 @@ public class AcceptDemand {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer receivedPackets;   // NEW field
-    private String remarks;            // NEW field
+    @Column(name = "demand_id", nullable = false)
+    private Long demandId;   // only demandId as FK (not mapped)
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "dispatch_id", nullable = false)
-//    @JsonBackReference
-//    private DispatchDetail dispatchDetail;
+    @Column(name = "batch_no")
+    private String batchNo;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "demand_id", nullable = false)   // changed from dispatch_id to demand_id
-    @JsonBackReference
-    private Demand demand;
+    @Column(name = "lot_no")
+    private String lotNo;
 
-    @OneToMany(mappedBy = "acceptDemand", fetch = FetchType.LAZY)
-    private List<CDPOSupplierDispatch> cdpoSupplierDispatches;
+    @Column(name = "cdpo")
+    private String cdpo;   // store cdpo name as String
+
+    @Column(name = "no_of_packets")
+    private Integer noOfPackets;
+
+    @Column(name = "received_packets")
+    private Integer receivedPackets;
+
+    private String remarks;
 
     @Column(name = "qr_code", length = 1024)
     private String qrCode;
 
-    // Getters and Setters
+    // getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public Long getDemandId() { return demandId; }
+    public void setDemandId(Long demandId) { this.demandId = demandId; }
+
+    public String getBatchNo() { return batchNo; }
+    public void setBatchNo(String batchNo) { this.batchNo = batchNo; }
+
+    public String getLotNo() { return lotNo; }
+    public void setLotNo(String lotNo) { this.lotNo = lotNo; }
+
+    public String getCdpo() { return cdpo; }
+    public void setCdpo(String cdpo) { this.cdpo = cdpo; }
+
+    public Integer getNoOfPackets() { return noOfPackets; }
+    public void setNoOfPackets(Integer noOfPackets) { this.noOfPackets = noOfPackets; }
 
     public Integer getReceivedPackets() { return receivedPackets; }
     public void setReceivedPackets(Integer receivedPackets) { this.receivedPackets = receivedPackets; }
@@ -44,31 +60,6 @@ public class AcceptDemand {
     public String getRemarks() { return remarks; }
     public void setRemarks(String remarks) { this.remarks = remarks; }
 
-//    public DispatchDetail getDispatchDetail() { return dispatchDetail; }
-//    public void setDispatchDetail(DispatchDetail dispatchDetail) { this.dispatchDetail = dispatchDetail; }
-
-
-    public List<CDPOSupplierDispatch> getCdpoSupplierDispatches() {
-        return cdpoSupplierDispatches;
-    }
-
-    public void setCdpoSupplierDispatches(List<CDPOSupplierDispatch> cdpoSupplierDispatches) {
-        this.cdpoSupplierDispatches = cdpoSupplierDispatches;
-    }
-
-    public Demand getDemand() {
-        return demand;
-    }
-
-    public void setDemand(Demand demand) {
-        this.demand = demand;
-    }
-
-    public String getQrCode() {
-        return qrCode;
-    }
-
-    public void setQrCode(String qrCode) {
-        this.qrCode = qrCode;
-    }
+    public String getQrCode() { return qrCode; }
+    public void setQrCode(String qrCode) { this.qrCode = qrCode; }
 }

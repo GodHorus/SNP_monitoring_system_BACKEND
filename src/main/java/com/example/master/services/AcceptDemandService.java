@@ -8,8 +8,6 @@ import java.util.Optional;
 public interface AcceptDemandService {
 //    AcceptDemand createAcceptDemand(AcceptDemandDTO dto);
 
-    List<AcceptDemand> createAcceptDemands(List<AcceptDemandDTO> dtos);
-    List<AcceptDemandDTO> getAllAcceptDemands();
-
-    Optional<AcceptDemandDTO> getAcceptDemandByDemandId(Long demandId);
+    AcceptDemandDTO create(AcceptDemandDTO dto);
+    List<AcceptDemandDTO> getByDemandId(Long demandId);
 }
